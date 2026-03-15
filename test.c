@@ -5,7 +5,7 @@ int main ()
 
     int start,end;
     scanf("%d %d",&start,&end);
-    letRangeToRight(&start,&end,89);
+    letRangeToRight(&start,&end,0,89);
     printf("%d %d",start,end);
 
 }
