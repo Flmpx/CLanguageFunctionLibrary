@@ -12,13 +12,13 @@ void initializeList(List* plist) {
 
 
 // 添加新元素到链表的尾部
-int addNumInEnd(List* plist, int num) {
+int insertValAtEnd(List* plist, int val) {
     Node* newNode = (Node*)malloc(sizeof(Node));
     if (newNode == NULL) return -1;   //如果分配出错,返回-1
 
     //初始化新得到的节点
     newNode->next = NULL;
-    newNode->val = num;
+    newNode->val = val;
     
 
     if (plist->head) {
@@ -39,12 +39,12 @@ int addNumInEnd(List* plist, int num) {
 }
 
 //添加新元素到链表的头部
-int addNumInStart(List* plist, int num) {
+int insertValAtStart(List* plist, int val) {
     Node* newNode = (Node*)malloc(sizeof(Node));
     if (newNode == NULL) return -1;   //如果分配出错,返回-1
 
     newNode->next = plist->head;  //将新节点指向原来的头部
-    newNode->val = num;   //
+    newNode->val = val;   //
     plist->head = newNode;    //再将整个链表的头部设置为p
     
     //如果为空链表,还要同时设置尾部
@@ -58,7 +58,7 @@ int addNumInStart(List* plist, int num) {
 
 //在pos位置和pos-1位置的中间添加节点,0<=pos<=size
 //如果pos=0,那就是在开头添加节点,如果pos=size,就是在尾部添加节点
-int addNumInPos(List* plist, int num, int pos) {
+int insertValAtPos(List* plist, int val, int pos) {
 
     //如果不符合位置范围,返回-1
     if (pos < 0 || pos > plist->size) return -1; // 如果位置小于0,则返回-1代表错误
@@ -74,7 +74,7 @@ int addNumInPos(List* plist, int num, int pos) {
     //创建新节点
     Node* newNode = (Node*)malloc(sizeof(Node));
     if (newNode == NULL) return -1;   //如果分配出错,返回-1
-    newNode->val = num;
+    newNode->val = val;
     newNode->next = p;  //让这个新节点指向p
 
     

@@ -18,15 +18,15 @@ typedef struct {
 extern void initializeList(List* plist);
 
 // 添加新元素到链表的尾部
-extern int addNumInEnd(List* plist, int num);
+extern int insertValAtEnd(List* plist, int num);
 
 //添加新元素到链表的头部
-extern int addNumInStart(List* plist, int num);
+extern int insertValAtStart(List* plist, int num);
 
 
 //在pos位置和pos-1位置的中间添加节点,0<=pos<=size
 //如果pos=0,那就是在开头添加节点,如果pos=size,就是在尾部添加节点
-extern int addNumInPos(List* plist, int num, int pos);
+extern int insertValAtPos(List* plist, int num, int pos);
 
 
 //找到链表中值为val的节点,如果有多个,返回第一个节点
