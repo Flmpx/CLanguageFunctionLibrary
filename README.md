@@ -1,10 +1,13 @@
 ## C语言函数库  
 
-### 1 int letRangeToRight(int* start,int* end,int allNum)  
-#### 信息:  
+### [1 小功能函数_1](./Function_1/)  
+#### 各函数:
+    ```c
         1 可以把用户输入的区间范围修改正确的函数  
-        2 传入一个起始值start,终点值end,其中会把区间矫正,改为0<=start<=end<allNum  
-### 2 单向链表
+        \\ 传入一个起始值start,终点值end,其中会把区间矫正,改为0<=start<=end<allNum  
+        extern int letRangeToRight(int* start,int* end,int allNum)
+    ```
+### [2 单向链表](./SList/)
 #### 各函数:
     ```c
     1 初始化链表
@@ -56,7 +59,7 @@
     extern void freeList(List* plist); 
 
     ```
-### 3 双向链表  
+### [3 双向链表](./Dlist/) 
 #### 各函数:  
     ```c
     1 初始化链表
