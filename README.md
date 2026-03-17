@@ -59,7 +59,7 @@
     extern void freeList(List* plist); 
 
     ```
-### [3 双向链表](https://github.com/Flmpx/CLanguageFunctionLibrary/tree/master/Dlist/) 
+### [3 双向链表](https://github.com/Flmpx/CLanguageFunctionLibrary/tree/master/DList/) 
 #### 各函数:  
     ```c
     1 初始化链表
