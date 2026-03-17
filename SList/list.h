@@ -1,6 +1,13 @@
 #ifndef LIST_H
 #define LIST_H
 
+
+enum info {
+    Warning = -1,
+    None = 0,
+    Success = 1
+};
+
 typedef struct node {
     int val;    //链表的值--->可以自定义其他类型或自定义结构体
     struct node* next;  //下一节点的地址
@@ -37,6 +44,12 @@ extern Node* findNodeByPos(List* plist, int pos);
 
 //通过值来删除节点,如果存在多个节点,删除第一个
 extern int delNodeByVal(List* plist, int val);
+
+//删除头节点
+int delStartNode(List* plist);
+
+//删除尾节点
+int delEndNode(List* plist);
 
 //通过在链表中的位置来删除节点
 extern int delNodeByPos(List* plist, int pos);
