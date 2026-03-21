@@ -1,10 +1,16 @@
 #include <stdio.h>
-#include "./list.h"
+#include "s_list.h"
 #include <stdlib.h>
 // 链表的构建,搜索,删除,清除
 
+enum info {
+    Warning = -1,
+    None = 0,
+    Success = 1
+};
+
 //初始化链表
-void initializeList(List* plist) {
+void initializeSList(SList* plist) {
     plist->head = NULL;
     plist->tail = NULL;
     plist->size = 0;
@@ -12,8 +18,8 @@ void initializeList(List* plist) {
 
 
 // 添加新元素到链表的尾部
-int insertValAtEnd(List* plist, int val) {
-    Node* newNode = (Node*)malloc(sizeof(Node));
+int insertValAtEndInSList(SList* plist, int val) {
+    SNode* newNode = (SNode*)malloc(sizeof(SNode));
     if (newNode == NULL) return Warning;   //如果分配出错,返回-1
 
     //初始化新得到的节点
@@ -39,8 +45,8 @@ int insertValAtEnd(List* plist, int val) {
 }
 
 //添加新元素到链表的头部
-int insertValAtStart(List* plist, int val) {
-    Node* newNode = (Node*)malloc(sizeof(Node));
+int insertValAtStartInSList(SList* plist, int val) {
+    SNode* newNode = (SNode*)malloc(sizeof(SNode));
     if (newNode == NULL) return Warning;   //如果分配出错,返回-1
 
     newNode->next = plist->head;  //将新节点指向原来的头部
@@ -59,17 +65,17 @@ int insertValAtStart(List* plist, int val) {
 
 //在pos位置和pos-1位置的中间添加节点,0<=pos<=size
 //如果pos=0,那就是在开头添加节点,如果pos=size,就是在尾部添加节点
-int insertValAtPos(List* plist, int val, int pos) {
+int insertValAtPosInSList(SList* plist, int val, int pos) {
 
     //如果不符合位置范围,返回-1
     if (pos < 0 || pos > plist->size) return Warning; // 如果位置小于0,则返回-1代表错误
     
     //如果为在结尾或头添加,直接调用函数
-    if (pos == 0) return insertValAtStart(plist, val);
-    if (pos == plist->size) return insertValAtEnd(plist, val);
+    if (pos == 0) return insertValAtStartInSList(plist, val);
+    if (pos == plist->size) return insertValAtEndInSList(plist, val);
 
-    Node* p = plist->head;  //正在判断是不是这个位置的节点的节点
-    Node* q = NULL; //p的前一个节点
+    SNode* p = plist->head;  //正在判断是不是这个位置的节点的节点
+    SNode* q = NULL; //p的前一个节点
     
     //通过循环得到位置对应的节点及前一个节点
     
@@ -79,7 +85,7 @@ int insertValAtPos(List* plist, int val, int pos) {
         p = p->next;
     }
     //创建新节点
-    Node* newNode = (Node*)malloc(sizeof(Node));
+    SNode* newNode = (SNode*)malloc(sizeof(SNode));
     if (newNode == NULL) return -1;   //如果分配出错,返回-1
 
     newNode->val = val;
@@ -93,8 +99,8 @@ int insertValAtPos(List* plist, int val, int pos) {
 }
 
 //找到链表中值为val的节点,如果有多个,返回第一个节点
-Node* findNodeByVal(List* plist, int val) {
-    Node* p = NULL;
+SNode* findNodeByValInSList(SList* plist, int val) {
+    SNode* p = NULL;
     for (p = plist->head; p; p = p->next) {
         if (p->val == val) {
             return p; 
@@ -104,9 +110,9 @@ Node* findNodeByVal(List* plist, int val) {
 }
 
 //通过pos来找到节点
-Node* findNodeByPos(List* plist, int pos) {
+SNode* findNodeByPosInSList(SList* plist, int pos) {
     if (pos < 0 || pos >= plist->size) return NULL; // 如果位置小于0,则返回-1代表错误
-    Node* p = plist->head;  //先初始化为头节点
+    SNode* p = plist->head;  //先初始化为头节点
     
     int i;
     for (i = 0; i < pos; i++) {
@@ -117,9 +123,9 @@ Node* findNodeByPos(List* plist, int pos) {
 
 
 //删除头节点
-int delStartNode(List* plist) {
+int delStartNodeInSList(SList* plist) {
     if (plist->size == 0) return Warning;
-    Node* p = plist->head;
+    SNode* p = plist->head;
 
     if (plist->size > 1) {
         //
@@ -134,11 +140,11 @@ int delStartNode(List* plist) {
 }
 
 //删除尾节点
-int delEndNode(List* plist) {
+int delEndNodeInSList(SList* plist) {
     if (plist->size == 0) return Warning;
     //找到最后一个节点及前一个节点
-    Node* p = plist->head;
-    Node* q = NULL;
+    SNode* p = plist->head;
+    SNode* q = NULL;
     int i;
     for (i = 0; i < plist->size-1; i++) {
         q = p;
@@ -161,17 +167,17 @@ int delEndNode(List* plist) {
 
 
 //通过值来删除节点,如果存在多个节点,删除第一个
-int delNodeByVal(List* plist, int val) {
+int delNodeByValInSList(SList* plist, int val) {
     
-    Node* p = plist->head; //正在搜索的节点
-    Node* q = NULL; //p的上一个节点
+    SNode* p = plist->head; //正在搜索的节点
+    SNode* q = NULL; //p的上一个节点
 
     for (; p; q = p, p = p->next) {
         //如果找到节点的值符合条件
         if (p->val == val) {
 
-            if (p == plist->head) return delStartNode(plist);
-            if (p == plist->tail) return delEndNode(plist);
+            if (p == plist->head) return delStartNodeInSList(plist);
+            if (p == plist->tail) return delEndNodeInSList(plist);
 
             q->next = p->next;
             free(p);
@@ -183,12 +189,12 @@ int delNodeByVal(List* plist, int val) {
 }
 
 //通过在链表中的位置来删除节点
-int delNodeByPos(List* plist, int pos) {
+int delNodeByPosInSList(SList* plist, int pos) {
     //如果不符合位置范围,返回-1
     if (pos < 0 || pos >= plist->size) return Warning; // 如果位置小于0,则返回-1代表错误
 
-    Node* p = plist->head;  //搜索的节点p
-    Node* q = NULL; //p的前一个节点
+    SNode* p = plist->head;  //搜索的节点p
+    SNode* q = NULL; //p的前一个节点
     
     int i;
     for (i = 0; i < pos; i++) {
@@ -196,8 +202,8 @@ int delNodeByPos(List* plist, int pos) {
         p = p->next;
     }
 
-    if (p == plist->head) return delStartNode(plist);
-    if (p == plist->tail) return delEndNode(plist);
+    if (p == plist->head) return delStartNodeInSList(plist);
+    if (p == plist->tail) return delEndNodeInSList(plist);
 
     q->next = p->next;
     free(p);
@@ -206,8 +212,8 @@ int delNodeByPos(List* plist, int pos) {
 }
 
 // 打印节点的所有值(只有属性int才可以使用这个函数)
-void printList(List* list) {
-    Node* p;
+void printSList(SList* list) {
+    SNode* p;
     for (p = list->head; p; p = p->next) {
         printf("%d ", p->val);
     }
@@ -215,16 +221,16 @@ void printList(List* list) {
 }
 
 //消除链表
-void freeList(List* plist) {
+void freeSList(SList* plist) {
 
-    Node* p = plist->head;  //当前节点
-    Node* q = NULL; //p的上一个节点
+    SNode* p = plist->head;  //当前节点
+    SNode* q = NULL; //p的上一个节点
     //只要当前节点非空就执行
     while (p) {
         q = p;
         p = p->next;
         free(q);
     }
-    initializeList(plist);  //初始化
+    initializeSList(plist);  //初始化
 }
 
