@@ -176,6 +176,7 @@ void printCDListFromStart(CDList* plist) {
 }
 void printCDListFromPos(CDList* plist, int pos) {
     if (isEmptyCDList(plist)) return;
+    if ((pos < 0) || (pos >= plist->size)) return;
     int i;
     CDNode* p = findNodeByPosInCDList(plist, pos);
     for (i = 0; i < plist->size; i++, p = p->next) {
