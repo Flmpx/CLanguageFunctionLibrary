@@ -223,3 +223,30 @@ void freeList(List* plist) {
     }
     initializeList(plist);
 }
+
+
+void sortList(List* plist, Compare cmp) {
+    if (plist->size < 2) return;
+    Node* p = plist->head;
+    // i以及i之前的节点的都是有序区
+    for (int i = 0; i < plist->size-1; i++, p = p->next) {
+        void* temp_data = p->next->data;
+        int temp_sizeofdata = p->next->sizeofdata;
+        Node* q = p;
+        for (int j = i; j >= 0; j--, q = q->prev) {
+            if (cmp(q->data, temp_data) > 0) {
+                q->next->data = q->data;
+                q->next->sizeofdata = q->sizeofdata;
+            } else {
+                break;
+            }
+        }
+        if (q) {
+            q->next->data = temp_data;
+            q->next->sizeofdata = temp_sizeofdata;
+        } else {
+            plist->head->data = temp_data;
+            plist->head->sizeofdata = temp_sizeofdata;
+        }
+    }
+}

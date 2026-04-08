@@ -101,4 +101,10 @@ extern void printList(List* plist, Print print);
 /// @brief 清除链表
 /// @param plist 链表指针
 extern void freeList(List* plist);
+
+
+/// @brief 对链表进行排序
+/// @param plist 链表指针
+/// @param cmp 自己提供比较函数
+extern void sortList(List* plist, Compare cmp);
 #endif
