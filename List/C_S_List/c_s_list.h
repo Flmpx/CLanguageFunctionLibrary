@@ -13,7 +13,7 @@ typedef struct {
     int size;
 } CSList;
 
-//åˆ¤æ–­é“¾è¡¨æ˜¯å¦ä¸ºç©º
+//ÅĞ¶ÏÁ´±íÊÇ·ñÎª¿Õ
 bool isEmptyCSList(CSList* plist);
 
 
