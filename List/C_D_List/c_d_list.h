@@ -12,8 +12,8 @@ typedef struct {
     int size;
 } CDList;
 
-/// @brief ³õÊ¼»¯Á´±í
-/// @param plist Á´±íÖ¸Õë
+/// @brief åˆå§‹åŒ–é“¾è¡¨
+/// @param plist é“¾è¡¨æŒ‡é’ˆ
 extern void initializeCDList(CDList* plist);
 
 
