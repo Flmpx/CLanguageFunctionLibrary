@@ -4,15 +4,34 @@
 #include <stdbool.h>
 #include <string.h>
 
-Operation emptyOperation = {
+static Operation emptyOperation = {
     NULL, NULL, NULL, NULL, NULL
 };
 
-Otherthings emptyOtherthings = {
+static Otherthings emptyOtherthings = {
     NULL, NULL, NULL, NULL, NULL
 };
 
 
+
+
+static Data returnEmptyData() {
+    Data data;
+    data.data = NULL;
+    data.isEmpty = true;
+    data.type = -1;
+    data.oper = &emptyOperation;
+    data.others = &emptyOtherthings;
+    return data;
+}
+
+static Entry returnEmptyEntry() {
+    Entry entry;
+    entry.key = returnEmptyData();
+    entry.value = returnEmptyData();
+    entry.state = NULL_IN_OUTER;
+    return entry;
+}
 
 
 static bool isPrime(int n) {
@@ -97,13 +116,15 @@ static int compareData(Data* Data_a, Data* Data_b, _compare cmp) {
 }
 
 
-static void freeOthers(Otherthings* others) {
+void freeOthers(Otherthings* others) {
+    if (others == NULL) return;
     free(others->thingOf_Compare);
     free(others->thingOf_Copy);
     free(others->thingOf_Free);
     free(others->thingOf_Hash);
     free(others->thingOf_Print);
     free(others);
+    others = NULL;
 }
 
 void freeData(Data* data) {
@@ -119,6 +140,7 @@ void freeData(Data* data) {
 
 //这个仅仅只会把Entry中的key和value的data和others(不会释放oper,因为同种类型数据是要共用同一个opertion类型的指针)
 void freeEntry(Entry* entry) {
+    if (entry->state == EXIST_IN_OUTER) return;
     freeData(&(entry->key));
     freeData(&(entry->value));
 }
@@ -141,43 +163,92 @@ static char* copyString(char* oldString) {
     if (oldString == NULL) return NULL;
     int len = strlen(oldString);
     char* newString = (char*)malloc((len+1)*sizeof(char));
+    if (newString == NULL) return NULL;
     strcpy(newString, oldString);
     return newString;
 }
 
 static Otherthings* copyOtherthings(Otherthings* oldOtherthings) {
     Otherthings* newThing = (Otherthings*)malloc(sizeof(Otherthings));
+    if (newThing == NULL) return NULL;
+    newThing->thingOf_Compare = newThing->thingOf_Copy = newThing->thingOf_Free = newThing->thingOf_Hash = newThing->thingOf_Print = NULL;
+
     newThing->thingOf_Compare = copyString(oldOtherthings->thingOf_Compare);
+    if (newThing->thingOf_Compare == NULL) {
+        free(newThing);
+        return NULL;
+    }
     newThing->thingOf_Copy = copyString(oldOtherthings->thingOf_Copy);
+    if (newThing->thingOf_Copy == NULL) {
+        freeOthers(newThing);
+        free(newThing);
+        return NULL;
+    }
     newThing->thingOf_Free = copyString(oldOtherthings->thingOf_Free);
+    if (newThing->thingOf_Free == NULL) {
+        freeOthers(newThing);
+        free(newThing);
+        return NULL;
+    }
     newThing->thingOf_Hash = copyString(oldOtherthings->thingOf_Hash);
+    if (newThing->thingOf_Hash == NULL) {
+        freeOthers(newThing);
+        free(newThing);
+        return NULL;
+    }
     newThing->thingOf_Print = copyString(oldOtherthings->thingOf_Print);
+    if (newThing->thingOf_Print == NULL) {
+        freeOthers(newThing);
+        free(newThing);
+        return NULL;
+    }
     return newThing;
 }
 
 Data copyData(Data oldData) {
+
+    if (oldData.isEmpty) {
+        return returnEmptyData();
+    }
     //复制void* data
     Data newData;
 
     //copy函数不仅仅只是把指针赋值,还要把整个void* data赋值一遍
     newData.data = oldData.oper->copy(oldData.data, oldData.others->thingOf_Copy);
 
+    if (newData.data == NULL) {
+        return returnEmptyData();
+    }
     newData.type = oldData.type;
 
     //提供的相应操作函数因该是全局的
     newData.oper = oldData.oper;
     //由于输入的字符串信息可能是静态区的,所以需要完全复制
     newData.others = copyOtherthings(oldData.others);
+    if (newData.others == NULL) {
+        oldData.oper->freedata(newData.data, oldData.others->thingOf_Free);
+        return returnEmptyData();
+    }
+
     newData.isEmpty = false;
     return newData;
 }
 
 Entry copyEntry(Entry oldEntry) {
+    if (oldEntry.state == NULL_IN_OUTER) {
+        return returnEmptyEntry();
+    }
     Entry newEntry;
     newEntry.key = copyData(oldEntry.key);
+    if (newEntry.key.isEmpty) {
+        return returnEmptyEntry();
+    }
     newEntry.value = copyData(oldEntry.value);
-    newEntry.isSingle = true;
-    newEntry.state = EXIST;
+    if (newEntry.value.isEmpty) {
+        freeData(&(newEntry.key));
+        return returnEmptyEntry();
+    }
+    newEntry.state = EXIST_IN_OUTER;
     return newEntry;
 }
 
@@ -185,19 +256,29 @@ Entry copyEntry(Entry oldEntry) {
 //这个函数保证可以添加
 static int addEntryFunction(Map* pMap, Data key, Data value) {
     ull index = (key.oper->hash(key.data, key.others->thingOf_Hash))%pMap->mod;
-    while (pMap->arr[index].state != NONE && pMap->arr[index].state != DEL) {
+    while (pMap->arr[index].state != NONE_IN_MAP && pMap->arr[index].state != DEL_IN_MAP) {
         if (compareData(&(pMap->arr[index].key), &key, key.oper->cmp) == 0) {
             freeData(&(pMap->arr[index].value));
             pMap->arr[index].value = copyData(value);
-            return Success;
+            if (pMap->arr[index].value.isEmpty) {
+                return Warning;
+            } else {
+                return Success;
+            }
         }
         index++;
         index %= pMap->len;
     }
     pMap->arr[index].key = copyData(key);
+    if (pMap->arr[index].key.isEmpty) {
+        return Warning;
+    }
     pMap->arr[index].value = copyData(value);
-    pMap->arr[index].state = EXIST;
-    pMap->arr[index].isSingle = false;
+    if (pMap->arr[index].value.isEmpty) {
+        freeData(&(pMap->arr[index].key));
+        return Warning;
+    }
+    pMap->arr[index].state = EXIST_IN_MAP;
     pMap->size++;
     return Success;
 }
@@ -205,14 +286,13 @@ static int addEntryFunction(Map* pMap, Data key, Data value) {
 
 static int addEntryForFreshMap(Map* pMap, Data key, Data value) {
     ull index = (key.oper->hash(key.data, key.others->thingOf_Hash))%pMap->mod;
-    while (pMap->arr[index].state != NONE) {
+    while (pMap->arr[index].state != NONE_IN_MAP) {
         index++;
         index %= pMap->len;
     }
     pMap->arr[index].key = key;
     pMap->arr[index].value = value;
-    pMap->arr[index].state = EXIST;
-    pMap->arr[index].isSingle = false;
+    pMap->arr[index].state = EXIST_IN_MAP;
     pMap->size++;
     return Success;
 }
@@ -229,8 +309,9 @@ static int freshMap(Map* pMap) {
     
     Map newMap;
     Entry* newArray = (Entry*)malloc(newLen*sizeof(Entry));
+    if (newArray == NULL) return Warning;
     for (int i = 0; i < newLen; i++) {
-        newArray[i].state = NONE;
+        newArray[i].state = NONE_IN_MAP;
     }
 
     newMap.arr = newArray;
@@ -250,32 +331,23 @@ static int freshMap(Map* pMap) {
 
 int insertEntryInMap(Map* pMap, Data key, Data val) {
     if (4*(pMap->size) >= 3*(pMap->len)) {
-        freshMap(pMap);
+        if (freshMap(pMap) == Warning) {
+            return Warning;
+        }
     }
-    addEntryFunction(pMap, key, val);
-    return Success;
+    return addEntryFunction(pMap, key, val);
 }
 
-
-Data returnEmptyData() {
-    Data data;
-    data.data = NULL;
-    data.isEmpty = true;
-    data.type = -1;
-    data.oper = &emptyOperation;
-    data.others = &emptyOtherthings;
-    return data;
-}
 
 
 static int returnIndexByKey(Map* pMap, Data key) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return NOT_FOUND;
     ull index = (key.oper->hash(key.data, key.others->thingOf_Hash))%pMap->mod;
     for (int i = 0; i < pMap->len; i++) {
-        if (pMap->arr[index].state == NONE) {
+        if (pMap->arr[index].state == NONE_IN_MAP) {
             return NOT_FOUND;
         }
-        if (pMap->arr[index].state == DEL) {
+        if (pMap->arr[index].state == DEL_IN_MAP) {
             index++;
             index %= (pMap->len);
             continue;
@@ -316,7 +388,7 @@ int delEntryByKey(Map* pMap, Data key) {
         return None;
     } else {
         freeEntry(&(pMap->arr[index]));
-        pMap->arr[index].state = DEL;
+        pMap->arr[index].state = DEL_IN_MAP;
         pMap->size--;
         return Success;
     }
