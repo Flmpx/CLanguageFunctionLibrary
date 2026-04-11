@@ -1,8 +1,6 @@
 #ifndef _HASH_MAP_H
 #define _HASH_MAP_H
 #include <stdbool.h>
-#define NULL_IN_OUTER -3
-#define EXIST_IN_OUTER -2
 #define DEL_IN_MAP -1
 #define NONE_IN_MAP 0
 #define EXIST_IN_MAP 1
@@ -12,7 +10,26 @@
 
 //注:Data和Entry的空不能作为有效的内容,只是为了在出现问题时返回空
 
+/*
+使用方法:
+    1 创建当前类型数据的所有操作函数
+    2 把相关函数的指针整合成一个Operation类型的数据
+    3 使用stackOthers函数合成描述性信息
+    4 使用stackData函数和成Data类型(包括key和val)
+    5 插入到散列表中
+    6 每次使用玩Map后必须释放掉Map,使用freeMap函数
 
+注: 1 同一中类型的操作函数应该一致
+    2 stack函数返回的时自动变量,不可以free
+    3 描述信息主要用与操作函数进行操作,操作函数中一般有解析该字符串的功能
+      ---- 比如二维动态数组一般写成  2_3 表示2行3列 可用于打印,释放, 复制等
+    4 通过key等返回的Entry和Val都是malloc出来的,使用完记得释放,如果无法找到或者无法创建Data或者Entry,会输出提示信息,同时返回空Data或Entry
+    5 描述性字符串不可以为NULL,只能为""
+
+
+
+
+*/
 typedef unsigned long long ull;
 typedef struct Data Data;
 
@@ -31,8 +48,8 @@ typedef struct {
     char* thingOf_Compare;
     char* thingOf_Copy;
     char* thingOf_Print;
+    bool isEmpty;
 } Otherthings;
-
 
 
 
@@ -71,7 +88,7 @@ struct Data {
     int type;
     //如果是同一种类型,那他们的操作函数因该都是相同的,所以直接用指针
     Operation* oper;
-    Otherthings* others;
+    Otherthings others;
     bool isEmpty;
 };
 
@@ -80,6 +97,7 @@ typedef struct Entry {
     Data key;
     Data value;
     int state;
+    bool isEmpty;
 } Entry;
 
 /// @brief Map
@@ -95,10 +113,6 @@ typedef struct Map {
 /// @param pMap Mpa类型指针
 extern void initializeMap(Map* pMap);
 
-/// @brief 释放掉others的描述性字符串
-/// @param others Otherthings类型的指针
-extern void freeOthers(Otherthings* others);
-
 
 /// @brief 释放掉Data数据
 /// @param data Data数据类型指针
@@ -113,17 +127,6 @@ extern void freeEntry(Entry* entry);
 /// @param pMap Map类型指针
 extern void freeMap(Map* pMap);
 
-
-/// @brief 复制一份Data(描述性字符串会复制一份,但操作函数不会)
-/// @param oldData 旧Data数据
-/// @return Data数据(返回后的Data一定要检查一下是否为空,若为空,说明内存分配失败或者oldData本来就是空的)
-extern Data copyData(Data oldData);
-
-/// @brief 复制一份Entry(描述性字符串会复制一份,但操作函数不会)
-/// @param oldEntry 旧Entry数据
-/// @return Entry数据
-extern Entry copyEntry(Entry oldEntry);
-
 /// @brief 插入新的key和value
 /// @param pMap Mpa类型指针
 /// @param key key
@@ -134,8 +137,15 @@ extern int insertEntryInMap(Map* pMap, Data key, Data val);
 /// @brief 通过key返回Data
 /// @param pMap Mpa类型指针
 /// @param key key
-/// @return Data数据,除了操作函数不是复制的一份,其他的都是复制的,使用完后记得释放
+/// @return Data数据,(如果为空,Data.isEmpty==0),除了操作函数不是复制的一份,其他的都是复制的,使用完后记得释放
 extern Data returnValByKey(Map* pMap, Data key);
+
+/// @brief 通过key返回Entry
+/// @param pMap Mpa类型指针
+/// @param key key
+/// @return Entry数据,(如果为空Entry.state == NULL_IN_OUTER)除了操作函数不是复制的一份,其他的都是复制的,使用完后记得释放
+extern Entry returnEntryByKey(Map* pMap, Data key);
+
 
 /// @brief 判断释放含有该key
 /// @param pMap Mpa类型指针
@@ -151,4 +161,20 @@ extern bool hasKeyInMap(Map* pMap, Data key);
 extern int delEntryByKey(Map* pMap, Data key);
 
 
+/// @brief 将Data的数据整合在一起(注意:这个Data数据里面的不是动态分配的,不可以使用freeData函数释放)
+/// @param data void* data指针
+/// @param type 数据类型
+/// @param oper 操作函数指针
+/// @param others others数据,通过intergrateOthers函数获得
+/// @return 返回Data数据(注意:这个Data数据里面的不是动态分配的,不可以使用freeData函数释放)
+extern Data stackData(void* data, int type, Operation* oper, Otherthings others);
+
+/// @brief 将Others的数据整合在一起(注意:这个Otherthings数据里面的不是动态分配的,不可以使用free函数释放)
+/// @param thingOf_Free free的描述性字符串
+/// @param thingOf_Hash hash的描述性字符串
+/// @param thingOf_Compare cmp的描述性字符串
+/// @param thingOf_Copy copy的描述性字符串
+/// @param thingOf_Print print的描述性字符串
+/// @return 返回Otherthings数据(注意:这个Otherthings数据里面的不是动态分配的,不可以使用free函数释放)
+extern Otherthings stackOthers(char* thingOf_Free, char* thingOf_Hash, char* thingOf_Compare, char* thingOf_Copy, char* thingOf_Print);
 #endif
