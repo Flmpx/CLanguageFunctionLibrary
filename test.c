@@ -21,9 +21,9 @@
 //     Map map;
 //     initializeMap(&map);
 //     int num = 10;
-//     Data key = stackData(&num, 0, &oper_Int, other_Int);
+//     Data key = stackData(&num, 0, &oper_Int, NULL, false);
 //     int n = 200;
-//     Data val = stackData(&n, 0, &oper_Int, other_Int);
+//     Data val = stackData(&n, 0, &oper_Int, NULL, false);
 //     printf("%d\n", insertEntryInMap(&map, key, val));
 //     if (hasKeyInMap(&map, key)) {
 //         printf("Yes\n");
@@ -283,101 +283,230 @@
 
 
 
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <time.h>
+// // 请根据你的目录结构修改路径
+// #include "Map/Hash_Map/_hash_map.h"
+// #include "Map/Hash_Map/int_oper/_int_oper.h"
+
+// #define TEST_SIZE 6000000     // 尝试 20 万级别
+// #define UPDATE_COUNT 50000   // 更新前 5 万个数据
+
+// // 辅助计时宏
+// #define TIMER_START clock_t t_start = clock();
+// #define TIMER_STOP(name) clock_t t_end = clock(); \
+//     printf(">> [%s] 耗时: %.4f 秒\n", name, (double)(t_end - t_start) / CLOCKS_PER_SEC);
+
+// void run_performance_test() {
+//     Map myMap;
+//     initializeMap(&myMap);
+
+//     printf("========================================\n");
+//     printf("   哈希表性能测试 (Size: %d)\n", TEST_SIZE);
+//     printf("========================================\n");
+
+//     // --- 1. 插入测试 ---
+//     {
+//         TIMER_START
+//         for (int i = 0; i < TEST_SIZE; i++) {
+//             int k = i;
+//             int v = i * 2;
+//             Data kd = stackData(&k, 1, &oper_Int, other_Int);
+//             Data vd = stackData(&v, 1, &oper_Int, other_Int);
+//             insertEntryInMap(&myMap, kd, vd);
+//         }
+//         TIMER_STOP("大规模插入 (含多次扩容)")
+//     }
+
+//     // --- 2. 更新测试 ---
+//     {
+//         TIMER_START
+//         for (int i = 0; i < UPDATE_COUNT; i++) {
+//             int k = i;
+//             int v = 999999;
+//             Data kd = stackData(&k, 1, &oper_Int, other_Int);
+//             Data vd = stackData(&v, 1, &oper_Int, other_Int);
+//             insertEntryInMap(&myMap, kd, vd);
+//         }
+//         TIMER_STOP("覆盖更新 (含旧值释放)")
+//     }
+
+//     // --- 3. 查找测试 ---
+//     int errors = 0;
+//     {
+//         TIMER_START
+//         for (int i = 0; i < TEST_SIZE; i++) {
+//             int k = i;
+//             Data kd = stackData(&k, 1, &oper_Int, other_Int);
+//             Data res = returnValByKey(&myMap, kd);
+            
+//             // 简单校验
+//             if (res.isEmpty) {
+//                 errors++;
+//             } else {
+//                 int expected = (i < UPDATE_COUNT) ? 999999 : (i * 2);
+//                 if (*(int*)res.data != expected) errors++;
+//             }
+//             freeData(&res); // 释放拷贝件
+//         }
+//         TIMER_STOP("全量查找 (含数据拷贝与释放)")
+//     }
+
+//     // --- 4. 删除测试 ---
+//     {
+//         TIMER_START
+//         for (int i = 0; i < TEST_SIZE; i += 2) {
+//             int k = i;
+//             Data kd = stackData(&k, 1, &oper_Int, other_Int);
+//             delEntryByKey(&myMap, kd);
+//         }
+//         TIMER_STOP("删除 50%% 数据 (线性探测打补丁)")
+//     }
+
+//     // --- 5. 清理测试 ---
+//     {
+//         TIMER_START
+//         freeMap(&myMap);
+//         TIMER_STOP("内存彻底销毁")
+//     }
+
+//     printf("========================================\n");
+//     printf("测试完成。校验错误数: %d\n", errors);
+//     if (errors == 0) printf("结果: 完美! (Perfect)\n");
+// }
+
+// int main() {
+//     // 运行多次看平均值
+//     run_performance_test();
+//     return 0;
+// }
+
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-// 请根据你的目录结构修改路径
+#include <stdbool.h>
+
+// 根据你的实际路径调整
 #include "Map/Hash_Map/_hash_map.h"
 #include "Map/Hash_Map/int_oper/_int_oper.h"
 
-#define TEST_SIZE 6000000     // 尝试 20 万级别
-#define UPDATE_COUNT 50000   // 更新前 5 万个数据
+#define TEST_SIZE 1000000     // 初始插入 20 万条
+#define UPDATE_SIZE 50000    // 更新前 5 万条
+#define REINSERT_SIZE 10000  // 重新插入 1 万条已删除的数据
+#define NEW_VAL_CONST 888888 // 更新后的目标值
 
-// 辅助计时宏
-#define TIMER_START clock_t t_start = clock();
-#define TIMER_STOP(name) clock_t t_end = clock(); \
-    printf(">> [%s] 耗时: %.4f 秒\n", name, (double)(t_end - t_start) / CLOCKS_PER_SEC);
-
-void run_performance_test() {
-    Map myMap;
-    initializeMap(&myMap);
-
-    printf("========================================\n");
-    printf("   哈希表性能测试 (Size: %d)\n", TEST_SIZE);
-    printf("========================================\n");
-
-    // --- 1. 插入测试 ---
-    {
-        TIMER_START
-        for (int i = 0; i < TEST_SIZE; i++) {
-            int k = i;
-            int v = i * 2;
-            Data kd = stackData(&k, 1, &oper_Int, other_Int);
-            Data vd = stackData(&v, 1, &oper_Int, other_Int);
-            insertEntryInMap(&myMap, kd, vd);
-        }
-        TIMER_STOP("大规模插入 (含多次扩容)")
-    }
-
-    // --- 2. 更新测试 ---
-    {
-        TIMER_START
-        for (int i = 0; i < UPDATE_COUNT; i++) {
-            int k = i;
-            int v = 999999;
-            Data kd = stackData(&k, 1, &oper_Int, other_Int);
-            Data vd = stackData(&v, 1, &oper_Int, other_Int);
-            insertEntryInMap(&myMap, kd, vd);
-        }
-        TIMER_STOP("覆盖更新 (含旧值释放)")
-    }
-
-    // --- 3. 查找测试 ---
-    int errors = 0;
-    {
-        TIMER_START
-        for (int i = 0; i < TEST_SIZE; i++) {
-            int k = i;
-            Data kd = stackData(&k, 1, &oper_Int, other_Int);
-            Data res = returnValByKey(&myMap, kd);
-            
-            // 简单校验
-            if (res.isEmpty) {
-                errors++;
-            } else {
-                int expected = (i < UPDATE_COUNT) ? 999999 : (i * 2);
-                if (*(int*)res.data != expected) errors++;
-            }
-            freeData(&res); // 释放拷贝件
-        }
-        TIMER_STOP("全量查找 (含数据拷贝与释放)")
-    }
-
-    // --- 4. 删除测试 ---
-    {
-        TIMER_START
-        for (int i = 0; i < TEST_SIZE; i += 2) {
-            int k = i;
-            Data kd = stackData(&k, 1, &oper_Int, other_Int);
-            delEntryByKey(&myMap, kd);
-        }
-        TIMER_STOP("删除 50%% 数据 (线性探测打补丁)")
-    }
-
-    // --- 5. 清理测试 ---
-    {
-        TIMER_START
-        freeMap(&myMap);
-        TIMER_STOP("内存彻底销毁")
-    }
-
-    printf("========================================\n");
-    printf("测试完成。校验错误数: %d\n", errors);
-    if (errors == 0) printf("结果: 完美! (Perfect)\n");
+// 简易计时宏
+#define TIME_IT(label, code) { \
+    clock_t start = clock(); \
+    code; \
+    clock_t end = clock(); \
+    printf(">> [%s] 耗时: %.4f 秒\n", label, (double)(end - start) / CLOCKS_PER_SEC); \
 }
 
 int main() {
-    // 运行多次看平均值
-    run_performance_test();
+    Map myMap;
+    initializeMap(&myMap);
+    int error_count = 0;
+
+    printf("================================================\n");
+    printf("开始哈希表暴力压力测试 (Size: %d)\n", TEST_SIZE);
+    printf("================================================\n");
+
+    // 1. 插入测试
+    TIME_IT("大规模数据插入 (含多次自动扩容)", {
+        for (int i = 0; i < TEST_SIZE; i++) {
+            int k = i;
+            int v = i * 2;
+            // 使用 stackData 包装 (注意：这里传 false 因为 int 没用到 content)
+            Data key = stackData(&k, 1, &oper_Int, NULL, false);
+            Data val = stackData(&v, 1, &oper_Int, NULL, false);
+            if (insertEntryInMap(&myMap, key, val) != Success) {
+                printf("Error: 插入失败 i=%d\n", i);
+            }
+        }
+    });
+    printf("   当前 Size: %d, Array Len: %d\n", myMap.size, myMap.len);
+
+    // 2. 更新测试
+    TIME_IT("覆盖更新前 5 万条数据", {
+        for (int i = 0; i < UPDATE_SIZE; i++) {
+            int k = i;
+            int v = NEW_VAL_CONST;
+            Data key = stackData(&k, 1, &oper_Int, NULL, false);
+            Data val = stackData(&v, 1, &oper_Int, NULL, false);
+            insertEntryInMap(&myMap, key, val);
+        }
+    });
+
+    // 3. 逻辑验证 (查)
+    TIME_IT("全量数据逻辑校验", {
+        for (int i = 0; i < TEST_SIZE; i++) {
+            int k = i;
+            Data key = stackData(&k, 1, &oper_Int, NULL, false);
+            Data res = returnValByKey(&myMap, key);
+            
+            if (res.isEmpty) {
+                error_count++;
+            } else {
+                int actual = *(int*)res.data;
+                int expected = (i < UPDATE_SIZE) ? NEW_VAL_CONST : (i * 2);
+                if (actual != expected) error_count++;
+            }
+            freeData(&res); // 必须释放，因为 returnValByKey 返回的是 malloc 出来的副本
+        }
+    });
+
+    // 4. 删除测试 (删掉所有偶数)
+    TIME_IT("删除所有偶数 Key (测试 DEL_IN_MAP 标记)", {
+        for (int i = 0; i < TEST_SIZE; i += 2) {
+            int k = i;
+            Data key = stackData(&k, 1, &oper_Int, NULL, false);
+            if (delEntryByKey(&myMap, key) != Success) {
+                // 这里不计入 error_count，因为逻辑上只要删成功就行
+            }
+        }
+    });
+    printf("   删除后 Size: %d\n", myMap.size);
+
+    // 5. 删除后的生存校验
+    TIME_IT("验证删除后的数据完整性", {
+        for (int i = 0; i < TEST_SIZE; i++) {
+            int k = i;
+            Data key = stackData(&k, 1, &oper_Int, NULL, false);
+            bool exists = hasKeyInMap(&myMap, key);
+            if (i % 2 == 0 && exists) error_count++; // 偶数本该被删
+            if (i % 2 != 0 && !exists) error_count++; // 奇数本该存在
+        }
+    });
+
+    // 6. 重新插入测试 (测试墓碑槽位复用)
+    TIME_IT("在已删除槽位重新插入数据", {
+        for (int i = 0; i < REINSERT_SIZE; i++) {
+            int k = i * 2; // 重新插入原本被删的偶数
+            int v = 777;
+            Data key = stackData(&k, 1, &oper_Int, NULL, false);
+            Data val = stackData(&v, 1, &oper_Int, NULL, false);
+            insertEntryInMap(&myMap, key, val);
+        }
+    });
+
+    // 7. 销毁
+    TIME_IT("内存彻底释放", {
+        freeMap(&myMap);
+    });
+
+    printf("================================================\n");
+    if (error_count == 0) {
+        printf("测试结论: [完美通过] 0 错误!\n");
+    } else {
+        printf("测试结论: [失败] 发现 %d 处逻辑错误!\n", error_count);
+    }
+    printf("================================================\n");
+    
+
     return 0;
 }

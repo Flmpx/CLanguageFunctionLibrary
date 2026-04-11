@@ -4,19 +4,19 @@
 #include <stdbool.h>
 #include <string.h>
 
+enum EntryStateInMap {
+    DEL_IN_MAP = -1,
+    NONE_IN_MAP = 0,
+    EXIST_IN_MAP = 1
+};
+
+
+
 
 /// @brief 空oper,代表一种错误状态
 static Operation emptyOperation = {
     NULL, NULL, NULL, NULL, NULL
 };
-
-
-/// @brief 空others,代表一种错误状态
-static Otherthings emptyOtherthings = {
-    NULL, NULL, NULL, NULL, NULL, true
-};
-
-
 
 //返回空Data
 static Data returnEmptyData() {
@@ -25,7 +25,8 @@ static Data returnEmptyData() {
     data.isEmpty = true;
     data.type = -1;
     data.oper = &emptyOperation;
-    data.others = emptyOtherthings;
+    data.content = NULL;
+    data.hasContent = false;
     return data;
 }
 
@@ -74,55 +75,21 @@ void initializeMap(Map* pMap) {
 ///////////////////////////////////////////////////////////////////////////////////
 //比较类
 
-
-/// @brief 比较字符串是否相同
-/// @param string_a 字符串a
-/// @param string_b 字符串b
-/// @return SAME-->相同 | DIFFERENT-->不同
-static int compareString(char* string_a, char* string_b) {
-    if (string_a == string_b) return SAME;  //二者都为空,或者相同
-    if (string_a == NULL || string_b == NULL) return DIFFERENT; //一个为空说明不同
-    return strcmp(string_a, string_b) == 0 ? SAME : DIFFERENT;  //正常比较
-}
-
-
-/// @brief 比较Others中的描述性字符串是否相同
-/// @param other_a a
-/// @param other_b b
-/// @return SAME-->相同 | DIFFERENT-->不同
-static int compareOthers(Otherthings* other_a, Otherthings* other_b) {
-    int result = 0;
-    result += compareString(other_a->thingOf_Compare, other_b->thingOf_Compare);
-    if (result) return DIFFERENT;
-    result += compareString(other_a->thingOf_Copy, other_b->thingOf_Copy);
-    if (result) return DIFFERENT;
-    result += compareString(other_a->thingOf_Free, other_b->thingOf_Free);
-    if (result) return DIFFERENT;
-    result += compareString(other_a->thingOf_Hash, other_b->thingOf_Hash);
-    if (result) return DIFFERENT;
-    result += compareString(other_a->thingOf_Print, other_b->thingOf_Print);
-    if (result) return DIFFERENT;
-    return SAME;
-}
-
 //这个函数通过判断函数指针是否相同来判断函数是否相同
 static int compareOperation(Operation* oper_b, Operation* oper_a) {
-    int result = 0;
-    result += (oper_a->freedata == oper_b->freedata);
-    result += (oper_a->cmp == oper_b->cmp);
-    result += (oper_a->copy == oper_b->copy);
-    result += (oper_a->hash == oper_b->hash);
-    result += (oper_a->print == oper_b->print);
-
-    return result == 5 ? SAME : DIFFERENT;
+    return oper_a == oper_b ? SAME : DIFFERENT;
+    
 }
+
+
+
 
 /// @brief 比较二者Data类型是否相同
 /// @param Data_a a
 /// @param Data_b b
 /// @param cmp _compare类型的函数
 /// @return SAME-->相同 | DIFFERENT-->不同
-static int compareData(Data* Data_a, Data* Data_b, _compare cmp) {
+static int compareData(Data* Data_a, Data* Data_b) {
     if (Data_a->type != Data_b->type) {
         return DIFFERENT;
     }
@@ -131,11 +98,10 @@ static int compareData(Data* Data_a, Data* Data_b, _compare cmp) {
         printf("\nType is the same but operation is different! Please check!\n");
         return DIFFERENT;
     }
-
-    if (compareOthers(&(Data_a->others), &(Data_b->others))) {
-        return DIFFERENT;
-    }
-    if (cmp(Data_a->data, Data_b->data, Data_a->others.thingOf_Compare)) {
+    
+    _cmpdata cmp;
+    cmp = Data_a->oper->cmpdata;    //能走到这一步,说明二者的比较函数相同
+    if (cmp(Data_a->data, Data_a->content, Data_b->data, Data_b->content)) {
         return DIFFERENT;
     }
     return SAME;
@@ -146,30 +112,21 @@ static int compareData(Data* Data_a, Data* Data_b, _compare cmp) {
 //////////////////////////////////////////////////////////////////////////////////////
 //释放类
 
-
-//释放others中的字符串数据
-static void freeOthers(Otherthings* others) {
-
-    if (others->isEmpty) return;    //如果other为空,不进行释放
-    free(others->thingOf_Compare);
-    free(others->thingOf_Copy);
-    free(others->thingOf_Free);
-    free(others->thingOf_Hash);
-    free(others->thingOf_Print);
-    others->isEmpty = true;
-}
-
-
 //释放Data数据
 void freeData(Data* data) {
     //为空不释放
     if (data->isEmpty) return;
     //data的释放
-    data->oper->freedata(data->data, data->others.thingOf_Free);
-    freeOthers(&(data->others));
+    data->oper->freedata(data->data, data->content);
+    //有content时才释放
+    if (data->hasContent) {
+        data->oper->freecontent(data->content);
+    }
+
+    data->content = NULL;
     data->data = NULL;
+
     data->oper = &emptyOperation;
-    data->others = emptyOtherthings;
     data->type = -1;
     data->isEmpty = true;
 }
@@ -195,59 +152,6 @@ void freeMap(Map* pMap) {
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //复制类
 
-
-//复制字符串
-static char* copyString(char* oldString) {
-    if (oldString == NULL) return NULL;
-    int len = strlen(oldString);
-    char* newString = (char*)malloc((len+1)*sizeof(char));
-    if (newString == NULL) return NULL; //
-    strcpy(newString, oldString);
-    return newString;
-}
-
-
-//复制others
-static Otherthings copyOtherthings(Otherthings oldOtherthings) {
-    if (oldOtherthings.isEmpty) {
-        return emptyOtherthings;
-    }
-    Otherthings newThing;
-    newThing.thingOf_Compare = newThing.thingOf_Copy = newThing.thingOf_Free = newThing.thingOf_Hash = newThing.thingOf_Print = NULL;
-
-    newThing.isEmpty = false;
-    newThing.thingOf_Compare = copyString(oldOtherthings.thingOf_Compare);
-    if (newThing.thingOf_Compare == NULL) {
-        //分配失败,或者本身为空,返回空
-        //这也说明提示信息要么不可以为NULL,只能为"",NULL代表错误状态
-        return emptyOtherthings;
-    }
-    newThing.thingOf_Copy = copyString(oldOtherthings.thingOf_Copy);
-    if (newThing.thingOf_Copy == NULL) {
-        freeOthers(&newThing);
-        return emptyOtherthings;
-    }
-    newThing.thingOf_Free = copyString(oldOtherthings.thingOf_Free);
-    if (newThing.thingOf_Free == NULL) {
-        freeOthers(&newThing);
-        return emptyOtherthings;
-        
-    }
-    newThing.thingOf_Hash = copyString(oldOtherthings.thingOf_Hash);
-    if (newThing.thingOf_Hash == NULL) {
-        freeOthers(&newThing);
-        return emptyOtherthings;
-        
-    }
-    newThing.thingOf_Print = copyString(oldOtherthings.thingOf_Print);
-    if (newThing.thingOf_Print == NULL) {
-        freeOthers(&newThing);
-        return emptyOtherthings;
-    }
-    return newThing;
-}
-
-
 //复制Data
 static Data copyData(Data oldData) {
 
@@ -258,25 +162,32 @@ static Data copyData(Data oldData) {
     Data newData;
 
     //copy函数不仅仅只是把指针赋值,还要把整个void* data赋值一遍
-    newData.data = oldData.oper->copy(oldData.data, oldData.others.thingOf_Copy);
+    newData.data = oldData.oper->copydata(oldData.data, oldData.content);
 
     if (newData.data == NULL) {
+        printf("\nMemory allocation failed\n");
         return returnEmptyData();
+    }
+
+    newData.hasContent = oldData.hasContent;
+    //有content才复制content
+    if (oldData.hasContent) {
+        newData.content = oldData.oper->copycontent(oldData.content);
+        if (newData.content == NULL) {
+            printf("\nMemory allocation failed\n");
+            oldData.oper->freedata(newData.data, oldData.content);
+            return returnEmptyData();
+        }
+    } else {
+        newData.content = NULL;
     }
     newData.type = oldData.type;
 
     //提供的相应操作函数因该是全局的
     newData.oper = oldData.oper;
-    //由于输入的字符串信息可能是静态区的,所以需要完全复制
-    newData.others = copyOtherthings(oldData.others);
-    if (newData.others.isEmpty) {
-        oldData.oper->freedata(newData.data, oldData.others.thingOf_Free);
-        return returnEmptyData();
-    }
     newData.isEmpty = false;
     return newData;
 }
-
 
 //复制一个Entry,注意:entry.state自动赋值,必须要自己赋值
 static Entry copyEntry(Entry oldEntry) {
@@ -302,21 +213,23 @@ static Entry copyEntry(Entry oldEntry) {
 
 
 
+
 //这个函数保证可以添加
 static int addEntryFunction(Map* pMap, Data key, Data value) {
     //hash
-    ull index = (key.oper->hash(key.data, key.others.thingOf_Hash))%pMap->mod;
+    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
     //找到一个NONE或者DEl标记的位置
     while (pMap->arr[index].state != NONE_IN_MAP && pMap->arr[index].state != DEL_IN_MAP) {
         //如果发现是同一个key,则更新数据
-        if (compareData(&(pMap->arr[index].key), &key, key.oper->cmp) == 0) {
-            freeData(&(pMap->arr[index].value));
-            pMap->arr[index].value = copyData(value);
-            if (pMap->arr[index].value.isEmpty) {
+        if (compareData(&(pMap->arr[index].key), &key) == 0) {
+            Data newVal = copyData(value);
+            if (newVal.isEmpty) {
+                printf("\nMemory allocation failed\n");
                 return Warning;
-            } else {
-                return Success;
             }
+            freeData(&(pMap->arr[index].value));
+            pMap->arr[index].value = newVal;
+            return Success;
         }
         index++;
         index %= pMap->len;
@@ -330,6 +243,7 @@ static int addEntryFunction(Map* pMap, Data key, Data value) {
     pMap->arr[index] = copyEntry(oldEntry);
     
     if (pMap->arr[index].isEmpty) {
+        printf("\nMemory allocation failed\n");
         return Warning;
     }
     pMap->arr[index].state = EXIST_IN_MAP;
@@ -338,9 +252,11 @@ static int addEntryFunction(Map* pMap, Data key, Data value) {
 }
 
 
+
+
 //专门为重哈希做的软拷贝方式添加的Entry
 static int addEntryForFreshMap(Map* pMap, Data key, Data value) {
-    ull index = (key.oper->hash(key.data, key.others.thingOf_Hash))%pMap->mod;
+    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
     while (pMap->arr[index].state != NONE_IN_MAP) {
         index++;
         index %= pMap->len;
@@ -352,6 +268,7 @@ static int addEntryForFreshMap(Map* pMap, Data key, Data value) {
     pMap->size++;
     return Success;
 }
+
 
 //重hash
 static int freshMap(Map* pMap) {
@@ -368,7 +285,10 @@ static int freshMap(Map* pMap) {
     //新创建一个newMap;
     Map newMap;
     Entry* newArray = (Entry*)malloc(newLen*sizeof(Entry));
-    if (newArray == NULL) return Warning;
+    if (newArray == NULL) {
+        printf("\nMemory allocation failed\n");
+        return Warning;
+    }
     for (int i = 0; i < newLen; i++) {
         //初始化
         newArray[i].state = NONE_IN_MAP;
@@ -398,6 +318,7 @@ int insertEntryInMap(Map* pMap, Data key, Data val) {
     //当填充因子大于75%时自动扩容
     if (4*(pMap->size) >= 3*(pMap->len)) {
         if (freshMap(pMap) == Warning) {
+            printf("\nMemory allocation failed\n");
             return Warning;
         }
     }
@@ -409,12 +330,10 @@ int insertEntryInMap(Map* pMap, Data key, Data val) {
 //查找类
 
 
-
-
 //通过key返回key在Map中的位置
 static int returnIndexByKey(Map* pMap, Data key) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return NOT_FOUND;
-    ull index = (key.oper->hash(key.data, key.others.thingOf_Hash))%pMap->mod;
+    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
     for (int i = 0; i < pMap->len; i++) {
         if (pMap->arr[index].state == NONE_IN_MAP) {
             return NOT_FOUND;
@@ -425,7 +344,7 @@ static int returnIndexByKey(Map* pMap, Data key) {
             continue;
         }
 
-        if (compareData(&(pMap->arr[index].key), &key, key.oper->cmp) == 0) {
+        if (compareData(&(pMap->arr[index].key), &key) == 0) {
             return index;
         }
         index++;
@@ -439,18 +358,31 @@ static int returnIndexByKey(Map* pMap, Data key) {
 Data returnValByKey(Map* pMap, Data key) {
     int index = returnIndexByKey(pMap, key);
     if (index == NOT_FOUND) {
+        printf("\nNot Found\n");
         return returnEmptyData();
     } else {
-        return copyData(pMap->arr[index].value);
+        Data newData;
+        newData = copyData(pMap->arr[index].value);
+        if (newData.isEmpty) {
+            printf("\nMemory allocation failed\n");
+        }
+        return newData;
     }
 }
+
+
 
 Entry returnEntryByKey(Map* pMap, Data key) {
     int index = returnIndexByKey(pMap, key);
     if (index == NOT_FOUND) {
         return returnEmptyEntry();
     } else {
-        return copyEntry(pMap->arr[index]);
+        Entry newEntry;
+        newEntry = copyEntry(pMap->arr[index]);
+        if (newEntry.isEmpty) {
+            printf("\nMemory allocation failed\n");
+        }
+        return newEntry;
     }
 }
 
@@ -467,6 +399,7 @@ bool hasKeyInMap(Map* pMap, Data key) {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 //删除类
+
 
 int delEntryByKey(Map* pMap, Data key) {
     int index = returnIndexByKey(pMap, key);
@@ -486,27 +419,15 @@ int delEntryByKey(Map* pMap, Data key) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //整合类
 
-Data stackData(void* data, int type, Operation* oper, Otherthings others) {
+Data stackData(void* data, int type, Operation* oper, void* content, bool hasContent) {
     Data newData;
     newData.data = data;
     newData.isEmpty = false;
     newData.oper = oper;
-    newData.others = others;
     newData.type = type;
+    newData.content = content;
+    newData.hasContent = hasContent;
     return newData;
 }
-
-
-Otherthings stackOthers(char* thingOf_Free, char* thingOf_Hash, char* thingOf_Compare, char* thingOf_Copy, char* thingOf_Print) {
-    Otherthings newOthers;
-    newOthers.thingOf_Compare = thingOf_Compare;
-    newOthers.thingOf_Copy = thingOf_Copy;
-    newOthers.thingOf_Free = thingOf_Free;
-    newOthers.thingOf_Hash = thingOf_Hash;
-    newOthers.thingOf_Print = thingOf_Print;
-    newOthers.isEmpty = false;
-    return newOthers;
-}
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -2,40 +2,39 @@
 #include <stdlib.h>
 #include "../_hash_map.h"
 
-void free_Int(void* data, char* thingsOf_free) {
+void freedata_Int(void* data, void* content) {
     free(data);
 }
 
-ull hash_Int(void* data, char* thingOf_Hash) {
+ull hashdata_Int(void* data, void* content) {
     int n = *(int*)data;
     return (ull)n;
 }
 
-int cmp_Int(void* data_a, void* data_b, char* thingOf_Compare) {
+int cmpdata_Int(void* data_a, void* content_a, void* data_b, void* content_b) {
     return *(int*)data_a == *(int*)data_b ? SAME : DIFFERENT;
 }
 
 
-void* copy_Int(void* data, char* thingOf_Copy) {
+void* copydata_Int(void* data, void* content) {
     int* newdata = (int*)malloc(sizeof(int));
     *newdata = *(int*)data;
     return newdata;
 }
 
-void print_Int(void* data, char* thingOf_Print) {
+void printdata_Int(void* data, void* content) {
     printf("%d", *(int*)data);
 }
 
 Operation oper_Int = {
-    free_Int,
-    hash_Int,
-    cmp_Int,
-    copy_Int,
-    print_Int
+    freedata_Int,
+    hashdata_Int,
+    cmpdata_Int,
+    copydata_Int,
+    printdata_Int,
+    NULL,
+    NULL,
 };
 
-Otherthings other_Int = {
-    "", "", "", "", ""
-};
 
 

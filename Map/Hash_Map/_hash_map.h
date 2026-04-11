@@ -1,9 +1,6 @@
 #ifndef _HASH_MAP_H
 #define _HASH_MAP_H
 #include <stdbool.h>
-#define DEL_IN_MAP -1
-#define NONE_IN_MAP 0
-#define EXIST_IN_MAP 1
 #define NOT_FOUND -1
 #define DIFFERENT -1
 #define SAME 0
@@ -14,22 +11,31 @@
 使用方法:
     1 创建当前类型数据的所有操作函数
     2 把相关函数的指针整合成一个Operation类型的数据
-    3 使用stackOthers函数合成描述性信息
-    4 使用stackData函数和成Data类型(包括key和val)
-    5 插入到散列表中
-    6 每次使用玩Map后必须释放掉Map,使用freeMap函数
+    3 使用stackData函数和成Data类型(包括key和val)
+    4 插入到散列表中
+    5 每次使用玩Map后必须释放掉Map,使用freeMap函数
 
 注: 1 同一中类型的操作函数应该一致
     2 stack函数返回的时自动变量,不可以free
-    3 描述信息主要用与操作函数进行操作,操作函数中一般有解析该字符串的功能
-      ---- 比如二维动态数组一般写成  2_3 表示2行3列 可用于打印,释放, 复制等
-    4 通过key等返回的Entry和Val都是malloc出来的,使用完记得释放,如果无法找到或者无法创建Data或者Entry,会输出提示信息,同时返回空Data或Entry
-    5 描述性字符串不可以为NULL,只能为""
+    3 通过key等返回的Entry和Val都是malloc出来的,使用完记得释放,如果无法找到或者无法创建Data或者Entry,会输出提示信息,同时返回空Data或Entry
+    4 content内容一般为结构体,比如二维动态数组content的应该为,注意要是指针
+                        typedef struct {
+                            int row;
+                            int col;
+                        } MetriArray;
+
 
 
 
 
 */
+
+typedef struct {
+    int row;
+    int col;
+} MetriArray;
+
+
 typedef unsigned long long ull;
 typedef struct Data Data;
 
@@ -40,55 +46,54 @@ enum info {
     Success = 1
 };
 
-
-//每个相应的函数应该能够解析相应的字符串
-typedef struct {
-    char* thingOf_Free;
-    char* thingOf_Hash;
-    char* thingOf_Compare;
-    char* thingOf_Copy;
-    char* thingOf_Print;
-    bool isEmpty;
-} Otherthings;
-
-
-
 //以下函数都需要自己提供
 
 /// @brief 释放void* data
-typedef void (*_freedata)(void* data, char* thingOf_free);
+typedef void (*_freedata)(void* data, void* content);
 
 
 /// @brief 对void* data的内容进行hash的函数(hash函数必须返回ull类型的数据)
-typedef ull (*_hash)(void* data, char* thingOf_Hash);
+typedef ull (*_hashdata)(void* data, void* content);
 
 /// @brief 对void* data进行比较的函数
-typedef int (*_compare)(void* data_a, void* data_b, char* thingOf_Compare);
+typedef int (*_cmpdata)(void* data_a, void* content_a, void* data_b, void* content_b);
 
 /// @brief 对void* data进行复制的函数
-typedef void* (*_copy)(void* data, char* thingOf_Copy);
+typedef void* (*_copydata)(void* data, void* content);
 
 /// @brief 对Data进行输出的函数
-typedef void (*_print)(void* data, char* thingOf_Print);
+typedef void (*_printdata)(void* data, void* content);
+
+
+/// @brief 按自己的方式释放content
+typedef void (*_freecontent)(void* content);
+
+
+/// @brief 通过按自己的方式解析content内容,然后创建一个完全一样的
+typedef void* (*_copycontent)(void* content);
 
 
 /// @brief 创建的这种类型的变量是不允许删除的(把他设置为全局变量),它代表的是某一种类型的相关操作函数
 typedef struct Operation {
     _freedata freedata;
-    _hash hash;
-    _compare cmp;
-    _copy copy;
-    _print print;
+    _hashdata hashdata;
+    _cmpdata cmpdata;
+    _copydata copydata;
+    _printdata printdata;
+    _copycontent copycontent;
+    _freecontent freecontent;
 } Operation;
 
 
 /// @brief 这是key和val的相关属性
 struct Data {
     void* data;
+    void* content;  //用于描述data数据的特点的
+
     int type;
     //如果是同一种类型,那他们的操作函数因该都是相同的,所以直接用指针
     Operation* oper;
-    Otherthings others;
+    bool hasContent;
     bool isEmpty;
 };
 
@@ -167,14 +172,5 @@ extern int delEntryByKey(Map* pMap, Data key);
 /// @param oper 操作函数指针
 /// @param others others数据,通过intergrateOthers函数获得
 /// @return 返回Data数据(注意:这个Data数据里面的不是动态分配的,不可以使用freeData函数释放)
-extern Data stackData(void* data, int type, Operation* oper, Otherthings others);
-
-/// @brief 将Others的数据整合在一起(注意:这个Otherthings数据里面的不是动态分配的,不可以使用free函数释放)
-/// @param thingOf_Free free的描述性字符串
-/// @param thingOf_Hash hash的描述性字符串
-/// @param thingOf_Compare cmp的描述性字符串
-/// @param thingOf_Copy copy的描述性字符串
-/// @param thingOf_Print print的描述性字符串
-/// @return 返回Otherthings数据(注意:这个Otherthings数据里面的不是动态分配的,不可以使用free函数释放)
-extern Otherthings stackOthers(char* thingOf_Free, char* thingOf_Hash, char* thingOf_Compare, char* thingOf_Copy, char* thingOf_Print);
+extern Data stackData(void* data, int type, Operation* oper, void* content, bool hasContent);
 #endif

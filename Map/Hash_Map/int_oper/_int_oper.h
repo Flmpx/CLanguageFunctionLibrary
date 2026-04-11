@@ -1,22 +1,20 @@
 #ifndef _INT_OPER_H
 #define _INT_OPER_H
 #include "../_hash_map.h"
-extern void free_Int(void* data, char* thingsOf_free);
+extern void freedata_Int(void* data, void* content);
 
 
-extern ull hash_Int(void* data, char* thingOf_Hash);
+extern ull hashdata_Int(void* data, void* content);
 
 
-extern int cmp_Int(void* data_a, void* data_b, char* thingOf_Compare);
+extern int cmpdata_Int(void* data_a, void* content_a, void* data_b, void* content_b);
 
-extern void* copy_Int(void* data, char* thingOf_Copy);
+extern void* copydata_Int(void* data, void* content);
 
-extern void print_Int(void* data, char* thingOf_Print);
+extern void printdata_Int(void* data, void* content);
 
 
 extern Operation oper_Int;
-
-extern Otherthings other_Int;
 
 
 #endif
