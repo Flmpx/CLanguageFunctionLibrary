@@ -268,7 +268,7 @@ Data returnEmptyData() {
 }
 
 
-int returnIndexByKey(Map* pMap, Data key) {
+static int returnIndexByKey(Map* pMap, Data key) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return NOT_FOUND;
     ull index = (key.oper->hash(key.data, key.others->thingOf_Hash))%pMap->mod;
     for (int i = 0; i < pMap->len; i++) {
@@ -298,6 +298,15 @@ Data returnValByKey(Map* pMap, Data key) {
         return returnEmptyData();
     } else {
         return copyData(pMap->arr[index].value);
+    }
+}
+
+
+bool hasKeyInMap(Map* pMap, Data key) {
+    if (returnIndexByKey(pMap, key) == NOT_FOUND) {
+        return false;
+    } else {
+        return true;
     }
 }
 

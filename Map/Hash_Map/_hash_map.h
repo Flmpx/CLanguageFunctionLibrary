@@ -85,4 +85,64 @@ typedef struct Map {
 } Map;
 
 
+/// @brief 初始化Map
+/// @param pMap Mpa类型指针
+extern void initializeMap(Map* pMap);
+
+
+/// @brief 释放掉Data数据
+/// @param data Data数据类型指针
+extern void freeData(Data* data);
+
+
+/// @brief 释放掉Entry数据
+/// @param entry Entry类型指针
+extern void freeEntry(Entry* entry);
+
+/// @brief 删除Map;
+/// @param pMap Map类型指针
+extern void freeMap(Map* pMap);
+
+
+/// @brief 复制一份Data(描述性字符串会复制一份,但操作函数不会)
+/// @param oldData 旧Data数据
+/// @return Data数据
+extern Data copyData(Data oldData);
+
+/// @brief 复制一份Entry(描述性字符串会复制一份,但操作函数不会)
+/// @param oldEntry 旧Entry数据
+/// @return Entry数据
+extern Entry copyEntry(Entry oldEntry);
+
+/// @brief 插入新的key和value
+/// @param pMap Mpa类型指针
+/// @param key key
+/// @param val value
+/// @return 插入成功返回1
+extern int insertEntryInMap(Map* pMap, Data key, Data val);
+
+/// @brief 返回一个空Data
+/// @return 空Data
+extern Data returnEmptyData();
+
+/// @brief 通过key返回Data
+/// @param pMap Mpa类型指针
+/// @param key key
+/// @return Data数据,除了操作函数不是复制的一份,其他的都是复制的,使用完后记得释放
+extern Data returnValByKey(Map* pMap, Data key);
+
+/// @brief 判断释放含有该key
+/// @param pMap Mpa类型指针
+/// @param key key
+/// @return 有就返回true,否则false
+extern bool hasKeyInMap(Map* pMap, Data key);
+
+
+/// @brief 通过key删除Entry
+/// @param pMap Mpa类型指针
+/// @param key key
+/// @return 没找到返回0,删除成功返回1
+extern int delEntryByKey(Map* pMap, Data key);
+
+
 #endif
