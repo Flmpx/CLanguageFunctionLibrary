@@ -385,128 +385,242 @@
 
 
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <stdbool.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <time.h>
+// #include <stdbool.h>
 
-// 根据你的实际路径调整
-#include "Map/Hash_Map/_hash_map.h"
-#include "Map/Hash_Map/int_oper/_int_oper.h"
+// // 根据你的实际路径调整
+// #include "Map/Hash_Map/_hash_map.h"
+// #include "Map/Hash_Map/int_oper/_int_oper.h"
 
-#define TEST_SIZE 1000000     // 初始插入 20 万条
-#define UPDATE_SIZE 50000    // 更新前 5 万条
-#define REINSERT_SIZE 10000  // 重新插入 1 万条已删除的数据
-#define NEW_VAL_CONST 888888 // 更新后的目标值
+// #define TEST_SIZE 80000     // 初始插入 20 万条
+// #define UPDATE_SIZE 50000    // 更新前 5 万条
+// #define REINSERT_SIZE 10000  // 重新插入 1 万条已删除的数据
+// #define NEW_VAL_CONST 888888 // 更新后的目标值
 
-// 简易计时宏
-#define TIME_IT(label, code) { \
-    clock_t start = clock(); \
-    code; \
-    clock_t end = clock(); \
-    printf(">> [%s] 耗时: %.4f 秒\n", label, (double)(end - start) / CLOCKS_PER_SEC); \
-}
+// // 简易计时宏
+// #define TIME_IT(label, code) { \
+//     clock_t start = clock(); \
+//     code; \
+//     clock_t end = clock(); \
+//     printf(">> [%s] 耗时: %.4f 秒\n", label, (double)(end - start) / CLOCKS_PER_SEC); \
+// }
 
-int main() {
-    Map myMap;
-    initializeMap(&myMap);
-    int error_count = 0;
+// int main() {
+//     Map myMap;
+//     initializeMap(&myMap);
+//     int error_count = 0;
 
-    printf("================================================\n");
-    printf("开始哈希表暴力压力测试 (Size: %d)\n", TEST_SIZE);
-    printf("================================================\n");
+//     printf("================================================\n");
+//     printf("开始哈希表暴力压力测试 (Size: %d)\n", TEST_SIZE);
+//     printf("================================================\n");
 
-    // 1. 插入测试
-    TIME_IT("大规模数据插入 (含多次自动扩容)", {
-        for (int i = 0; i < TEST_SIZE; i++) {
-            int k = i;
-            int v = i * 2;
-            // 使用 stackData 包装 (注意：这里传 false 因为 int 没用到 content)
-            Data key = stackData(&k, 1, &oper_Int, NULL, false);
-            Data val = stackData(&v, 1, &oper_Int, NULL, false);
-            if (insertEntryInMap(&myMap, key, val) != Success) {
-                printf("Error: 插入失败 i=%d\n", i);
-            }
-        }
-    });
-    printf("   当前 Size: %d, Array Len: %d\n", myMap.size, myMap.len);
+//     // 1. 插入测试
+//     TIME_IT("大规模数据插入 (含多次自动扩容)", {
+//         for (int i = 0; i < TEST_SIZE; i++) {
+//             int k = i;
+//             int v = i * 2;
+//             // 使用 stackData 包装 (注意：这里传 false 因为 int 没用到 content)
+//             Data key = stackData(&k, 1, &oper_Int, NULL, false);
+//             Data val = stackData(&v, 1, &oper_Int, NULL, false);
+//             if (insertEntryInMap(&myMap, key, val) != Success) {
+//                 printf("Error: 插入失败 i=%d\n", i);
+//             }
+//         }
+//     });
+//     printf("   当前 Size: %d, Array Len: %d\n", myMap.size, myMap.len);
 
-    // 2. 更新测试
-    TIME_IT("覆盖更新前 5 万条数据", {
-        for (int i = 0; i < UPDATE_SIZE; i++) {
-            int k = i;
-            int v = NEW_VAL_CONST;
-            Data key = stackData(&k, 1, &oper_Int, NULL, false);
-            Data val = stackData(&v, 1, &oper_Int, NULL, false);
-            insertEntryInMap(&myMap, key, val);
-        }
-    });
+//     // 2. 更新测试
+//     TIME_IT("覆盖更新前 5 万条数据", {
+//         for (int i = 0; i < UPDATE_SIZE; i++) {
+//             int k = i;
+//             int v = NEW_VAL_CONST;
+//             Data key = stackData(&k, 1, &oper_Int, NULL, false);
+//             Data val = stackData(&v, 1, &oper_Int, NULL, false);
+//             insertEntryInMap(&myMap, key, val);
+//         }
+//     });
 
-    // 3. 逻辑验证 (查)
-    TIME_IT("全量数据逻辑校验", {
-        for (int i = 0; i < TEST_SIZE; i++) {
-            int k = i;
-            Data key = stackData(&k, 1, &oper_Int, NULL, false);
-            Data res = returnValByKey(&myMap, key);
+//     // 3. 逻辑验证 (查)
+//     TIME_IT("全量数据逻辑校验", {
+//         for (int i = 0; i < TEST_SIZE; i++) {
+//             int k = i;
+//             Data key = stackData(&k, 1, &oper_Int, NULL, false);
+//             Data res = returnValByKey(&myMap, key);
             
-            if (res.isEmpty) {
-                error_count++;
-            } else {
-                int actual = *(int*)res.data;
-                int expected = (i < UPDATE_SIZE) ? NEW_VAL_CONST : (i * 2);
-                if (actual != expected) error_count++;
-            }
-            freeData(&res); // 必须释放，因为 returnValByKey 返回的是 malloc 出来的副本
-        }
-    });
+//             if (res.isEmpty) {
+//                 error_count++;
+//             } else {
+//                 int actual = *(int*)res.data;
+//                 int expected = (i < UPDATE_SIZE) ? NEW_VAL_CONST : (i * 2);
+//                 if (actual != expected) error_count++;
+//             }
+//             freeData(&res); // 必须释放，因为 returnValByKey 返回的是 malloc 出来的副本
+//         }
+//     });
 
-    // 4. 删除测试 (删掉所有偶数)
-    TIME_IT("删除所有偶数 Key (测试 DEL_IN_MAP 标记)", {
-        for (int i = 0; i < TEST_SIZE; i += 2) {
-            int k = i;
-            Data key = stackData(&k, 1, &oper_Int, NULL, false);
-            if (delEntryByKey(&myMap, key) != Success) {
-                // 这里不计入 error_count，因为逻辑上只要删成功就行
-            }
-        }
-    });
-    printf("   删除后 Size: %d\n", myMap.size);
+//     // 4. 删除测试 (删掉所有偶数)
+//     TIME_IT("删除所有偶数 Key (测试 DEL_IN_MAP 标记)", {
+//         for (int i = 0; i < TEST_SIZE; i += 2) {
+//             int k = i;
+//             Data key = stackData(&k, 1, &oper_Int, NULL, false);
+//             if (delEntryByKey(&myMap, key) != Success) {
+//                 // 这里不计入 error_count，因为逻辑上只要删成功就行
+//             }
+//         }
+//     });
+//     printf("   删除后 Size: %d\n", myMap.size);
 
-    // 5. 删除后的生存校验
-    TIME_IT("验证删除后的数据完整性", {
-        for (int i = 0; i < TEST_SIZE; i++) {
-            int k = i;
-            Data key = stackData(&k, 1, &oper_Int, NULL, false);
-            bool exists = hasKeyInMap(&myMap, key);
-            if (i % 2 == 0 && exists) error_count++; // 偶数本该被删
-            if (i % 2 != 0 && !exists) error_count++; // 奇数本该存在
-        }
-    });
+//     // 5. 删除后的生存校验
+//     TIME_IT("验证删除后的数据完整性", {
+//         for (int i = 0; i < TEST_SIZE; i++) {
+//             int k = i;
+//             Data key = stackData(&k, 1, &oper_Int, NULL, false);
+//             bool exists = hasKeyInMap(&myMap, key);
+//             if (i % 2 == 0 && exists) error_count++; // 偶数本该被删
+//             if (i % 2 != 0 && !exists) error_count++; // 奇数本该存在
+//         }
+//     });
 
-    // 6. 重新插入测试 (测试墓碑槽位复用)
-    TIME_IT("在已删除槽位重新插入数据", {
-        for (int i = 0; i < REINSERT_SIZE; i++) {
-            int k = i * 2; // 重新插入原本被删的偶数
-            int v = 777;
-            Data key = stackData(&k, 1, &oper_Int, NULL, false);
-            Data val = stackData(&v, 1, &oper_Int, NULL, false);
-            insertEntryInMap(&myMap, key, val);
-        }
-    });
+//     // 6. 重新插入测试 (测试墓碑槽位复用)
+//     TIME_IT("在已删除槽位重新插入数据", {
+//         for (int i = 0; i < REINSERT_SIZE; i++) {
+//             int k = i * 2; // 重新插入原本被删的偶数
+//             int v = 777;
+//             Data key = stackData(&k, 1, &oper_Int, NULL, false);
+//             Data val = stackData(&v, 1, &oper_Int, NULL, false);
+//             insertEntryInMap(&myMap, key, val);
+//         }
+//     });
 
-    // 7. 销毁
-    TIME_IT("内存彻底释放", {
-        freeMap(&myMap);
-    });
+//     // 7. 销毁
+//     TIME_IT("内存彻底释放", {
+//         freeMap(&myMap);
+//     });
 
-    printf("================================================\n");
-    if (error_count == 0) {
-        printf("测试结论: [完美通过] 0 错误!\n");
-    } else {
-        printf("测试结论: [失败] 发现 %d 处逻辑错误!\n", error_count);
-    }
-    printf("================================================\n");
+//     printf("================================================\n");
+//     if (error_count == 0) {
+//         printf("测试结论: [完美通过] 0 错误!\n");
+//     } else {
+//         printf("测试结论: [失败] 发现 %d 处逻辑错误!\n", error_count);
+//     }
+//     printf("================================================\n");
     
 
+//     return 0;
+// }
+
+
+
+#include <stdio.h>
+#include <stdbool.h>
+#include <stdlib.h>
+typedef void (*_printval)(void* val);
+typedef void (*_freeval)(void* val);
+typedef struct Node {
+    int type;
+    void* val;
+    struct Node* sameLevel;
+    _printval print;
+    _freeval freeval;
+} Node;
+typedef struct {
+    int size;
+    Node* head;
+    Node* tail;
+} Array;
+
+
+enum info {
+    Warning = -1,
+    None = 0,
+    Success = 1
+};
+
+
+void print_Int(void* val) {
+    printf("%d", *(int*)val);
+}
+void print_Bool(void* val) {
+    printf("%s", *(bool*)val == true ? "Ture" : "False");
+}
+void print_Ll(void* val) {
+    printf("%lld", *(long long*)val);
+}
+
+
+void print_Array(void* val) {
+    Array* arr = (Array*)val;
+    printf("[");
+    Node* p = arr->head;
+    for (int i = 0; i < arr->size; i++, p = p->sameLevel) {
+        if (i != 0) {
+            printf(",");
+        }
+        p->print(p->val);
+    }
+    printf("]");
+}
+
+
+void initialArray(Array* arr) {
+    arr->head = arr->tail = NULL;
+    arr->size = 0;
+}
+
+int insertValueInArray(Array* arr, void* val, int type, _printval print, _freeval freeval) {
+    Node* newNode = (Node*)malloc(sizeof(Node));
+    if (newNode == NULL) {
+        printf("\nMemory allocation failed\n");
+        return Warning;
+    }
+    newNode->print = print;
+    newNode->freeval = freeval;
+    newNode->sameLevel = NULL;
+    newNode->type = type;
+    newNode->val = val;
+
+    if (arr->size) {
+        arr->tail->sameLevel = newNode;
+        arr->tail = newNode;
+    } else {
+        arr->head = arr->tail = newNode;
+    }
+    arr->size++;
+    return Success;
+}
+
+void free_Array(void* arr) {
+    Node* p = ((Array*)arr)->head;
+    Node* q = NULL;
+    while (p) {
+        q = p;
+        p = p->sameLevel;
+        q->freeval(q->val);
+        free(q);
+    }
+    free(arr);
+}
+
+
+int main()
+{
+
+    void* arr = malloc(sizeof(Array));
+    initialArray((Array*)arr);
+    void* arr_son = malloc(sizeof(Array));
+    initialArray((Array*)arr_son);
+    insertValueInArray(arr, arr_son, 0, print_Array, free_Array);
+    for (int i = 0; i < 8; i++) {
+        void* num = malloc(sizeof(int));
+        insertValueInArray(arr, num, 1, print_Int, free);
+    }
+    for (int i = 0; i < 3; i++) {
+        void* num = malloc(sizeof(int));
+        insertValueInArray(arr_son, num, 1, print_Int, free);
+    }
+    print_Array(arr);
+    free_Array(arr);
     return 0;
 }
