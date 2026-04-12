@@ -513,114 +513,256 @@
 
 
 
+// #include <stdio.h>
+// #include <stdbool.h>
+// #include <stdlib.h>
+// typedef void (*_printval)(void* val);
+// typedef void (*_freeval)(void* val);
+// typedef struct Node {
+//     int type;
+//     void* val;
+//     struct Node* sameLevel;
+//     _printval print;
+//     _freeval freeval;
+// } Node;
+// typedef struct {
+//     int size;
+//     Node* head;
+//     Node* tail;
+// } Array;
+
+
+// enum info {
+//     Warning = -1,
+//     None = 0,
+//     Success = 1
+// };
+
+
+// void print_Int(void* val) {
+//     printf("%d", *(int*)val);
+// }
+// void print_Bool(void* val) {
+//     printf("%s", *(bool*)val == true ? "Ture" : "False");
+// }
+// void print_Ll(void* val) {
+//     printf("%lld", *(long long*)val);
+// }
+
+
+// void print_Array(void* val) {
+//     Array* arr = (Array*)val;
+//     printf("[");
+//     Node* p = arr->head;
+//     for (int i = 0; i < arr->size; i++, p = p->sameLevel) {
+//         if (i != 0) {
+//             printf(",");
+//         }
+//         p->print(p->val);
+//     }
+//     printf("]");
+// }
+
+
+// void initialArray(Array* arr) {
+//     arr->head = arr->tail = NULL;
+//     arr->size = 0;
+// }
+
+// int insertValueInArray(Array* arr, void* val, int type, _printval print, _freeval freeval) {
+//     Node* newNode = (Node*)malloc(sizeof(Node));
+//     if (newNode == NULL) {
+//         printf("\nMemory allocation failed\n");
+//         return Warning;
+//     }
+//     newNode->print = print;
+//     newNode->freeval = freeval;
+//     newNode->sameLevel = NULL;
+//     newNode->type = type;
+//     newNode->val = val;
+
+//     if (arr->size) {
+//         arr->tail->sameLevel = newNode;
+//         arr->tail = newNode;
+//     } else {
+//         arr->head = arr->tail = newNode;
+//     }
+//     arr->size++;
+//     return Success;
+// }
+
+// void free_Array(void* arr) {
+//     Node* p = ((Array*)arr)->head;
+//     Node* q = NULL;
+//     while (p) {
+//         q = p;
+//         p = p->sameLevel;
+//         q->freeval(q->val);
+//         free(q);
+//     }
+//     free(arr);
+// }
+
+
+// int main()
+// {
+
+//     void* arr = malloc(sizeof(Array));
+//     initialArray((Array*)arr);
+//     void* arr_son = malloc(sizeof(Array));
+//     initialArray((Array*)arr_son);
+//     insertValueInArray(arr, arr_son, 0, print_Array, free_Array);
+//     for (int i = 0; i < 8; i++) {
+//         void* num = malloc(sizeof(int));
+//         insertValueInArray(arr, num, 1, print_Int, free);
+//     }
+//     for (int i = 0; i < 3; i++) {
+//         void* num = malloc(sizeof(int));
+//         insertValueInArray(arr_son, num, 1, print_Int, free);
+//     }
+//     print_Array(arr);
+//     free_Array(arr);
+//     return 0;
+// }
+
+
+
+
+
+
+
+
 #include <stdio.h>
-#include <stdbool.h>
-#include <stdlib.h>
-typedef void (*_printval)(void* val);
-typedef void (*_freeval)(void* val);
-typedef struct Node {
-    int type;
-    void* val;
-    struct Node* sameLevel;
-    _printval print;
-    _freeval freeval;
-} Node;
-typedef struct {
-    int size;
-    Node* head;
-    Node* tail;
-} Array;
-
-
-enum info {
-    Warning = -1,
-    None = 0,
-    Success = 1
-};
-
-
-void print_Int(void* val) {
-    printf("%d", *(int*)val);
-}
-void print_Bool(void* val) {
-    printf("%s", *(bool*)val == true ? "Ture" : "False");
-}
-void print_Ll(void* val) {
-    printf("%lld", *(long long*)val);
-}
-
-
-void print_Array(void* val) {
-    Array* arr = (Array*)val;
-    printf("[");
-    Node* p = arr->head;
-    for (int i = 0; i < arr->size; i++, p = p->sameLevel) {
-        if (i != 0) {
-            printf(",");
-        }
-        p->print(p->val);
-    }
-    printf("]");
-}
-
-
-void initialArray(Array* arr) {
-    arr->head = arr->tail = NULL;
-    arr->size = 0;
-}
-
-int insertValueInArray(Array* arr, void* val, int type, _printval print, _freeval freeval) {
-    Node* newNode = (Node*)malloc(sizeof(Node));
-    if (newNode == NULL) {
-        printf("\nMemory allocation failed\n");
-        return Warning;
-    }
-    newNode->print = print;
-    newNode->freeval = freeval;
-    newNode->sameLevel = NULL;
-    newNode->type = type;
-    newNode->val = val;
-
-    if (arr->size) {
-        arr->tail->sameLevel = newNode;
-        arr->tail = newNode;
-    } else {
-        arr->head = arr->tail = newNode;
-    }
-    arr->size++;
-    return Success;
-}
-
-void free_Array(void* arr) {
-    Node* p = ((Array*)arr)->head;
-    Node* q = NULL;
-    while (p) {
-        q = p;
-        p = p->sameLevel;
-        q->freeval(q->val);
-        free(q);
-    }
-    free(arr);
-}
-
+#include "Map/Hash_Map/_hash_map.h"
+#include "Map/Hash_Map/string_oper/_string_oper.h"
+#include "Map/Hash_Map/int_oper/_int_oper.h"
 
 int main()
 {
+    Map map;
+    initializeMap(&map);
+    int n = 0, m = 2;
+    Data key = stackData(&n, 0, &oper_Int, NULL, false);
+    Data val = stackData(&m, 0, &oper_Int, NULL, false);
+    insertEntryInMap(&map, key, val);
 
-    void* arr = malloc(sizeof(Array));
-    initialArray((Array*)arr);
-    void* arr_son = malloc(sizeof(Array));
-    initialArray((Array*)arr_son);
-    insertValueInArray(arr, arr_son, 0, print_Array, free_Array);
-    for (int i = 0; i < 8; i++) {
-        void* num = malloc(sizeof(int));
-        insertValueInArray(arr, num, 1, print_Int, free);
-    }
-    for (int i = 0; i < 3; i++) {
-        void* num = malloc(sizeof(int));
-        insertValueInArray(arr_son, num, 1, print_Int, free);
-    }
-    print_Array(arr);
-    free_Array(arr);
-    return 0;
+    Entry entry = returnEntryByKey(&map, key);
+    printEntry(entry);
+    freeEntry(&entry);
+    freeMap(&map);
+
 }
+
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <time.h>
+
+// // 根据你的项目结构调整路径
+// #include "Map/Hash_Map/_hash_map.h"
+// #include "Map/Hash_Map/string_oper/_string_oper.h"
+// #include "Map/Hash_Map/int_oper/_int_oper.h"
+
+// #define TEST_SIZE 100000      // 10万条字符串数据
+// #define STR_LEN 20            // 随机字符串长度
+// #define TIME_IT(label, code) { \
+//     clock_t start = clock(); \
+//     code; \
+//     clock_t end = clock(); \
+//     printf(">> [%s] 耗时: %.4f 秒\n", label, (double)(end - start) / CLOCKS_PER_SEC); \
+// }
+
+// // 随机字符串生成器
+// void gen_random_str(char *s, const int len) {
+//     static const char alphanum[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+//     for (int i = 0; i < len; ++i) {
+//         s[i] = alphanum[rand() % (sizeof(alphanum) - 1)];
+//     }
+//     s[len] = 0;
+// }
+
+// int main() {
+//     srand((unsigned int)time(NULL));
+//     Map stringMap;
+//     initializeMap(&stringMap);
+    
+//     char **key_pool = malloc(TEST_SIZE * sizeof(char*));
+//     int error_count = 0;
+
+//     printf("================================================\n");
+//     printf("哈希表字符串暴力测试 (Size: %d, KeyLen: %d)\n", TEST_SIZE, STR_LEN);
+//     printf("================================================\n");
+
+//     // 1. 数据准备
+//     for (int i = 0; i < TEST_SIZE; i++) {
+//         key_pool[i] = malloc(STR_LEN + 1);
+//         gen_random_str(key_pool[i], STR_LEN);
+//     }
+
+//     // 2. 插入测试 (String Key -> Int Value)
+//     TIME_IT("字符串 Key 大规模插入", {
+//         for (int i = 0; i < TEST_SIZE; i++) {
+//             int val_raw = i;
+//             // Key 使用 string_oper, Value 使用 int_oper
+//             Data k = stackData(key_pool[i], 2, &oper_String, NULL, false);
+//             Data v = stackData(&val_raw, 1, &oper_Int, NULL, false);
+            
+//             if (insertEntryInMap(&stringMap, k, v) != Success) {
+//                 error_count++;
+//             }
+//         }
+//     });
+//     printf("   当前 Size: %d, 数组长度: %d\n", stringMap.size, stringMap.len);
+
+//     // 3. 查找与校验
+//     TIME_IT("全量字符串查找验证", {
+//         for (int i = 0; i < TEST_SIZE; i++) {
+//             Data k = stackData(key_pool[i], 2, &oper_String, NULL, false);
+//             Data res = returnValByKey(&stringMap, k);
+            
+//             if (res.isEmpty) {
+//                 error_count++;
+//             } else {
+//                 if (*(int*)res.data != i) error_count++;
+//                 freeData(&res); // 记得释放 copy 出来的副本
+//             }
+//         }
+//     });
+
+//     // 4. 更新测试
+//     TIME_IT("重复 Key 覆盖更新", {
+//         for (int i = 0; i < 20000; i++) {
+//             int newVal = 999999;
+//             Data k = stackData(key_pool[i], 2, &oper_String, NULL, false);
+//             Data v = stackData(&newVal, 1, &oper_Int, NULL, false);
+//             insertEntryInMap(&stringMap, k, v);
+//         }
+//     });
+
+//     // 5. 删除测试
+//     TIME_IT("删除前 50%% 的字符串 Key", {
+//         for (int i = 0; i < TEST_SIZE / 2; i++) {
+//             Data k = stackData(key_pool[i], 2, &oper_String, NULL, false);
+//             if (delEntryByKey(&stringMap, k) != Success) error_count++;
+//         }
+//     });
+
+//     // 6. 最终销毁
+//     TIME_IT("内存彻底销毁 (Map + KeyPool)", {
+//         freeMap(&stringMap);
+//         for (int i = 0; i < TEST_SIZE; i++) free(key_pool[i]);
+//         free(key_pool);
+//     });
+
+//     printf("================================================\n");
+//     if (error_count == 0) {
+//         printf("结果: 完美! (Perfect)\n");
+//     } else {
+//         printf("结果: 失败, 错误数: %d\n", error_count);
+//     }
+//     printf("================================================\n");
+
+//     return 0;
+// }

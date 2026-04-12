@@ -13,10 +13,10 @@
     2 把相关函数的指针整合成一个Operation类型的数据
     3 使用stackData函数和成Data类型(包括key和val)
     4 插入到散列表中
-    5 每次使用玩Map后必须释放掉Map,使用freeMap函数
+    5 每次使用完Map后必须释放掉Map,使用freeMap函数
 
 注: 1 同一中类型的操作函数应该一致
-    2 stack函数返回的时自动变量,不可以free
+    2 stackData函数返回的时自动变量,不可以free
     3 通过key等返回的Entry和Val都是malloc出来的,使用完记得释放,如果无法找到或者无法创建Data或者Entry,会输出提示信息,同时返回空Data或Entry
     4 content内容一般为结构体,比如二维动态数组content的应该为,注意要是指针
                         typedef struct {
@@ -173,4 +173,12 @@ extern int delEntryByKey(Map* pMap, Data key);
 /// @param others others数据,通过intergrateOthers函数获得
 /// @return 返回Data数据(注意:这个Data数据里面的不是动态分配的,不可以使用freeData函数释放)
 extern Data stackData(void* data, int type, Operation* oper, void* content, bool hasContent);
+
+
+
+
+extern void printData(Data data, char* tip);
+
+
+extern void printEntry(Entry entry);
 #endif

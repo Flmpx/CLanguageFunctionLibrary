@@ -431,3 +431,32 @@ Data stackData(void* data, int type, Operation* oper, void* content, bool hasCon
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//打印类
+
+void printData(Data data, char* tip) {
+    if (data.isEmpty) {
+        printf("\nData is empty, cannot print\n");
+        return;
+    }
+    printf("[%s:", tip);
+    data.oper->printdata(data.data, data.content);
+    printf("]");
+}
+
+void printEntry(Entry entry) {
+    if (entry.isEmpty) {
+        printf("\nData is empty, cannot print\n");
+        return;
+    }
+    //key
+    printf("[key:");
+    entry.key.oper->printdata(entry.key.data, entry.key.content);
+
+    //value
+    printf(", value:");
+    entry.value.oper->printdata(entry.value.data, entry.value.content);
+    printf("]");
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
