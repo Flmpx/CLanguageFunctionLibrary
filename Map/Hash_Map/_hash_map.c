@@ -292,6 +292,7 @@ static int freshMap(Map* pMap) {
     for (int i = 0; i < newLen; i++) {
         //初始化
         newArray[i].state = NONE_IN_MAP;
+        newArray[i].isEmpty = true;
     }
 
     newMap.arr = newArray;
@@ -445,18 +446,39 @@ void printData(Data data, char* tip) {
 
 void printEntry(Entry entry) {
     if (entry.isEmpty) {
-        printf("\nData is empty, cannot print\n");
+        printf("\nEntry is empty, cannot print\n");
         return;
     }
     //key
     printf("[key:");
     entry.key.oper->printdata(entry.key.data, entry.key.content);
-
+    
     //value
     printf(", value:");
     entry.value.oper->printdata(entry.value.data, entry.value.content);
     printf("]");
 }
+
+void printMap(Map* pMap) {
+    if (pMap->size == 0) {
+        printf("\nMap is empty, cannot print\n");
+        return;
+    }
+    int cnt = 0;
+    printf("[");
+    for (int i = 0; i < pMap->len; i++) {
+        if (pMap->arr[i].isEmpty == false) {
+            if (cnt != 0) {
+                printf(", ");
+            }
+            printEntry(pMap->arr[i]);
+            cnt++;
+        }
+        
+    }
+    printf("]");
+}
+
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 

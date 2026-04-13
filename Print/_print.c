@@ -60,7 +60,7 @@ int insertValueInArray(Array* arr, void* val, int type, _printval print, _freeva
     return Success;
 }
 
-void free_Array(void* val) {
+void free_ArrayForFather(void* val) {
     if (!val) return;
     Array* arr = (Array*)val;
     Node* p = arr->head;
@@ -74,9 +74,9 @@ void free_Array(void* val) {
     initialArray(arr);
 }
 
-void free_Array_and_Self(void* val) {
+void free_ArrayForSon(void* val) {
     if (!val) return;
-    free_Array(val);
+    free_ArrayForFather(val);
     free(val);
 }
 
@@ -89,7 +89,7 @@ void free_Array_and_Self(void* val) {
 //     initialArray(&arr);
 //     Array* arr_son = (Array*)malloc(sizeof(Array));
 //     initialArray(arr_son);
-//     insertValueInArray(&arr, arr_son, 0, print_Array, free_Array_and_Self);
+//     insertValueInArray(&arr, arr_son, 0, print_Array, free_ArrayForSon);
 //     for (int i = 0; i < 8; i++) {
 //         void* num = malloc(sizeof(int));
 //         *(int*)num = i;
@@ -101,6 +101,6 @@ void free_Array_and_Self(void* val) {
 //         insertValueInArray(arr_son, num, 1, print_Int, free);
 //     }
 //     print_Array(&arr);
-//     free_Array(&arr);
+//     free_ArrayForFather(&arr);
 //     return 0;
 // }

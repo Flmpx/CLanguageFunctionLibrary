@@ -34,11 +34,11 @@ extern int insertValueInArray(Array* arr, void* val, int type, _printval print, 
 
 /// @brief 释放元素链中的元素但不释放Array本身(用于Array类型的自动变量)
 /// @param val 传入的值(内部会自动强制转化为Array*)
-extern void free_Array(void* val);
+extern void free_ArrayForFather(void* val);
 
 /// @brief 释放元素链中的元素同时释放Array本身(用于动态分配的Array类型)
 /// @param val 传入的值(内部会自动强制转化为Array*)
-extern void free_Array_and_Self(void* val);
+extern void free_ArrayForSon(void* val);
 
 //打印类
 /*

@@ -176,9 +176,16 @@ extern Data stackData(void* data, int type, Operation* oper, void* content, bool
 
 
 
-
+/// @brief 打印Data类型数据,包括Key和Val
+/// @param data Data类型数据
+/// @param tip 提示词,会显示的
 extern void printData(Data data, char* tip);
 
-
+/// @brief 打印Entry数据,会自动打印Key和val
+/// @param entry entry数据
 extern void printEntry(Entry entry);
+
+/// @brief 打印Map中的所有数据
+/// @param pMap Map类型数据指针
+extern void printMap(Map* pMap);
 #endif

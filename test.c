@@ -636,18 +636,23 @@
 #include "Map/Hash_Map/_hash_map.h"
 #include "Map/Hash_Map/string_oper/_string_oper.h"
 #include "Map/Hash_Map/int_oper/_int_oper.h"
+#include "Map/Hash_Map/double_oper/_double_oper.h"
 
 int main()
 {
     Map map;
     initializeMap(&map);
-    int n = 0, m = 2;
-    Data key = stackData(&n, 0, &oper_Int, NULL, false);
-    Data val = stackData(&m, 0, &oper_Int, NULL, false);
+    double n = 0, m = 2;
+    Data key = stackData(&n, 0, &oper_Double, NULL, false);
+    Data val = stackData(&m, 0, &oper_Double, NULL, false);
     insertEntryInMap(&map, key, val);
-
+    insertEntryInMap(&map, val, key);
     Entry entry = returnEntryByKey(&map, key);
+    printData(key, "key");
+    printf("\n");
     printEntry(entry);
+    printf("\n");
+    printMap(&map);
     freeEntry(&entry);
     freeMap(&map);
 
