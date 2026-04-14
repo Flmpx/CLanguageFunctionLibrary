@@ -10,4 +10,11 @@ extern int letRangeToRight(int* start,int* end,int min,int max);
 /// @param a a数据指针
 /// @param b b数据指针
 extern void swap_Int(int* a, int* b);
+
+
+/// @brief 交换两个double类型数据
+/// @param a a数据指针
+/// @param b b数据指针
+extern void swap_Double(double* a, double* b);
+
 #endif
