@@ -15,7 +15,7 @@ enum EntryStateInMap {
 
 /// @brief 空oper,代表一种错误状态
 static Operation emptyOperation = {
-    NULL, NULL, NULL, NULL, NULL
+    NULL, NULL, NULL, NULL, NULL, NULL, NULL
 };
 
 //返回空Data

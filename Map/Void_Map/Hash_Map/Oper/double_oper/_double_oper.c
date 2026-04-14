@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../_hash_map.h"
+#include "_double_oper.h"
+#include "../../_hash_map.h"
 
 static const char* format_Double = "double%.12edouble"; 
 

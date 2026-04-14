@@ -633,30 +633,99 @@
 
 
 #include <stdio.h>
-#include "Map/Hash_Map/_hash_map.h"
-#include "Map/Hash_Map/string_oper/_string_oper.h"
-#include "Map/Hash_Map/int_oper/_int_oper.h"
-#include "Map/Hash_Map/double_oper/_double_oper.h"
+// #include "Map/Hash_Map/_hash_map.h"
+// #include "Map/Hash_Map/string_oper/_string_oper.h"
+// #include "Map/Hash_Map/int_oper/_int_oper.h"
+// #include "Map/Hash_Map/double_oper/_double_oper.h"
+#include "Map/Void_Map/Hash_Map_List/_hash_map_list.h"
+#include "Map/Void_Map/Hash_Map_List/Oper/double_oper/_double_oper.h"
+#include "Map/Void_Map/Hash_Map_List/Oper/int_oper/_int_oper.h"
 
-int main()
-{
-    Map map;
-    initializeMap(&map);
-    double n = 0, m = 2;
-    Data key = stackData(&n, 0, &oper_Double, NULL, false);
-    Data val = stackData(&m, 0, &oper_Double, NULL, false);
-    insertEntryInMap(&map, key, val);
-    insertEntryInMap(&map, val, key);
-    Entry entry = returnEntryByKey(&map, key);
-    printData(key, "key");
-    printf("\n");
-    printEntry(entry);
-    printf("\n");
-    printMap(&map);
-    freeEntry(&entry);
-    freeMap(&map);
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+// #include "_hash_map_list.h"
+// // 假设你保留了之前的 int_oper.h
+// #include "int_oper/_int_oper.h" 
 
+#define TOTAL_DATA 50000
+
+int main() {
+    Map myMap;
+    initializeMap(&myMap);
+
+    printf("--- 开始链表版哈希表压力测试 ---\n");
+
+    // 1. 插入大量数据
+    for (int i = 0; i < TOTAL_DATA; i++) {
+        int v = i * 10;
+        Data k = stackData(&i, 1, &oper_Int, NULL, false);
+        Data val = stackData(&v, 1, &oper_Int, NULL, false);
+        insertKeyAndValInMap(&myMap, k, val);
+    }
+    printf("插入完成, 当前 Size: %d, 桶数: %d\n", myMap.size, myMap.len);
+
+    // 2. 验证数据 (随机抽查)
+    int errors = 0;
+    for (int i = 0; i < TOTAL_DATA; i += 100) {
+        Data k = stackData(&i, 1, &oper_Int, NULL, false);
+        Data res = returnValByKey(&myMap, k);
+        if (res.isEmpty || *(int*)res.data != i * 10) {
+            errors++;
+        }
+        freeData(&res);
+    }
+    printf("抽样验证完成, 错误数: %d\n", errors);
+
+    // 3. 删除测试 (删除前一半数据)
+    for (int i = 0; i < TOTAL_DATA / 2; i++) {
+        Data k = stackData(&i, 1, &oper_Int, NULL, false);
+        if (delEntryByKey(&myMap, k) != Success) {
+            errors++;
+        }
+    }
+    printf("删除一半数据完成, 当前 Size: %d\n", myMap.size);
+
+    // 4. 验证残留数据
+    for (int i = TOTAL_DATA / 2; i < TOTAL_DATA; i += 100) {
+        Data k = stackData(&i, 1, &oper_Int, NULL, false);
+        if (!hasKeyInMap(&myMap, k)) {
+            errors++;
+        }
+    }
+    printf("残留验证完成, 错误总数: %d\n", errors);
+
+    // 5. 内存释放
+    freeMap(&myMap);
+    printf("Map 已释放.\n");
+
+    if (errors == 0) {
+        printf("\n>>> [测试通过] 链表版逻辑完美无瑕! <<<\n");
+    }
+
+    return 0;
 }
+
+
+// int main()
+// {
+//     Map map;
+//     initializeMap(&map);
+//     double n = 0, m = 2;
+//     Data key = stackData(&n, 0, &oper_Double, NULL, false);
+//     Data val = stackData(&m, 0, &oper_Double, NULL, false);
+//     insertKeyAndValInMap(&map, key, val);
+//     insertKeyAndValInMap(&map, val, key);
+//     Entry entry = returnEntryByKey(&map, key);
+//     printData(key, "key");
+//     printf("\n");
+//     printEntry(entry);
+//     printf("\n");
+//     printMap(&map);
+//     freeEntry(&entry);
+//     freeMap(&map);
+
+// }
 
 
 
