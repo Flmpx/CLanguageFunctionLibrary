@@ -619,6 +619,7 @@ void printMap(Map* pMap) {
                 printf(", ");
             }
             printEntry(p->entry);
+            cnt++;
         }
     }
     printf("]");

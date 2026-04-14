@@ -13,3 +13,9 @@ int letRangeToRight(int* start,int* end,int min,int max){
     *end=(*end)>max?max:(*end);
     return *end-*start+1;
 }
+
+void swap_Int(int* a, int* b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
