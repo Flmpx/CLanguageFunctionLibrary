@@ -481,8 +481,8 @@ static int freshMap(Map* pMap) {
 
 
 int insertKeyAndValInMap(Map* pMap, Data key, Data val) {
-    //当填充因子大于75%时自动扩容
-    if (4*(pMap->size) >= 3*(pMap->len)) {
+    //当填充因子大于75%时或者Map为空时自动扩容
+    if (4*(pMap->size) >= 3*(pMap->len) || pMap->size == 0) {
         if (freshMap(pMap) == Warning) {
             printf("\nMemory allocation failed\n");
             return Warning;
