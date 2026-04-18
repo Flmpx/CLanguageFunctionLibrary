@@ -2,7 +2,46 @@
 #define VOIDLIST_H
 #include <stdbool.h>
 
+enum info {
+    Warning = -1,
+    None = 0,
+    Success = 1
+};
 
+//以下函数都需要自己提供
+
+/// @brief 释放void* data
+typedef void (*_freedata)(void* data, void* content);
+
+
+
+/// @brief 对void* data进行比较的函数
+typedef int (*_cmpdata)(void* data_a, void* content_a, void* data_b, void* content_b);
+
+/// @brief 对void* data进行复制的函数
+typedef void* (*_copydata)(void* data, void* content);
+
+/// @brief 对Data进行输出的函数
+typedef void (*_printdata)(void* data, void* content);
+
+
+/// @brief 按自己的方式释放content
+typedef void (*_freecontent)(void* content);
+
+
+/// @brief 通过按自己的方式解析content内容,然后创建一个完全一样的
+typedef void* (*_copycontent)(void* content);
+
+
+/// @brief 创建的这种类型的变量是不允许删除的(把他设置为全局变量),它代表的是某一种类型的相关操作函数
+typedef struct Operation {
+    _freedata freedata;
+    _cmpdata cmpdata;
+    _copydata copydata;
+    _printdata printdata;
+    _copycontent copycontent;
+    _freecontent freecontent;
+} Operation;
 
 typedef struct node {
     struct node* prev;
@@ -15,6 +54,8 @@ typedef struct {
     Node* head;
     Node* tail;
     int size;
+    Operation* oper;
+    bool hasContent;
 } List;
 
 /// @brief 判断链表是否为空
@@ -25,7 +66,7 @@ extern bool isEmptyList(List* plist);
 
 /// @brief 初始化链表,使用之前必须初始化
 /// @param plist 链表指针
-extern void initializeList(List* plist);
+extern void initializeList(List* plist, Operation* oper, bool hasContenet);
 
 typedef int (*Compare)(const void* a, const void* b);
 

@@ -1,4 +1,4 @@
-#include "_hash_map_list.h"
+#include "./_hash_map_list.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -6,25 +6,18 @@
 static bool isEmptyList(List* plist);
 static void initializeList(List* plist);
 
-
+//只要是需要两个InfoOfData的函数,直接传入Map类型指针!!!
 
 /////////////////////////////////////////////////////////////////////////////////
 
 
-/// @brief 空oper,代表一种错误状态
-static Operation emptyOperation = {
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL
-};
 
 //返回空Data
 static Data returnEmptyData() {
     Data data;
     data.data = NULL;
     data.isEmpty = true;
-    data.type = -1;
-    data.oper = &emptyOperation;
     data.content = NULL;
-    data.hasContent = false;
     return data;
 }
 
@@ -61,11 +54,13 @@ static int returnLargestPrime(int n) {
     return 2;
 }
 
-
-void initializeMap(Map* pMap) {
+/************** */
+void initializeMap(Map* pMap, InfoOfData keyInfo, InfoOfData valInfo) {
     pMap->arr = NULL;
     pMap->len = pMap->size = 0;
     pMap->mod = 2;
+    pMap->keyInfo = keyInfo;
+    pMap->valInfo = valInfo;
 }
 
 
@@ -81,12 +76,6 @@ void initializeMap(Map* pMap) {
 ///////////////////////////////////////////////////////////////////////////////////
 //比较类
 
-//这个函数通过判断函数指针是否相同来判断函数是否相同
-static int compareOperation(Operation* oper_b, Operation* oper_a) {
-    return oper_a == oper_b ? SAME : DIFFERENT;
-    
-}
-
 
 
 
@@ -95,22 +84,13 @@ static int compareOperation(Operation* oper_b, Operation* oper_a) {
 /// @param Data_b b
 /// @param cmp _compare类型的函数
 /// @return SAME-->相同 | DIFFERENT-->不同
-static int compareData(Data* Data_a, Data* Data_b) {
+static int compareKey(Data* Data_a, Data* Data_b, InfoOfData keyInfo) {
     if (Data_a->isEmpty || Data_b->isEmpty) {
         return DIFFERENT;
-    }
-    if (Data_a->type != Data_b->type) {
-        return DIFFERENT;
-    }
-    if (compareOperation(Data_a->oper, Data_b->oper)) {
-        //类型相同带操作函数不同,说明有问题
-        printf("\nType is the same but operation is different! Please check!\n");
-        return DIFFERENT;
-    }
+    }   
     
-    _cmpdata cmp;
-    cmp = Data_a->oper->cmpdata;    //能走到这一步,说明二者的比较函数相同
-    if (cmp(Data_a->data, Data_a->content, Data_b->data, Data_b->content)) {
+    //利用提供的比价函数来进行比较
+    if (keyInfo.oper->cmpdata(Data_a->data, Data_a->content, Data_b->data, Data_b->content)) {
         return DIFFERENT;
     }
     return SAME;
@@ -121,36 +101,38 @@ static int compareData(Data* Data_a, Data* Data_b) {
 //////////////////////////////////////////////////////////////////////////////////////
 //释放类
 
+
+/**************** */
 //释放Data数据
-void freeData(Data* data) {
+void freeData(Data* data, InfoOfData infoOfKeyOrVal) {
     //为空不释放
     if (data->isEmpty) return;
     //data的释放
-    data->oper->freedata(data->data, data->content);
+    infoOfKeyOrVal.oper->freedata(data->data, data->content);
     //有content时才释放
-    if (data->hasContent) {
-        data->oper->freecontent(data->content);
+    if (infoOfKeyOrVal.hasContent) {
+        infoOfKeyOrVal.oper->freecontent(data->content);
     }
-
+    
     data->content = NULL;
     data->data = NULL;
-
-    data->oper = &emptyOperation;
-    data->type = -1;
     data->isEmpty = true;
 }
 
+
+/************ */
 //这个仅仅只会把Entry中的key和value的data和others(不会释放oper,因为同种类型数据是要共用同一个opertion类型的指针)
-void freeEntry(Entry* entry) {
+void freeEntry(Entry* entry, Map* pMap) {
     if (entry->isEmpty) return;
-    freeData(&(entry->key));
-    freeData(&(entry->value));
+    freeData(&(entry->key), pMap->keyInfo);
+    freeData(&(entry->value), pMap->valInfo);
     entry->isEmpty = true;
 }
 
 
+/************** */
 //释放一个链表,包括它里面Data类型数据所指向的内容
-static void freeList(List* plist) {
+static void freeList(List* plist, Map* pMap) {
     if (plist->size == 0) {
         return;
     }
@@ -159,7 +141,7 @@ static void freeList(List* plist) {
     while (p) {
         q = p;
         p = p->next;
-        freeEntry(&(q->entry));
+        freeEntry(&(q->entry), pMap);
         free(q);
     }
     initializeList(plist);
@@ -167,12 +149,14 @@ static void freeList(List* plist) {
 
 
 
+
+/**************** */
 void freeMap(Map* pMap) {
     for (int i = 0; i < pMap->len; i++) {
-        freeList(&(pMap->arr[i]));
+        freeList(&(pMap->arr[i]), pMap);
     }
     free(pMap->arr);
-    initializeMap(pMap);
+    initializeMap(pMap, pMap->keyInfo, pMap->valInfo);
 }
 
 
@@ -194,11 +178,13 @@ static void initializeList(List* plist) {
     plist->size = 0;
 }
 
-static Node* findNodeByKey(List* plist, Data key) {
+
+/************* */
+static Node* findNodeByKey(List* plist, Data key, InfoOfData keyInfo) {
     if (isEmptyList(plist)) return NULL;
     Node* p = plist->head;
     for (int i = 0; i < plist->size; i++, p = p->next) {
-        if (compareData(&(p->entry.key), &key) == SAME) {
+        if (compareKey(&(p->entry.key), &key, keyInfo) == SAME) {
             return p;
         }
     } 
@@ -227,7 +213,9 @@ static int insertEntryInList(List* plist, Entry entry) {
     return Success;
 }
 
-static int delStartNode(List* plist) {
+
+
+static int delStartNode(List* plist, Map* pMap) {
     if (isEmptyList(plist)) {
         printf("\nNot found! Cannot del\n");
         return None;
@@ -241,7 +229,7 @@ static int delStartNode(List* plist) {
         plist->head = plist->tail = NULL;
     }
 
-    freeEntry(&(p->entry));
+    freeEntry(&(p->entry), pMap);
     free(p);
     plist->size--;
     return Success;
@@ -250,7 +238,7 @@ static int delStartNode(List* plist) {
 
 
 
-static int delEndNode(List* plist) {
+static int delEndNode(List* plist, Map* pMap) {
     if (isEmptyList(plist)) {
         printf("\nNot found! Cannot del\n");
         return None;
@@ -264,7 +252,7 @@ static int delEndNode(List* plist) {
         plist->head = plist->tail = NULL;
     }
 
-    freeEntry(&(p->entry));
+    freeEntry(&(p->entry), pMap);
     free(p);
     plist->size--;
     return Success;
@@ -272,24 +260,24 @@ static int delEndNode(List* plist) {
 
 
 
-static int delNodeByKey(List* plist, Data key) {
+static int delNodeByKey(List* plist, Data key, Map* pMap) {
     if (isEmptyList(plist)) {
         printf("\nNot found! Cannot del\n");
         return None;
     }
-    Node* p = findNodeByKey(plist, key);
+    Node* p = findNodeByKey(plist, key, pMap->keyInfo);
     if (p == NULL) {
         printf("\nNot found! Cannot del\n");
         return None;
     }
-    if (p == plist->head) return delStartNode(plist);
-    if (p == plist->tail) return delEndNode(plist);
+    if (p == plist->head) return delStartNode(plist, pMap);
+    if (p == plist->tail) return delEndNode(plist, pMap);
 
 
     p->prev->next = p->next;
     p->next->prev = p->prev;
 
-    freeEntry(&(p->entry));
+    freeEntry(&(p->entry), pMap);
     free(p);
     plist->size--;
     return Success;
@@ -305,7 +293,7 @@ static int delNodeByKey(List* plist, Data key) {
 //复制类
 
 //复制Data
-static Data copyData(Data oldData) {
+static Data copyData(Data oldData, InfoOfData InfoOfKeyOrVal) {
 
     if (oldData.isEmpty) {
         return returnEmptyData();
@@ -313,47 +301,42 @@ static Data copyData(Data oldData) {
     //复制void* data
     Data newData;
 
-    //copy函数不仅仅只是把指针赋值,还要把整个void* data赋值一遍
-    newData.data = oldData.oper->copydata(oldData.data, oldData.content);
+    //copy函数不仅仅只是把指针赋值,还要把整个void* data复制一遍
+    newData.data = InfoOfKeyOrVal.oper->copydata(oldData.data, oldData.content);
 
     if (newData.data == NULL) {
         printf("\nMemory allocation failed\n");
         return returnEmptyData();
     }
 
-    newData.hasContent = oldData.hasContent;
     //有content才复制content
-    if (oldData.hasContent) {
-        newData.content = oldData.oper->copycontent(oldData.content);
+    if (InfoOfKeyOrVal.hasContent) {
+        newData.content = InfoOfKeyOrVal.oper->copycontent(oldData.content);
         if (newData.content == NULL) {
             printf("\nMemory allocation failed\n");
-            oldData.oper->freedata(newData.data, oldData.content);
+            InfoOfKeyOrVal.oper->freedata(newData.data, oldData.content);
             return returnEmptyData();
         }
     } else {
         newData.content = NULL;
     }
-    newData.type = oldData.type;
-
-    //提供的相应操作函数因该是全局的
-    newData.oper = oldData.oper;
     newData.isEmpty = false;
     return newData;
 }
 
 //复制一个Entry,注意:entry.state自动赋值,必须要自己赋值
-static Entry copyEntry(Entry oldEntry) {
+static Entry copyEntry(Entry oldEntry, Map* pMap) {
     if (oldEntry.isEmpty) {
         return returnEmptyEntry();
     }
     Entry newEntry;
-    newEntry.key = copyData(oldEntry.key);
+    newEntry.key = copyData(oldEntry.key, pMap->keyInfo);
     if (newEntry.key.isEmpty) {
         return returnEmptyEntry();
     }
-    newEntry.value = copyData(oldEntry.value);
+    newEntry.value = copyData(oldEntry.value, pMap->valInfo);
     if (newEntry.value.isEmpty) {
-        freeData(&(newEntry.key));
+        freeData(&(newEntry.key), pMap->keyInfo);
         return returnEmptyEntry();
     }
     newEntry.isEmpty = false;
@@ -369,16 +352,16 @@ static Entry copyEntry(Entry oldEntry) {
 //这个函数保证可以添加
 static int addEntryFunction(Map* pMap, Data key, Data value) {
     //hash
-    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (pMap->keyInfo.oper->hashdata(key.data, key.content))%pMap->mod;
 
-    Node* p = findNodeByKey(&(pMap->arr[index]), key);
+    Node* p = findNodeByKey(&(pMap->arr[index]), key, pMap->keyInfo);
     if (p) {
-        Data newVal = copyData(value);
+        Data newVal = copyData(value, pMap->valInfo);
         if (newVal.isEmpty) {
             printf("\nMemory allocation failed\n");
             return Warning;
         }
-        freeData(&(p->entry.value));
+        freeData(&(p->entry.value), pMap->valInfo);
         p->entry.value = newVal;
         return Success;
     }
@@ -387,7 +370,7 @@ static int addEntryFunction(Map* pMap, Data key, Data value) {
     oldEntry.key = key;
     oldEntry.value = value;
     
-    Entry newEntry = copyEntry(oldEntry);
+    Entry newEntry = copyEntry(oldEntry, pMap);
     if (newEntry.isEmpty) {
         printf("\nMemory allocation failed\n");
         return Warning;
@@ -405,7 +388,7 @@ static int addEntryFunction(Map* pMap, Data key, Data value) {
 
 //专门为重哈希做的软拷贝方式添加的Entry
 static int addEntryForFreshMap(Map* pMap, Data key, Data value) {
-    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (pMap->keyInfo.oper->hashdata(key.data, key.content))%pMap->mod;
     Entry entry;
     entry.isEmpty = false;
     entry.key = key;
@@ -440,7 +423,7 @@ static int freshMap(Map* pMap) {
     if (pMap->len == 0) {
         newLen = 16;    //如果为空,直接给16的空间
     } else {
-        newLen = (pMap->len+1)*2;   //否则扩容两倍
+        newLen = (pMap->len)*2;   //否则扩容两倍
     }
 
     int newSize = pMap->size;
@@ -458,7 +441,8 @@ static int freshMap(Map* pMap) {
         initializeList(newArray+i);
     }
 
-
+    newMap.keyInfo = pMap->keyInfo;
+    newMap.valInfo = pMap->valInfo;
     newMap.arr = newArray;
     newMap.len = newLen;
     newMap.mod = newMod;
@@ -479,12 +463,13 @@ static int freshMap(Map* pMap) {
     }
     free(pMap->arr);
     *pMap = newMap;
+
     return Success;
 }
 
 
 
-int insertKeyAndValInMap(Map* pMap, Data key, Data val) {
+int insertKeyAndValInMap(Map* pMap, void* keydata, void* keycontent, void* valdata, void* valcontent) {
     //当填充因子大于75%时或者Map为空时自动扩容
     if (4*(pMap->size) >= 3*(pMap->len) || pMap->size == 0) {
         if (freshMap(pMap) == Warning) {
@@ -492,6 +477,9 @@ int insertKeyAndValInMap(Map* pMap, Data key, Data val) {
             return Warning;
         }
     }
+    //原来的stackData函数去除,直接创建
+    Data key = {keydata, keycontent, false};
+    Data val = {valdata, valcontent, false};
     return addEntryFunction(pMap, key, val);
 }
 
@@ -502,16 +490,18 @@ int insertKeyAndValInMap(Map* pMap, Data key, Data val) {
 
 
 //返回的Data数据为新建,用完后记得释放
-Data returnValByKey(Map* pMap, Data key) {
+Data returnValByKey(Map* pMap, void* keydata, void* keycontent) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyData();
-    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (pMap->keyInfo.oper->hashdata(keydata, keycontent))%pMap->mod;
     
-    Node* p = findNodeByKey(&(pMap->arr[index]), key);
+    Data key = {keydata, keycontent, false};
+    
+    Node* p = findNodeByKey(&(pMap->arr[index]), key, pMap->keyInfo);
     if (p == NULL) {
         return returnEmptyData();
     } else {
         Data newData;
-        newData = copyData(p->entry.value);
+        newData = copyData(p->entry.value, pMap->valInfo);
         if (newData.isEmpty) {
             printf("\nMemory allocation failed\n");
         }
@@ -521,16 +511,18 @@ Data returnValByKey(Map* pMap, Data key) {
 
 
 
-Entry returnEntryByKey(Map* pMap, Data key) {
+Entry returnEntryByKey(Map* pMap, void* keydata, void* keycontent) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyEntry();
-    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (pMap->keyInfo.oper->hashdata(keydata, keycontent))%pMap->mod;
     
-    Node* p = findNodeByKey(&(pMap->arr[index]), key);
+    Data key = {keydata, keycontent, false};
+    
+    Node* p = findNodeByKey(&(pMap->arr[index]), key, pMap->keyInfo);
     if (p == NULL) {
         return returnEmptyEntry();
     } else {
         Entry newEntry;
-        newEntry = copyEntry(p->entry);
+        newEntry = copyEntry(p->entry, pMap);
         if (newEntry.isEmpty) {
             printf("\nMemory allocation failed\n");
         }
@@ -539,11 +531,12 @@ Entry returnEntryByKey(Map* pMap, Data key) {
 }
 
 
-bool hasKeyInMap(Map* pMap, Data key) {
+bool hasKeyInMap(Map* pMap, void* keydata, void* keycontent) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return false;
-    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (pMap->keyInfo.oper->hashdata(keydata, keycontent))%pMap->mod;
     
-    Node* p = findNodeByKey(&(pMap->arr[index]), key);
+    Data key = {keydata, keycontent, false};
+    Node* p = findNodeByKey(&(pMap->arr[index]), key, pMap->keyInfo);
     if (p == NULL) {
         return false;
     } else {
@@ -557,60 +550,50 @@ bool hasKeyInMap(Map* pMap, Data key) {
 //删除类
 
 
-int delEntryByKey(Map* pMap, Data key) {
+int delEntryByKey(Map* pMap, void* keydata, void* keycontent) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return Warning;
-    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (pMap->keyInfo.oper->hashdata(keydata, keycontent))%pMap->mod;
     
-    if (delNodeByKey(&(pMap->arr[index]), key) == None) {
+    Data key = {keydata, keycontent, false};
+    if (delNodeByKey(&(pMap->arr[index]), key, pMap) ==  None) {
         printf("\nNot found! Cannot del\n");
         return None;
     }
     pMap->size--;
     return Success;
+
 }
 
 
 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
-//整合类
 
-Data stackData(void* data, int type, Operation* oper, void* content, bool hasContent) {
-    Data newData;
-    newData.data = data;
-    newData.isEmpty = false;
-    newData.oper = oper;
-    newData.type = type;
-    newData.content = content;
-    newData.hasContent = hasContent;
-    return newData;
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //打印类
 
-void printData(Data data, char* tip) {
+void printData(Data data, char* tip, InfoOfData InfoOfKeyOrVal) {
     if (data.isEmpty) {
         printf("\nData is empty, cannot print\n");
         return;
     }
     printf("[%s:", tip);
-    data.oper->printdata(data.data, data.content);
+    InfoOfKeyOrVal.oper->printdata(data.data, data.content);
     printf("]");
 }
 
-void printEntry(Entry entry) {
+void printEntry(Entry entry, Map* pMap) {
     if (entry.isEmpty) {
         printf("\nEntry is empty, cannot print\n");
         return;
     }
     //key
     printf("[key:");
-    entry.key.oper->printdata(entry.key.data, entry.key.content);
+    pMap->keyInfo.oper->printdata(entry.key.data, entry.key.content);
     
     //value
     printf(", value:");
-    entry.value.oper->printdata(entry.value.data, entry.value.content);
+    pMap->valInfo.oper->printdata(entry.value.data, entry.value.content);
     printf("]");
 }
 
@@ -627,7 +610,7 @@ void printMap(Map* pMap) {
             if (cnt != 0) {
                 printf(", ");
             }
-            printEntry(p->entry);
+            printEntry(p->entry, pMap);
             cnt++;
         }
     }

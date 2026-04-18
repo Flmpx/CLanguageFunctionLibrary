@@ -136,6 +136,7 @@ void freeEntry(Entry* entry) {
     if (entry->isEmpty) return;
     freeData(&(entry->key));
     freeData(&(entry->value));
+    entry->isEmpty = true;
 }
 
 void freeMap(Map* pMap) {

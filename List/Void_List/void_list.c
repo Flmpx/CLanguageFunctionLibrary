@@ -4,20 +4,20 @@
 #include <stdbool.h>
 #include <string.h>
 
-static enum info {
-    Warning = -1,
-    None = 0,
-    Success = 1
-};
+//修改为任意数据类型,这个任意是指整个val都是同一种,但这中可以自定义
+
+
 
 
 bool isEmptyList(List* plist) {
     return plist->size == 0;
 }
 
-void initializeList(List* plist) {
+void initializeList(List* plist, Operation* oper, bool hasContenet) {
     plist->head = plist->tail = NULL;
     plist->size = 0;
+    plist->hasContent = hasContenet;
+    plist->oper = oper;
 }
 
 

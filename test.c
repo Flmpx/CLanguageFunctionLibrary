@@ -709,31 +709,31 @@
 // }
 
 
-#include <stdio.h>
-#include "Map/Void_Map/Hash_Map_List/_hash_map_list.h"
-#include "Map/Void_Map/Hash_Map_List/Oper/double_oper/_double_oper.h"
-#include "Map/Void_Map/Hash_Map_List/Oper/int_oper/_int_oper.h"
-#include "Map/Void_Map/Hash_Map_List/Oper/bool_oper/_bool_oper.h"
+// #include <stdio.h>
+// #include "Map/Void_Map/Hash_Map_List/_hash_map_list.h"
+// #include "Map/Void_Map/Hash_Map_List/Oper/double_oper/_double_oper.h"
+// #include "Map/Void_Map/Hash_Map_List/Oper/int_oper/_int_oper.h"
+// #include "Map/Void_Map/Hash_Map_List/Oper/bool_oper/_bool_oper.h"
 
-int main()
-{
-    Map map;
-    initializeMap(&map);
-    bool n = false, m = true;
-    Data key = stackData(&n, 0, &oper_Bool, NULL, false);
-    Data val = stackData(&m, 0, &oper_Bool, NULL, false);
-    insertKeyAndValInMap(&map, key, val);
-    insertKeyAndValInMap(&map, val, key);
-    Entry entry = returnEntryByKey(&map, key);
-    printData(key, "key");
-    printf("\n");
-    printEntry(entry);
-    printf("\n");
-    printMap(&map);
-    freeEntry(&entry);
-    freeMap(&map);
+// int main()
+// {
+//     Map map;
+//     initializeMap(&map);
+//     bool n = false, m = true;
+//     Data key = stackData(&n, 0, &oper_Bool, NULL, false);
+//     Data val = stackData(&m, 0, &oper_Bool, NULL, false);
+//     insertKeyAndValInMap(&map, key, val);
+//     insertKeyAndValInMap(&map, val, key);
+//     Entry entry = returnEntryByKey(&map, key);
+//     printData(key, "key");
+//     printf("\n");
+//     printEntry(entry);
+//     printf("\n");
+//     printMap(&map);
+//     freeEntry(&entry);
+//     freeMap(&map);
 
-}
+// }
 
 
 
@@ -848,3 +848,410 @@ int main()
 
 //     return 0;
 // }
+
+
+
+
+// #include <stdio.h>
+// #include "Map/_map_string_int/_map_string_int.h"
+
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <windows.h>
+
+
+
+
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <time.h>
+// #include <windows.h> // 如果是在 Linux 下请注释掉这行并删掉 Sleep
+// #include "Map/_map_string_int/_map_string_int.h"
+
+// #define TEST_COUNT 500000  // 50 万测试数据
+// #define STR_LEN 9          // 字符串长度
+
+// // 简单的计时函数
+// double get_time_diff(clock_t start, clock_t end) {
+//     return (double)(end - start) / CLOCKS_PER_SEC;
+// }
+
+// // 随机字符串生成
+// void rand_string(char *str, size_t size) {
+//     static const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+//     for (size_t n = 0; n < size; n++) {
+//         str[n] = charset[rand() % (sizeof(charset) - 1)];
+//     }
+//     str[size] = '\0';
+// }
+
+// int main() {
+//     srand((unsigned int)time(NULL));
+//     Map myMap;
+//     initializeMap(&myMap);
+
+//     // --- 关键修改：使用堆内存分配 ---
+//     // 分配一个 50万 * 10字节 的大块内存
+//     char (*keys)[STR_LEN + 1] = malloc(sizeof(char[STR_LEN + 1]) * TEST_COUNT);
+//     if (keys == NULL) {
+//         printf("内存分配失败，请尝试减小 TEST_COUNT\n");
+//         return -1;
+//     }
+
+//     printf("================================================\n");
+//     printf("String-Int Map 50万级 堆内存暴力测试\n");
+//     printf("================================================\n");
+
+//     // 1. 数据准备
+//     for (int i = 0; i < TEST_COUNT; i++) {
+//         rand_string(keys[i], STR_LEN);
+//     }
+
+//     // 2. 插入测试
+//     printf(">> 正在执行插入...\n");
+//     clock_t start = clock();
+//     for (int i = 0; i < TEST_COUNT; i++) {
+//         insertKeyAndValInMap(&myMap, keys[i], i);
+//     }
+//     clock_t end = clock();
+//     printf("   [插入耗时]: %.4f 秒\n", get_time_diff(start, end));
+//     printf("   [Map状态]: Size = %d, Buckets = %d\n", myMap.size, myMap.len);
+
+//     // 3. 更新测试
+//     printf(">> 正在执行覆盖更新 (前 10万条)...\n");
+//     start = clock();
+//     for (int i = 0; i < 100000; i++) {
+//         insertKeyAndValInMap(&myMap, keys[i], 999999);
+//     }
+//     end = clock();
+//     printf("   [更新耗时]: %.4f 秒\n", get_time_diff(start, end));
+
+//     // 4. 查找验证
+//     printf(">> 正在执行全量查找验证...\n");
+//     int error_cnt = 0;
+//     start = clock();
+//     for (int i = 0; i < TEST_COUNT; i++) {
+//         int val = returnValByKey(&myMap, keys[i]);
+//         if (i < 100000) {
+//             if (val != 999999) error_cnt++;
+//         } else {
+//             if (val != i) error_cnt++;
+//         }
+//     }
+//     end = clock();
+//     printf("   [查找耗时]: %.4f 秒\n", get_time_diff(start, end));
+//     printf("   [错误计数]: %d\n", error_cnt);
+
+//     // 5. 删除测试
+//     printf(">> 正在删除一半的数据...\n");
+//     start = clock();
+//     for (int i = 0; i < TEST_COUNT / 2; i++) {
+//         delEntryByKey(&myMap, keys[i]);
+//     }
+//     end = clock();
+//     printf("   [删除耗时]: %.4f 秒\n", get_time_diff(start, end));
+//     printf("   [剩余 Size]: %d\n", myMap.size);
+
+//     // 6. 内存清理
+//     printf(">> 正在清理内存...\n");
+//     start = clock();
+//     freeMap(&myMap);
+//     free(keys); // 释放堆内存
+//     end = clock();
+//     printf("   [清理耗时]: %.4f 秒\n", get_time_diff(start, end));
+
+//     printf("================================================\n");
+//     if (error_cnt == 0) {
+//         printf("测试结论: [完美通过]\n");
+//     } else {
+//         printf("测试结论: [失败] 发现 %d 处错误\n", error_cnt);
+//     }
+//     printf("================================================\n");
+
+//     return 0;
+// }
+
+
+
+
+
+
+// #define TEST_COUNT 5000000
+
+// // 生成随机字符串
+// void rand_string(char *str, size_t size) {
+//     const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJK";
+//     for (size_t n = 0; n < size; n++) {
+//         int key = rand() % (int) (sizeof charset - 1);
+//         str[n] = charset[key];
+//     }
+//     str[size] = '\0';
+// }
+
+// int main() {
+//     Map myMap;
+//     initializeMap(&myMap);
+    
+//     printf("--- String-Int Map 专用压力测试 ---\n");
+
+//     // 1. 批量插入
+//     // char keys[TEST_COUNT][10];
+//     char (*keys)[10] = malloc(sizeof(char[10]) * TEST_COUNT);
+//     for (int i = 0; i < TEST_COUNT; i++) {
+//         rand_string(keys[i], 9);
+//         insertKeyAndValInMap(&myMap, keys[i], i);
+//     }
+//     printf("插入 %d 条数据完成，Size: %d, Buckets: %d\n", TEST_COUNT, myMap.size, myMap.len);
+//     Sleep(10000);
+//     // 2. 更新测试
+//     printf("执行更新操作...\n");
+//     for (int i = 0; i < 1000; i++) {
+//         insertKeyAndValInMap(&myMap, keys[i], 88888); 
+//     }
+
+//     // 3. 查找与逻辑验证
+//     int error_cnt = 0;
+//     for (int i = 0; i < TEST_COUNT; i++) {
+//         int val = returnValByKey(&myMap, keys[i]);
+//         if (i < 1000) {
+//             if (val != 88888) error_cnt++;
+//         } else {
+//             if (val != i) error_cnt++;
+//         }
+//     }
+//     printf("查找验证完成，错误数: %d\n", error_cnt);
+
+//     // 4. 删除验证
+//     printf("删除测试中...\n");
+//     for (int i = 0; i < TEST_COUNT / 2; i++) {
+//         delEntryByKey(&myMap, keys[i]);
+//     }
+//     printf("剩余 Size: %d\n", myMap.size);
+
+//     // 5. 打印一小部分看看
+//     printf("随机抽看部分 Map 内容:\n");
+//     // 这里如果 Map 太大不要全打，可以用你的 printMap 观察一小下
+//     // printMap(&myMap); 
+
+//     // 6. 清理
+//     freeMap(&myMap);
+//     printf("内存清理完成。\n");
+
+//     if (error_cnt == 0) {
+//         printf("\n>>> [结论] String-Int 版本运行完美！ <<<\n");
+//     }
+//     free(keys);
+//     return 0;
+// }
+
+// int main()
+// {
+//     Map map;
+//     initializeMap(&map);
+//     insertKeyAndValInMap(&map, "dddd", 23);
+//     insertKeyAndValInMap(&map, "ddd", 111);
+//     printMap(&map);
+//     printf("\n");
+//     if (hasKeyInMap(&map, "c")) printf("Yes\n");
+//     else printf("No\n");
+//     if (hasKeyInMap(&map, "ddddd")) printf("Yes\n");
+//     else printf("No\n");
+
+//     freeMap(&map);
+//     return 0;
+// }
+
+// #include <windows.h>
+// #include <stdio.h>
+// #include "Map/Void_Map/_hash_map_list.h"
+// #include "Map\Void_Map\Oper\string_oper\_string_oper.h"
+// #include "Map\Void_Map\Oper\int_oper\_int_oper.h"
+// #include "Map\Void_Map\Oper\bool_oper\_bool_oper.c"
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <string.h>
+// #include <time.h>
+// #include <stdbool.h>
+
+// // 包含你的头文件，路径请根据你的实际目录修改
+// // #include "void_map.h" 
+// // #include "_string_oper.h"
+// // #include "_int_oper.h"
+
+// // ================= 配置区 =================
+// #define TEST_COUNT 5000000    // 插入的总条数，可以自由修改
+// #define KEY_LEN 12           // 随机字符串Key的长度
+// // ==========================================
+
+// // 导入你在 _string_oper.c 和 _int_oper.c 中定义的 Info 结构体
+// // 注意：如果你的 .c 文件里没有 extern 这些 Info，请在对应 .h 里声明一下
+// extern InfoOfData Info_String; 
+// extern InfoOfData Info_Int;
+
+// // 计时辅助函数
+// double get_seconds(clock_t start, clock_t end) {
+//     return (double)(end - start) / CLOCKS_PER_SEC;
+// }
+
+// // 随机字符串生成器
+// void generate_rand_string(char *str, int len) {
+//     static const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+//     for (int i = 0; i < len; i++) {
+//         str[i] = charset[rand() % (sizeof(charset) - 1)];
+//     }
+//     str[len] = '\0';
+// }
+
+// int main() {
+//     srand((unsigned int)time(NULL));
+    
+//     Map myMap;
+//     // 1. 初始化 Map：传入字符串作为 Key 的策略，整数作为 Value 的策略
+//     initializeMap(&myMap, Info_String, Info_Int);
+
+//     printf("================================================\n");
+//     printf("开始 void_map 压力测试 [数据量: %d]\n", TEST_COUNT);
+//     printf("Key类型: String, Value类型: Int\n");
+//     printf("================================================\n");
+
+//     // 2. 准备数据：在堆上分配 Key 数组，避免栈溢出
+//     printf(">> 正在生成随机数据...\n");
+//     char (*keys)[KEY_LEN + 1] = malloc(sizeof(char[KEY_LEN + 1]) * TEST_COUNT);
+//     if (!keys) {
+//         printf("内存分配失败！\n");
+//         return -1;
+//     }
+//     for (int i = 0; i < TEST_COUNT; i++) {
+//         generate_rand_string(keys[i], KEY_LEN);
+//     }
+
+//     // 3. 插入测试
+//     printf(">> 正在执行插入...\n");
+//     clock_t start = clock();
+//     for (int i = 0; i < TEST_COUNT; i++) {
+//         // 因为是 void_map，直接传指针。content 传 NULL。
+//         insertKeyAndValInMap(&myMap, keys[i], NULL, &i, NULL);
+//     }
+//     clock_t end = clock();
+//     printf("   [插入耗时]: %.4f 秒 (Size: %d, Buckets: %d)\n", 
+//            get_seconds(start, end), myMap.size, myMap.len);
+
+//     // 4. 查找验证
+//     printf(">> 正在执行全量查找验证...\n");
+//     int error_cnt = 0;
+//     start = clock();
+//     for (int i = 0; i < TEST_COUNT; i++) {
+//         Data res = returnValByKey(&myMap, keys[i], NULL);
+//         if (res.isEmpty) {
+//             error_cnt++;
+//         } else {
+//             // 获取返回的 int 指针并比对
+//             int val = *(int*)res.data;
+//             if (val != i) error_cnt++;
+            
+//             // 重要：根据你的 returnValByKey 注释，返回的 Data 是复制出来的，需要释放
+//             // 如果你的实现里 returnValByKey 不产生新 malloc，则不需要下面这行
+//             // free(res.data); 
+//         }
+//     }
+//     end = clock();
+//     printf("   [查找耗时]: %.4f 秒\n", get_seconds(start, end));
+//     printf("   [错误计数]: %d\n", error_cnt);
+
+//     // 5. 更新测试 (覆盖前 1/10 的数据)
+//     printf(">> 正在更新部分数据...\n");
+//     int newVal = 888888;
+//     for (int i = 0; i < TEST_COUNT / 10; i++) {
+//         insertKeyAndValInMap(&myMap, keys[i], NULL, &newVal, NULL);
+//     }
+//     printf("   [更新完成] 检查第一个元素: %d (预期: 888888)\n", 
+//             *(int*)returnValByKey(&myMap, keys[0], NULL).data);
+
+//     Sleep(5000);
+//     // 6. 删除测试
+//     printf(">> 正在删除一半的数据...\n");
+//     start = clock();
+//     for (int i = 0; i < TEST_COUNT / 2; i++) {
+//         delEntryByKey(&myMap, keys[i], NULL);
+//     }
+//     end = clock();
+//     printf("   [删除耗时]: %.4f 秒, 剩余 Size: %d\n", get_seconds(start, end), myMap.size);
+
+//     // 7. 清理
+//     Sleep(5000);
+//     printf(">> 正在清理内存...\n");
+//     freeMap(&myMap);
+//     Sleep(5000);
+//     free(keys);
+//     Sleep(5000);
+//     printf(">> 测试结束。\n");
+
+//     return 0;
+// }
+
+
+// int main()
+// {
+
+//     Map map_1, map_2;
+//     initializeMap(&map_1, Info_String, Info_Int);
+//     int n = 777;
+//     insertKeyAndValInMap(&map_1, "ddd", NULL, &n, NULL);
+//     printMap(&map_1);
+//     freeMap(&map_1);
+    
+//     printf("\n");
+    
+//     initializeMap(&map_2, Info_String, Info_Bool);
+//     bool a = false;
+//     insertKeyAndValInMap(&map_2, "djflfjla", NULL, &a, NULL);
+//     insertKeyAndValInMap(&map_2, "djflfa", NULL, &a, NULL);
+//     printMap(&map_2);
+//     freeMap(&map_2);
+//     return 0;
+// }
+
+
+
+
+
+#include <windows.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include "Map/Void_Map/_hash_map_list.h"
+#include "Map\Void_Map\Oper\string_oper\_string_oper.h"
+#include "Map\Void_Map\Oper\int_oper\_int_oper.h"
+#include "Map\Void_Map\Oper\bool_oper\_bool_oper.c"
+const char all[] =  "abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ!@#$^&*()_+-=?][{}";
+#define MAX 10
+void generate(char* string, int len) {
+    for (int i = 0; i < len - 1; i++) {
+        string[i] = all[rand()%(sizeof(all)-1)];
+    }
+    string[len] = '\0';
+}
+int main()
+{
+    srand(time(NULL));
+    Map map;
+    char string[MAX][101];
+    for (int i = 0; i < MAX; i++) {
+        generate(string[i], 8);
+    }
+    initializeMap(&map, Info_String, Info_Bool);
+    for (int i = 0; i < MAX; i++) {
+        bool val = (i%2 == 0);
+        insertKeyAndValInMap(&map, string[i], NULL, &val, NULL);
+    }
+    printMap(&map);
+    freeMap(&map);
+    return 0;
+}
