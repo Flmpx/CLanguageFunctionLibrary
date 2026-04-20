@@ -1,11 +1,9 @@
 #ifndef _INT_OPER_H
 #define _INT_OPER_H
-#include "../../_hash_map_list.h"
+#define DIFFERENT -1
+#define SAME 0
+#include "../../void_list.h"
 extern void freedata_Int(void* data, void* content);
-
-
-extern ull hashdata_Int(void* data, void* content);
-
 
 extern int cmpdata_Int(void* data_a, void* content_a, void* data_b, void* content_b);
 
@@ -14,7 +12,7 @@ extern void* copydata_Int(void* data, void* content);
 extern void printdata_Int(void* data, void* content);
 
 
-extern Operation oper_Int;
+extern InfoOfData Info_Int;
 
 
 #endif

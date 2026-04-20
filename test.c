@@ -1222,36 +1222,51 @@
 
 
 
-#include <windows.h>
+// #include <windows.h>
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <time.h>
+// #include "Map/Void_Map/_hash_map_list.h"
+// #include "Map\Void_Map\Oper\string_oper\_string_oper.h"
+// #include "Map\Void_Map\Oper\int_oper\_int_oper.h"
+// #include "Map\Void_Map\Oper\bool_oper\_bool_oper.c"
+// const char all[] =  "abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ!@#$^&*()_+-=?][{}";
+// #define MAX 10
+// void generate(char* string, int len) {
+//     for (int i = 0; i < len - 1; i++) {
+//         string[i] = all[rand()%(sizeof(all)-1)];
+//     }
+//     string[len] = '\0';
+// }
+// int main()
+// {
+//     srand(time(NULL));
+//     Map map;
+//     char string[MAX][101];
+//     for (int i = 0; i < MAX; i++) {
+//         generate(string[i], 8);
+//     }
+//     initializeMap(&map, Info_String, Info_Bool);
+//     for (int i = 0; i < MAX; i++) {
+//         bool val = (i%2 == 0);
+//         insertKeyAndValInMap(&map, string[i], NULL, &val, NULL);
+//     }
+//     printMap(&map);
+//     freeMap(&map);
+//     return 0;
+// }
+
 #include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include "Map/Void_Map/_hash_map_list.h"
-#include "Map\Void_Map\Oper\string_oper\_string_oper.h"
-#include "Map\Void_Map\Oper\int_oper\_int_oper.h"
-#include "Map\Void_Map\Oper\bool_oper\_bool_oper.c"
-const char all[] =  "abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ!@#$^&*()_+-=?][{}";
-#define MAX 10
-void generate(char* string, int len) {
-    for (int i = 0; i < len - 1; i++) {
-        string[i] = all[rand()%(sizeof(all)-1)];
-    }
-    string[len] = '\0';
-}
+#include "List\Void_List\void_list.h"
+#include "List\Void_List\Oper\string_oper\_string_oper.h"
 int main()
 {
-    srand(time(NULL));
-    Map map;
-    char string[MAX][101];
-    for (int i = 0; i < MAX; i++) {
-        generate(string[i], 8);
-    }
-    initializeMap(&map, Info_String, Info_Bool);
-    for (int i = 0; i < MAX; i++) {
-        bool val = (i%2 == 0);
-        insertKeyAndValInMap(&map, string[i], NULL, &val, NULL);
-    }
-    printMap(&map);
-    freeMap(&map);
+    List list;
+    initializeList(&list, Info_String);
+    insertDataAtEndInList(&list, "djfakjf", NULL);
+    insertDataAtEndInList(&list, "djfakjf", NULL);
+    printList(&list);
+    freeList(&list);
+
     return 0;
 }

@@ -43,68 +43,93 @@ typedef struct Operation {
     _freecontent freecontent;
 } Operation;
 
+typedef struct Data {
+    void* data;
+    void* content;
+    bool isEmpty;
+} Data;
+
+
 typedef struct node {
     struct node* prev;
     struct node* next;
-    void* data;
-    int sizeofdata;
+    Data val;
 } Node;
+
+typedef struct InfoOfData {
+    Operation* oper;
+    bool hasContent;
+} InfoOfData;
 
 typedef struct {
     Node* head;
     Node* tail;
     int size;
-    Operation* oper;
-    bool hasContent;
+    InfoOfData valInfo;
 } List;
 
-/// @brief 判断链表是否为空
-/// @param plist 链表指针
-/// @return | true:为空 | false:不为空| 
-extern bool isEmptyList(List* plist);
 
 
-/// @brief 初始化链表,使用之前必须初始化
-/// @param plist 链表指针
-extern void initializeList(List* plist, Operation* oper, bool hasContenet);
 
-typedef int (*Compare)(const void* a, const void* b);
+/// @brief 初始化List
+/// @param plist List类型的指针
+/// @param oper 操作函数指针
+/// @param hasContenet 是否有描述性内容
+extern void initializeList(List* plist, InfoOfData valInfo);
 
-/// @brief 通过data来返回链表节点
-/// @param plist 链表指针
-/// @param data 数据指针
-/// @param cmp 自己提供比较函数,比较函数返回0代表相同
-/// @return 若存在节点,返回节点, 如果位置无效,返回NULL
-extern Node* findNodeByData(List* plist, void* data, Compare cmp);
 
-/// @brief 通过位置返回链表节点
-/// @param plist 链表指针
-/// @param pos 位置(范围应在[0, list.size-1])
-/// @return 若存在节点,返回节点, 如果位置无效,返回NULL
-extern Node* findNodeByPos(List* plist, int pos);
+/// @brief 通过Data类型返回Data(主要用于改变List中的这个数据)
+/// @param plist List类型指针
+/// @param data void* data
+/// @param content void* content
+/// @return 如果找到,就返回Data类型, 这里的Ptr主要是Data数据里面的void* data和void* content
+extern Data returnPtrDataByData(List* plist, void* data, void* content);
+
+/// @brief 通过Pos位置返回Data的,注意这里Data中的data和content都是复制的,使用完后记得释放
+/// @param plist List类型指针
+/// @param pos 位置
+/// @return 如果找到,返回Data,反之,返回空Data
+extern Data returnCopyDataByPos(List* plist, int pos);
+
+
+/// @brief 通过Pos位置返回Data的,返回的是List中Data,说明可以通过这样修改数据
+/// @param plist List类型指针
+/// @param pos 位置
+/// @return 如果找到,返回Data,反之,返回空Data
+extern Data returnPtrDataByPos(List* plist, int pos);
+
+/// @brief 判断数据是否在里面
+/// @param plist List类型指针
+/// @param data void* data
+/// @param content void* content
+/// @return 有就返回true,没有就false
+extern bool hasDataInList(List* plist, void* data, void* content);
+
+
+
 
 /// @brief 在链表的尾部插入节点
 /// @param plist 链表指针
-/// @param data 数据指针
-/// @param sizeofdata 节点数据所占字节数
+/// @param data void* data
+/// @param content void* content
 /// @return | -1-->节点创建失败 | 1-->节点创建成功,并成功写入数据 |
-extern int insertNodeAtEndInList(List* plist, void* data, int sizeofdata);
+extern int insertDataAtEndInList(List* plist, void* data, void* content);
 
 
 /// @brief 在链表的头部插入节点
 /// @param plist 链表指针
-/// @param data 数据指针
-/// @param sizeofdata 节点数据所占字节数
+/// @param data void* data
+/// @param content void* content
 /// @return | -1-->节点创建失败 | 1-->节点创建成功,并成功写入数据 |
-extern int insertNodeAtStartInList(List* plist, void* data, int sizeofdata);
+extern int insertDataAtStartInList(List* plist, void* data, void* content);
 
-/// @brief 
+/// @brief 在指定位置插入数据
 /// @param plist 链表指针
-/// @param data 数据指针
-/// @param sizeofdata 节点数据所占字节数
+/// @param data void* data
+/// @param content void* content
 /// @param pos 位置的范围在[0, list.size],范围的两端分别代表头插和尾插
 /// @return | -1-->节点创建失败或者位置无效 | 1-->节点创建成功,并成功写入数据 |
-extern int insertNodeAtPosInList(List* plist, void* data, int sizeofdata, int pos);
+extern int insertDataAtPosInList(List* plist, void* data, void* content, int pos);
 
 /// @brief 删除链表头节点
 /// @param plist 链表指针
@@ -115,14 +140,14 @@ extern int delEndNodeInList(List* plist);
 /// @brief 删除链表尾节点
 /// @param plist 链表指针
 /// @return 如果链表为空返回-1, 否则返回1
-int delStartNodeINList(List* plist);
+int delStartNodeInList(List* plist);
 
 /// @brief 通过data来删除节点
 /// @param plist 链表指针
-/// @param data 数据指针
-/// @param cmp 自己提供比较函数,函数返回0代表数据相同
+/// @param data void* data
+/// @param content void* content
 /// @return 链表为空返回-1, 找不到对应的节点返回0, 删除成功返回1
-extern int delNodeByData(List* plist, void* data, Compare cmp);
+extern int delNodeByData(List* plist, void* data, void* content);
 
 /// @brief 通过位置删除节点
 /// @param plist 链表指针
@@ -136,16 +161,15 @@ extern void reverseList(List* plist);
 
 /// @brief 打印链表数据
 /// @param plist 链表指针
-/// @param print 自己提供打印函数
-extern void printList(List* plist, Print print);
+extern void printList(List* plist);
 
 /// @brief 清除链表
 /// @param plist 链表指针
 extern void freeList(List* plist);
-
-
-/// @brief 对链表进行排序
-/// @param plist 链表指针
-/// @param cmp 自己提供比较函数
-extern void sortList(List* plist, Compare cmp);
 #endif
+
+
+// /// @brief 对链表进行排序
+// /// @param plist 链表指针
+// /// @param cmp 自己提供比较函数
+// extern void sortList(List* plist, Compare cmp);
