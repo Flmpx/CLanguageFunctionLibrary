@@ -467,7 +467,9 @@ static int freshMap(Map* pMap) {
     return Success;
 }
 
+static int shrinkMap(Map* pMap) {
 
+}
 
 int insertKeyAndValInMap(Map* pMap, void* keydata, void* keycontent, void* valdata, void* valcontent) {
     //当填充因子大于75%时或者Map为空时自动扩容
@@ -490,7 +492,7 @@ int insertKeyAndValInMap(Map* pMap, void* keydata, void* keycontent, void* valda
 
 
 //返回的Data数据为新建,用完后记得释放
-Data returnValByKey(Map* pMap, void* keydata, void* keycontent) {
+Data returnCopyValByKey(Map* pMap, void* keydata, void* keycontent) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyData();
     ull index = (pMap->keyInfo.oper->hashdata(keydata, keycontent))%pMap->mod;
     
@@ -510,8 +512,22 @@ Data returnValByKey(Map* pMap, void* keydata, void* keycontent) {
 }
 
 
+Data returnPtrValByKey(Map* pMap, void* keydata, void* keycontent) {
+    if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyData();
+    ull index = (pMap->keyInfo.oper->hashdata(keydata, keycontent))%pMap->mod;
+    
+    Data key = {keydata, keycontent, false};
+    
+    Node* p = findNodeByKey(&(pMap->arr[index]), key, pMap->keyInfo);
+    if (p == NULL) {
+        return returnEmptyData();
+    } else {
+        return p->entry.value;
+    }
+}
 
-Entry returnEntryByKey(Map* pMap, void* keydata, void* keycontent) {
+
+Entry returnCopyEntryByKey(Map* pMap, void* keydata, void* keycontent) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyEntry();
     ull index = (pMap->keyInfo.oper->hashdata(keydata, keycontent))%pMap->mod;
     

@@ -145,17 +145,23 @@ extern void freeMap(Map* pMap);
 /// @return 插入成功返回1
 extern int insertKeyAndValInMap(Map* pMap, Data key, Data val);
 
-/// @brief 通过key返回Data
+/// @brief 通过key返回Data(会全部复制)
 /// @param pMap Mpa类型指针
 /// @param key key
 /// @return Data数据,(如果为空,Data.isEmpty==0),除了操作函数不是复制的一份,其他的都是复制的,使用完后记得释放
-extern Data returnValByKey(Map* pMap, Data key);
+extern Data returnCopyValByKey(Map* pMap, Data key);
+
+/// @brief 通过key返回Data(不会复制,主要用于修改val)
+/// @param pMap Mpa类型指针
+/// @param key key
+/// @return Data数据,(如果为空,Data.isEmpty==0)
+extern Data returnPtrValByKey(Map* pMap, Data key);
 
 /// @brief 通过key返回Entry
 /// @param pMap Mpa类型指针
 /// @param key key
 /// @return Entry数据,(如果为空Entry.state == NULL_IN_OUTER)除了操作函数不是复制的一份,其他的都是复制的,使用完后记得释放
-extern Entry returnEntryByKey(Map* pMap, Data key);
+extern Entry returnCopyEntryByKey(Map* pMap, Data key);
 
 
 /// @brief 判断释放含有该key

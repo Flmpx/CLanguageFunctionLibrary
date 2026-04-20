@@ -502,7 +502,7 @@ int insertKeyAndValInMap(Map* pMap, Data key, Data val) {
 
 
 //返回的Data数据为新建,用完后记得释放
-Data returnValByKey(Map* pMap, Data key) {
+Data returnCopyValByKey(Map* pMap, Data key) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyData();
     ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
     
@@ -519,9 +519,20 @@ Data returnValByKey(Map* pMap, Data key) {
     }
 }
 
+Data returnPtrValByKey(Map* pMap, Data key) {
+    if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyData();
+    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
+    
+    Node* p = findNodeByKey(&(pMap->arr[index]), key);
+    if (p == NULL) {
+        return returnEmptyData();
+    } else {
+        return p->entry.value;
+    }
+}
 
 
-Entry returnEntryByKey(Map* pMap, Data key) {
+Entry returnCopyEntryByKey(Map* pMap, Data key) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyEntry();
     ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
     

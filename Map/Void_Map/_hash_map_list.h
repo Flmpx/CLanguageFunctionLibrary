@@ -154,19 +154,27 @@ extern void freeMap(Map* pMap);
 /// @return 插入成功返回1, 内存分配失败返回-1
 extern int insertKeyAndValInMap(Map* pMap, void* keydata, void* keycontent, void* valdata, void* valcontent);
 
-/// @brief 通过key返回Data类型数据
+/// @brief 通过key返回Data类型数据(会自动创建一份,用完记得释放)
 /// @param pMap Map类型指针
 /// @param keydata key
 /// @param keycontent content, 如果没有输入NULL
 /// @return 如果有就返回正常的Data, 如果没有返回空Data, 是否为空Data,使用Data.isEmpty来判断, 建议先使用hasKeyInMap进行判断
-extern Data returnValByKey(Map* pMap, void* keydata, void* keycontent);
+extern Data returnCopyValByKey(Map* pMap, void* keydata, void* keycontent);
+
+
+/// @brief 通过key返回Data类型数据(不会创建一份,主要用于修改void* data的内容)
+/// @param pMap Map类型指针
+/// @param keydata key
+/// @param keycontent content, 如果没有输入NULL
+/// @return 如果有就返回正常的Data, 如果没有返回空Data, 是否为空Data,使用Data.isEmpty来判断
+extern Data returnPtrValByKey(Map* pMap, void* keydata, void* keycontent);
 
 /// @brief 通过key返回Entry类型数据
 /// @param pMap Map类型指针
 /// @param keydata key
 /// @param keycontent content, 如果没有输入NULL
 /// @return 如果有就返回正常的Entry, 如果没有返回空Entry, 是否为空Entry,使用Entry.isEmpty来判断, 建议先使用hasKeyInMap进行判断
-extern Entry returnEntryByKey(Map* pMap, void* keydata, void* keycontent);
+extern Entry returnCopyEntryByKey(Map* pMap, void* keydata, void* keycontent);
 
 /// @brief 判断key是否在Map中
 /// @param pMap Map类型指针

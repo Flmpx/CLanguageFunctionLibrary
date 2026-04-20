@@ -357,7 +357,7 @@ static int returnIndexByKey(Map* pMap, Data key) {
 
 
 //返回的Data数据为新建,用完后记得释放
-Data returnValByKey(Map* pMap, Data key) {
+Data returnCopyValByKey(Map* pMap, Data key) {
     int index = returnIndexByKey(pMap, key);
     if (index == NOT_FOUND) {
         printf("\nNot Found\n");
@@ -372,9 +372,18 @@ Data returnValByKey(Map* pMap, Data key) {
     }
 }
 
+Data returnPtrValByKey(Map* pMap, Data key) {
+    int index = returnIndexByKey(pMap, key);
+    if (index == NOT_FOUND) {
+        printf("\nNot Found\n");
+        return returnEmptyData();
+    } else {
+        return pMap->arr[index].value;
+    }
+}
 
 
-Entry returnEntryByKey(Map* pMap, Data key) {
+Entry returnCopyEntryByKey(Map* pMap, Data key) {
     int index = returnIndexByKey(pMap, key);
     if (index == NOT_FOUND) {
         return returnEmptyEntry();
