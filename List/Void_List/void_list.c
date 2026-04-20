@@ -11,10 +11,10 @@ static Data copyData(List* plist, Data oldData);
 
 //返回空Data
 static Data returnEmptyData() {
-    Data emtpyData;
-    emtpyData.content = emtpyData.data = NULL;
-    emtpyData.isEmpty = true;
-    return emtpyData;
+    Data emptyData;
+    emptyData.content = emptyData.data = NULL;
+    emptyData.isEmpty = true;
+    return emptyData;
 }
 
 
@@ -146,7 +146,7 @@ static Data copyData(List* plist, Data oldData) {
 
 //这个创建创建一个Node,并整合数据,data和content会复制
 /******************* */
-static Node* creatNode(List* plist, Data oldData) {
+static Node* createNode(List* plist, Data oldData) {
     Node* newNode = (Node*)malloc(sizeof(Node));
     if (newNode == NULL) return NULL; 
     Data newData = copyData(plist, oldData);
@@ -163,7 +163,7 @@ int insertDataAtEndInList(List* plist, void* data, void* content) {
     Data oldData = {data, content, false};
     
     //创建节点
-    Node* newNode = creatNode(plist, oldData);
+    Node* newNode = createNode(plist, oldData);
     if (newNode == NULL) {
         printf("\nMemory allocation failed\n");
         return Warning; 
@@ -189,7 +189,7 @@ int insertDataAtStartInList(List* plist, void* data, void* content) {
     Data oldData = {data, content, false};
     
     //创建节点
-    Node* newNode = creatNode(plist, oldData);
+    Node* newNode = createNode(plist, oldData);
     if (newNode == NULL) {
         printf("\nMemory allocation failed\n");
         return Warning; 
@@ -219,7 +219,7 @@ int insertDataAtPosInList(List* plist, void* data, void* content, int pos) {
     Data oldData = {data, content, false};
     
     //创建节点
-    Node* newNode = creatNode(plist, oldData);
+    Node* newNode = createNode(plist, oldData);
     if (newNode == NULL) {
         printf("\nMemory allocation failed\n");
         return Warning; 
