@@ -28,7 +28,7 @@ void printdata_Bool(void* data, void* content) {
     printf("%s", *(bool*)data == true ? "True" : "False");
 }
 
-Operation oper_Bool = {
+static Operation oper_Bool = {
     freedata_Bool, 
     hashdata_Bool,
     cmpdata_Bool,
@@ -37,4 +37,11 @@ Operation oper_Bool = {
     NULL,
     NULL
 };
+
+
+InfoOfData Info_Bool = {
+    &oper_Bool,
+    false
+};
+
 

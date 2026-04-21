@@ -1,6 +1,6 @@
 #ifndef _BOOL_OPER_H
 #define _BOOL_OPER_H
-#include "../../_hash_map.h"
+#include "../../_hash_map_list.h"
 
 /*
     注意:布尔类型一般做val,而不是key
@@ -21,6 +21,10 @@ extern void* copydata_Bool(void* data, void* content);
 extern void printdata_Bool(void* data, void* content);
 
 
-extern Operation oper_Bool;
+
+extern InfoOfData Info_Bool;
+
+
+
 
 #endif

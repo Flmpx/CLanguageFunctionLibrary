@@ -1256,17 +1256,62 @@
 //     return 0;
 // }
 
+// #include <stdio.h>
+// #include "List\Void_List\void_list.h"
+// #include "List\Void_List\Oper\string_oper\_string_oper.h"
+// int main()
+// {
+//     List list;
+//     initializeList(&list, Info_String);
+//     insertDataAtEndInList(&list, "djfakjf", NULL);
+//     insertDataAtEndInList(&list, "djfakjf", NULL);
+//     printList(&list);
+//     freeList(&list);
+
+//     return 0;
+// }
+
+
 #include <stdio.h>
-#include "List\Void_List\void_list.h"
-#include "List\Void_List\Oper\string_oper\_string_oper.h"
+#include "Map\Multiple_Void_Map\Hash_Map_List\Oper\int_oper\_int_oper.h"
+#include "Map\Multiple_Void_Map\Hash_Map_List\Oper\string_oper\_string_oper.h"
+#include "Map\Multiple_Void_Map\Hash_Map_List\_hash_map_list.h"
+#include <time.h>
+#include <stdlib.h>
+const char all[] =  "abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";
+#define MAX 10
+void generate(char* string, int len) {
+    for (int i = 0; i < len; i++) {
+        int temp = rand()%(sizeof(all)-1);
+        string[i] = all[temp];
+    }
+    string[len] = '\0';
+}
 int main()
 {
-    List list;
-    initializeList(&list, Info_String);
-    insertDataAtEndInList(&list, "djfakjf", NULL);
-    insertDataAtEndInList(&list, "djfakjf", NULL);
-    printList(&list);
-    freeList(&list);
+    Map map;
+    initializeMap(&map);
+    srand(time(NULL));
+    char string[10][101];
+    for (int i = 0; i < 10; i++) {
+        generate(string[i], 10);
+    }
+    for (int i = 0; i < 10; i++) {
+        //stack只是整合数据,不会复制
+        Data key = stackData(string[i], NULL, 0, Info_String);
+        Data val = stackData(&i, NULL, 1, Info_Int);
+        //会自动复制数据
+        insertKeyAndValInMap(&map, key, val);
+    }
+
+    for (int i = 0; i < 10; i++) {
+        Data val = stackData(string[i], NULL, 0, Info_String);
+        Data key = stackData(&i, NULL, 1, Info_Int);
+        insertKeyAndValInMap(&map, key, val);
+    }
+
+    printMap(&map);
+    freeMap(&map);
 
     return 0;
 }

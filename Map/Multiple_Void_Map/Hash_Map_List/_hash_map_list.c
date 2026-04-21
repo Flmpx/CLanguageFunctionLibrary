@@ -16,15 +16,21 @@ static Operation emptyOperation = {
     NULL, NULL, NULL, NULL, NULL, NULL, NULL
 };
 
+static InfoOfData returnEmptyInfo() {
+    InfoOfData info;
+    info.hasContent = false;
+    info.oper = NULL;
+    return info;
+}
+
 //返回空Data
 static Data returnEmptyData() {
     Data data;
     data.data = NULL;
     data.isEmpty = true;
-    data.type = -1;
-    data.oper = &emptyOperation;
+    data.dataInfo = returnEmptyInfo();
     data.content = NULL;
-    data.hasContent = false;
+    
     return data;
 }
 
@@ -102,14 +108,14 @@ static int compareData(Data* Data_a, Data* Data_b) {
     if (Data_a->type != Data_b->type) {
         return DIFFERENT;
     }
-    if (compareOperation(Data_a->oper, Data_b->oper)) {
+    if (compareOperation(Data_a->dataInfo.oper, Data_b->dataInfo.oper)) {
         //类型相同带操作函数不同,说明有问题
         printf("\nType is the same but operation is different! Please check!\n");
         return DIFFERENT;
     }
     
     _cmpdata cmp;
-    cmp = Data_a->oper->cmpdata;    //能走到这一步,说明二者的比较函数相同
+    cmp = Data_a->dataInfo.oper->cmpdata;    //能走到这一步,说明二者的比较函数相同
     if (cmp(Data_a->data, Data_a->content, Data_b->data, Data_b->content)) {
         return DIFFERENT;
     }
@@ -126,17 +132,17 @@ void freeData(Data* data) {
     //为空不释放
     if (data->isEmpty) return;
     //data的释放
-    data->oper->freedata(data->data, data->content);
+    data->dataInfo.oper->freedata(data->data, data->content);
     //有content时才释放
-    if (data->hasContent) {
-        data->oper->freecontent(data->content);
+    if (data->dataInfo.hasContent) {
+        data->dataInfo.oper->freecontent(data->content);
     }
 
     data->content = NULL;
     data->data = NULL;
 
-    data->oper = &emptyOperation;
-    data->type = -1;
+    data->dataInfo.oper = &emptyOperation;
+    data->type = NOT_FOUND;
     data->isEmpty = true;
 }
 
@@ -314,20 +320,20 @@ static Data copyData(Data oldData) {
     Data newData;
 
     //copy函数不仅仅只是把指针赋值,还要把整个void* data赋值一遍
-    newData.data = oldData.oper->copydata(oldData.data, oldData.content);
+    newData.data = oldData.dataInfo.oper->copydata(oldData.data, oldData.content);
 
     if (newData.data == NULL) {
         printf("\nMemory allocation failed\n");
         return returnEmptyData();
     }
 
-    newData.hasContent = oldData.hasContent;
+    newData.dataInfo.hasContent = oldData.dataInfo.hasContent;
     //有content才复制content
-    if (oldData.hasContent) {
-        newData.content = oldData.oper->copycontent(oldData.content);
+    if (oldData.dataInfo.hasContent) {
+        newData.content = oldData.dataInfo.oper->copycontent(oldData.content);
         if (newData.content == NULL) {
             printf("\nMemory allocation failed\n");
-            oldData.oper->freedata(newData.data, oldData.content);
+            oldData.dataInfo.oper->freedata(newData.data, oldData.content);
             return returnEmptyData();
         }
     } else {
@@ -336,7 +342,7 @@ static Data copyData(Data oldData) {
     newData.type = oldData.type;
 
     //提供的相应操作函数因该是全局的
-    newData.oper = oldData.oper;
+    newData.dataInfo.oper = oldData.dataInfo.oper;
     newData.isEmpty = false;
     return newData;
 }
@@ -369,7 +375,7 @@ static Entry copyEntry(Entry oldEntry) {
 //这个函数保证可以添加
 static int addEntryFunction(Map* pMap, Data key, Data value) {
     //hash
-    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (key.dataInfo.oper->hashdata(key.data, key.content))%pMap->mod;
 
     Node* p = findNodeByKey(&(pMap->arr[index]), key);
     if (p) {
@@ -405,7 +411,7 @@ static int addEntryFunction(Map* pMap, Data key, Data value) {
 
 //专门为重哈希做的软拷贝方式添加的Entry
 static int addEntryForFreshMap(Map* pMap, Data key, Data value) {
-    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (key.dataInfo.oper->hashdata(key.data, key.content))%pMap->mod;
     Entry entry;
     entry.isEmpty = false;
     entry.key = key;
@@ -504,7 +510,7 @@ int insertKeyAndValInMap(Map* pMap, Data key, Data val) {
 //返回的Data数据为新建,用完后记得释放
 Data returnCopyValByKey(Map* pMap, Data key) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyData();
-    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (key.dataInfo.oper->hashdata(key.data, key.content))%pMap->mod;
     
     Node* p = findNodeByKey(&(pMap->arr[index]), key);
     if (p == NULL) {
@@ -521,7 +527,7 @@ Data returnCopyValByKey(Map* pMap, Data key) {
 
 Data returnPtrValByKey(Map* pMap, Data key) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyData();
-    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (key.dataInfo.oper->hashdata(key.data, key.content))%pMap->mod;
     
     Node* p = findNodeByKey(&(pMap->arr[index]), key);
     if (p == NULL) {
@@ -534,7 +540,7 @@ Data returnPtrValByKey(Map* pMap, Data key) {
 
 Entry returnCopyEntryByKey(Map* pMap, Data key) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyEntry();
-    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (key.dataInfo.oper->hashdata(key.data, key.content))%pMap->mod;
     
     Node* p = findNodeByKey(&(pMap->arr[index]), key);
     if (p == NULL) {
@@ -552,7 +558,7 @@ Entry returnCopyEntryByKey(Map* pMap, Data key) {
 
 bool hasKeyInMap(Map* pMap, Data key) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return false;
-    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (key.dataInfo.oper->hashdata(key.data, key.content))%pMap->mod;
     
     Node* p = findNodeByKey(&(pMap->arr[index]), key);
     if (p == NULL) {
@@ -570,7 +576,7 @@ bool hasKeyInMap(Map* pMap, Data key) {
 
 int delEntryByKey(Map* pMap, Data key) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return Warning;
-    ull index = (key.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (key.dataInfo.oper->hashdata(key.data, key.content))%pMap->mod;
     
     if (delNodeByKey(&(pMap->arr[index]), key) == None) {
         printf("\nNot found! Cannot del\n");
@@ -586,14 +592,13 @@ int delEntryByKey(Map* pMap, Data key) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //整合类
 
-Data stackData(void* data, int type, Operation* oper, void* content, bool hasContent) {
+Data stackData(void* data, void* content, int type, InfoOfData dataInfo) {
     Data newData;
     newData.data = data;
     newData.isEmpty = false;
-    newData.oper = oper;
-    newData.type = type;
+    newData.dataInfo = dataInfo;
     newData.content = content;
-    newData.hasContent = hasContent;
+    newData.type = type;
     return newData;
 }
 
@@ -606,7 +611,7 @@ void printData(Data data, char* tip) {
         return;
     }
     printf("[%s:", tip);
-    data.oper->printdata(data.data, data.content);
+    data.dataInfo.oper->printdata(data.data, data.content);
     printf("]");
 }
 
@@ -617,11 +622,11 @@ void printEntry(Entry entry) {
     }
     //key
     printf("[key:");
-    entry.key.oper->printdata(entry.key.data, entry.key.content);
+    entry.key.dataInfo.oper->printdata(entry.key.data, entry.key.content);
     
     //value
     printf(", value:");
-    entry.value.oper->printdata(entry.value.data, entry.value.content);
+    entry.value.dataInfo.oper->printdata(entry.value.data, entry.value.content);
     printf("]");
 }
 

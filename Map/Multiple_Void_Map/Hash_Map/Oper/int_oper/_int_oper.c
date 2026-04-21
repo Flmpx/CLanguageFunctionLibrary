@@ -26,7 +26,7 @@ void printdata_Int(void* data, void* content) {
     printf("%d", *(int*)data);
 }
 
-Operation oper_Int = {
+static Operation oper_Int = {
     freedata_Int,
     hashdata_Int,
     cmpdata_Int,
@@ -37,4 +37,7 @@ Operation oper_Int = {
 };
 
 
-
+InfoOfData Info_Int = {
+    &oper_Int,
+    false
+};

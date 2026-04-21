@@ -44,7 +44,7 @@ void printdata_Double(void* data, void* content) {
     printf("%g", num);
 }
 
-Operation oper_Double = {
+static Operation oper_Double = {
     freedata_Double,
     hashdata_Double,
     cmpdata_Double,
@@ -52,4 +52,12 @@ Operation oper_Double = {
     printdata_Double,
     NULL,
     NULL
+};
+
+
+
+
+InfoOfData Info_Double = {
+    &oper_Double,
+    false
 };

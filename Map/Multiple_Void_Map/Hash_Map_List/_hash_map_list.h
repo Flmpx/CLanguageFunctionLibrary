@@ -79,15 +79,19 @@ typedef struct Operation {
 } Operation;
 
 
+
+typedef struct InfoOfData {
+    //如果是同一种类型,那他们的操作函数因该都是相同的,所以直接用指针
+    Operation* oper;
+    bool hasContent;
+} InfoOfData;
+
 /// @brief 这是key和val的相关属性
 struct Data {
     void* data;
     void* content;  //用于描述data数据的特点的
-
+    InfoOfData dataInfo;
     int type;
-    //如果是同一种类型,那他们的操作函数因该都是相同的,所以直接用指针
-    Operation* oper;
-    bool hasContent;
     bool isEmpty;
 };
 
@@ -180,11 +184,11 @@ extern int delEntryByKey(Map* pMap, Data key);
 
 /// @brief 将Data的数据整合在一起(注意:这个Data数据里面的不是动态分配的,不可以使用freeData函数释放)
 /// @param data void* data指针
+/// @param content 描述性信息, void* content
 /// @param type 数据类型
-/// @param oper 操作函数指针
-/// @param others others数据,通过intergrateOthers函数获得
+/// @param dataInfo InfoOfData类型
 /// @return 返回Data数据(注意:这个Data数据里面的不是动态分配的,不可以使用freeData函数释放)
-extern Data stackData(void* data, int type, Operation* oper, void* content, bool hasContent);
+extern Data stackData(void* data, void* content, int type, InfoOfData dataInfo);
 
 
 

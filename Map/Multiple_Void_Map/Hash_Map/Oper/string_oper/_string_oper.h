@@ -19,6 +19,8 @@ extern void* copydata_String(void* data, void* content);
 
 extern void printdata_String(void* data, void* content);
 
-extern Operation oper_String;
+
+
+extern InfoOfData Info_String;
 
 #endif

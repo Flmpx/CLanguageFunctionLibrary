@@ -1,8 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "_double_oper.h"
-#include "../../_hash_map.h"
+#include "../../_hash_map_list.h"
 
 static const char* format_Double = "double%.12edouble"; 
 
@@ -45,7 +44,7 @@ void printdata_Double(void* data, void* content) {
     printf("%g", num);
 }
 
-Operation oper_Double = {
+static Operation oper_Double = {
     freedata_Double,
     hashdata_Double,
     cmpdata_Double,
@@ -53,4 +52,12 @@ Operation oper_Double = {
     printdata_Double,
     NULL,
     NULL
+};
+
+
+
+
+InfoOfData Info_Double = {
+    &oper_Double,
+    false
 };

@@ -37,10 +37,10 @@ void* copydata_String(void* data, void* content) {
 }
 
 void printdata_String(void* data, void* content) {
-    printf("%s", (char*)data);
+    printf("\"%s\"", (char*)data);
 }
 
-Operation oper_String = {
+static Operation oper_String = {
     freedata_String,
     hashdata_String,
     cmpdata_String,
@@ -50,5 +50,10 @@ Operation oper_String = {
     NULL
 };
 
+
+InfoOfData Info_String = {
+    &oper_String,
+    false
+};
 
 

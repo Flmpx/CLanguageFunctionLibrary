@@ -21,6 +21,10 @@ extern void* copydata_Bool(void* data, void* content);
 extern void printdata_Bool(void* data, void* content);
 
 
-extern Operation oper_Bool;
+
+extern InfoOfData Info_Bool;
+
+
+
 
 #endif

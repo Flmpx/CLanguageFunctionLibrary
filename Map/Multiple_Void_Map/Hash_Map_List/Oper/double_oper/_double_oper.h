@@ -14,7 +14,6 @@ extern void* copydata_Double(void* data, void* content);
 
 extern void* printdata_Double(void* data, void* content);
 
-
-extern Operation oper_Double;
+extern InfoOfData Info_Double;
 
 #endif

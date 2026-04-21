@@ -14,7 +14,7 @@ extern void* copydata_Int(void* data, void* content);
 extern void printdata_Int(void* data, void* content);
 
 
-extern Operation oper_Int;
+extern InfoOfData Info_Int;
 
 
 #endif
