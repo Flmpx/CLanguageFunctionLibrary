@@ -1,9 +1,12 @@
-#ifndef VOIDLIST_H
-#define VOIDLIST_H
-#include <stdbool.h>
+#ifndef VOID_LIST_H
+#define VOID_LIST_H
 #define NOT_FOUND -1
 #define DIFFERENT -1
 #define SAME 0
+
+
+#include <stdbool.h>
+
 enum info {
     Warning = -1,
     None = 0,
@@ -45,9 +48,16 @@ typedef struct Operation {
     _freecontent freecontent;
 } Operation;
 
+typedef struct InfoOfData {
+    Operation* oper;
+    bool hasContent;
+} InfoOfData;
+
 typedef struct Data {
     void* data;
     void* content;
+    InfoOfData valInfo;
+    int type;
     bool isEmpty;
 } Data;
 
@@ -58,33 +68,24 @@ typedef struct node {
     Data val;
 } Node;
 
-typedef struct InfoOfData {
-    Operation* oper;
-    bool hasContent;
-} InfoOfData;
+
 
 typedef struct {
     Node* head;
     Node* tail;
     int size;
-    InfoOfData valInfo;
 } List;
-
-
-
 
 /// @brief 初始化List
 /// @param plist List类型的指针
-/// @param valInfo InfoOfData类型数据
-extern void initializeList(List* plist, InfoOfData valInfo);
+extern void initializeList(List* plist);
 
 
 /// @brief 通过Data类型返回Data(主要用于改变List中的这个数据)
 /// @param plist List类型指针
-/// @param data void* data
-/// @param content void* content
+/// @param inputData Data数据
 /// @return 如果找到,就返回Data类型, 这里的Ptr主要是Data数据里面的void* data和void* content
-extern Data returnPtrDataByData(List* plist, void* data, void* content);
+extern Data returnPtrDataByData(List* plist, Data inputData);
 
 /// @brief 通过Pos位置返回Data的,注意这里Data中的data和content都是复制的,使用完后记得释放
 /// @param plist List类型指针
@@ -101,36 +102,32 @@ extern Data returnPtrDataByPos(List* plist, int pos);
 
 /// @brief 判断数据是否在里面
 /// @param plist List类型指针
-/// @param data void* data
-/// @param content void* content
+/// @param inputData Data类型数据
 /// @return 有就返回true,没有就false
-extern bool hasDataInList(List* plist, void* data, void* content);
+extern bool hasDataInList(List* plist, Data inputData);
 
 
 
 
 /// @brief 在链表的尾部插入节点
 /// @param plist 链表指针
-/// @param data void* data
-/// @param content void* content
+/// @param inputData Data类型数据
 /// @return | -1-->节点创建失败 | 1-->节点创建成功,并成功写入数据 |
-extern int insertDataAtEndInList(List* plist, void* data, void* content);
+extern int insertDataAtEndInList(List* plist, Data inputData);
 
 
 /// @brief 在链表的头部插入节点
 /// @param plist 链表指针
-/// @param data void* data
-/// @param content void* content
+/// @param inputData Data类型数据
 /// @return | -1-->节点创建失败 | 1-->节点创建成功,并成功写入数据 |
-extern int insertDataAtStartInList(List* plist, void* data, void* content);
+extern int insertDataAtStartInList(List* plist, Data inputData);
 
 /// @brief 在指定位置插入数据
 /// @param plist 链表指针
-/// @param data void* data
-/// @param content void* content
+/// @param inputData Data类型数据
 /// @param pos 位置的范围在[0, list.size],范围的两端分别代表头插和尾插
 /// @return | -1-->节点创建失败或者位置无效 | 1-->节点创建成功,并成功写入数据 |
-extern int insertDataAtPosInList(List* plist, void* data, void* content, int pos);
+extern int insertDataAtPosInList(List* plist, Data inputData, int pos);
 
 /// @brief 删除链表头节点
 /// @param plist 链表指针
@@ -145,16 +142,25 @@ int delStartNodeInList(List* plist);
 
 /// @brief 通过data来删除节点
 /// @param plist 链表指针
-/// @param data void* data
-/// @param content void* content
+/// @param inputData Data类型数据
 /// @return 链表为空返回-1, 找不到对应的节点返回0, 删除成功返回1
-extern int delNodeByData(List* plist, void* data, void* content);
+extern int delNodeByData(List* plist, Data inputData);
 
 /// @brief 通过位置删除节点
 /// @param plist 链表指针
 /// @param pos 要删除的位置
 /// @return 如果链表为空或者位置有误返回-1, 删除成功返回1
 extern int delNodeByPos(List* plist, int pos);
+
+
+/// @brief 整合数据(不会复制,只是整合)
+/// @param data void* data
+/// @param content void* content
+/// @param type 数据标签,尽量不要使用-1
+/// @param valInfo InfoOfData类型数
+/// @return 整合好的Data数据
+extern Data stackData(void* data, void* content, int type, InfoOfData valInfo);
+
 
 /// @brief 反转链表
 /// @param plist 链表指针
@@ -167,10 +173,8 @@ extern void printList(List* plist);
 /// @brief 清除链表
 /// @param plist 链表指针
 extern void freeList(List* plist);
+
+
 #endif
 
 
-// /// @brief 对链表进行排序
-// /// @param plist 链表指针
-// /// @param cmp 自己提供比较函数
-// extern void sortList(List* plist, Compare cmp);

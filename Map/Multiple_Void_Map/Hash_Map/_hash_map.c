@@ -83,7 +83,7 @@ void initializeMap(Map* pMap) {
 //比较类
 
 //这个函数通过判断函数指针是否相同来判断函数是否相同
-static int compareOperation(Operation* oper_b, Operation* oper_a) {
+static int compareOper(Operation* oper_b, Operation* oper_a) {
     return oper_a == oper_b ? SAME : DIFFERENT;
     
 }
@@ -96,11 +96,14 @@ static int compareOperation(Operation* oper_b, Operation* oper_a) {
 /// @param Data_b b
 /// @param cmp _compare类型的函数
 /// @return SAME-->相同 | DIFFERENT-->不同
-static int compareData(Data* Data_a, Data* Data_b) {
+static int compareKey(Data* Data_a, Data* Data_b) {
+    if (Data_a->isEmpty || Data_b->isEmpty) {
+        return DIFFERENT;
+    }
     if (Data_a->type != Data_b->type) {
         return DIFFERENT;
     }
-    if (compareOperation(Data_a->dataInfo.oper, Data_b->dataInfo.oper)) {
+    if (compareOper(Data_a->dataInfo.oper, Data_b->dataInfo.oper) == DIFFERENT) {
         //类型相同带操作函数不同,说明有问题
         printf("\nType is the same but operation is different! Please check!\n");
         return DIFFERENT;
@@ -108,7 +111,7 @@ static int compareData(Data* Data_a, Data* Data_b) {
     
     _cmpdata cmp;
     cmp = Data_a->dataInfo.oper->cmpdata;    //能走到这一步,说明二者的比较函数相同
-    if (cmp(Data_a->data, Data_a->content, Data_b->data, Data_b->content)) {
+    if (cmp(Data_a->data, Data_a->content, Data_b->data, Data_b->content) == DIFFERENT) {
         return DIFFERENT;
     }
     return SAME;
@@ -229,7 +232,7 @@ static int addEntryFunction(Map* pMap, Data key, Data value) {
     //找到一个NONE或者DEl标记的位置
     while (pMap->arr[index].state != NONE_IN_MAP && pMap->arr[index].state != DEL_IN_MAP) {
         //如果发现是同一个key,则更新数据
-        if (compareData(&(pMap->arr[index].key), &key) == 0) {
+        if (compareKey(&(pMap->arr[index].key), &key) == 0) {
             Data newVal = copyData(value);
             if (newVal.isEmpty) {
                 printf("\nMemory allocation failed\n");
@@ -353,7 +356,7 @@ static int returnIndexByKey(Map* pMap, Data key) {
             continue;
         }
 
-        if (compareData(&(pMap->arr[index].key), &key) == 0) {
+        if (compareKey(&(pMap->arr[index].key), &key) == 0) {
             return index;
         }
         index++;

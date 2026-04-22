@@ -1272,46 +1272,81 @@
 // }
 
 
+// #include <stdio.h>
+// #include "Map\Multiple_Void_Map\Hash_Map_List\Oper\int_oper\_int_oper.h"
+// #include "Map\Multiple_Void_Map\Hash_Map_List\Oper\string_oper\_string_oper.h"
+// #include "Map\Multiple_Void_Map\Hash_Map_List\_hash_map_list.h"
+// #include <time.h>
+// #include <stdlib.h>
+// const char all[] =  "abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";
+// #define MAX 10
+// void generate(char* string, int len) {
+//     for (int i = 0; i < len; i++) {
+//         int temp = rand()%(sizeof(all)-1);
+//         string[i] = all[temp];
+//     }
+//     string[len] = '\0';
+// }
+// int main()
+// {
+//     Map map;
+//     initializeMap(&map);
+//     srand(time(NULL));
+//     char string[10][101];
+//     for (int i = 0; i < 10; i++) {
+//         generate(string[i], 10);
+//     }
+//     for (int i = 0; i < 10; i++) {
+//         //stack只是整合数据,不会复制
+//         Data key = stackData(string[i], NULL, 0, Info_String);
+//         Data val = stackData(&i, NULL, 1, Info_Int);
+//         //会自动复制数据
+//         insertKeyAndValInMap(&map, key, val);
+//     }
+
+//     for (int i = 0; i < 10; i++) {
+//         Data val = stackData(string[i], NULL, 0, Info_String);
+//         Data key = stackData(&i, NULL, 1, Info_Int);
+//         insertKeyAndValInMap(&map, key, val);
+//     }
+
+//     printMap(&map);
+//     freeMap(&map);
+
+//     return 0;
+// }
+
+
 #include <stdio.h>
-#include "Map\Multiple_Void_Map\Hash_Map_List\Oper\int_oper\_int_oper.h"
-#include "Map\Multiple_Void_Map\Hash_Map_List\Oper\string_oper\_string_oper.h"
-#include "Map\Multiple_Void_Map\Hash_Map_List\_hash_map_list.h"
-#include <time.h>
-#include <stdlib.h>
-const char all[] =  "abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";
-#define MAX 10
-void generate(char* string, int len) {
-    for (int i = 0; i < len; i++) {
-        int temp = rand()%(sizeof(all)-1);
-        string[i] = all[temp];
-    }
-    string[len] = '\0';
-}
+#include <stdbool.h>
+#include "List\Multiple_Void_List\void_list.h"
+#include "List\Multiple_Void_List\Oper\bool_oper\_bool_oper.h"
+#include "List\Multiple_Void_List\Oper\int_oper\_int_oper.h"
+#include "List\Multiple_Void_List\Oper\string_oper\_string_oper.h"
 int main()
 {
-    Map map;
-    initializeMap(&map);
-    srand(time(NULL));
-    char string[10][101];
-    for (int i = 0; i < 10; i++) {
-        generate(string[i], 10);
+    List list;
+    initializeList(&list);
+    
+    for (int i = 0; i < 12; i++) {
+        bool temp = (i&1) == 0;
+        Data val = stackData(&temp, NULL, 0, Info_Bool);
+        insertDataAtEndInList(&list, val);
+        
     }
-    for (int i = 0; i < 10; i++) {
-        //stack只是整合数据,不会复制
-        Data key = stackData(string[i], NULL, 0, Info_String);
-        Data val = stackData(&i, NULL, 1, Info_Int);
-        //会自动复制数据
-        insertKeyAndValInMap(&map, key, val);
+    for (int i = 0; i < 12; i++) {
+        Data val = stackData(&i, NULL, 0, Info_Int);
+        insertDataAtEndInList(&list, val);
     }
+    Data val;
+    int a = 10;
+    val = stackData(&a, NULL, 0, Info_Int);
 
-    for (int i = 0; i < 10; i++) {
-        Data val = stackData(string[i], NULL, 0, Info_String);
-        Data key = stackData(&i, NULL, 1, Info_Int);
-        insertKeyAndValInMap(&map, key, val);
-    }
-
-    printMap(&map);
-    freeMap(&map);
-
+    returnPtrDataByData(&list, val);
+    val = stackData("领主", NULL, 2, Info_String);
+    insertDataAtStartInList(&list, val);
+    insertDataAtPosInList(&list, val, 3);
+    printList(&list);
+    freeList(&list);
     return 0;
 }
