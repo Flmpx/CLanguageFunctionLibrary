@@ -1,6 +1,6 @@
 #ifndef _DOUBLE_OPER_H
 #define _DOUBLE_OPER_H
-#include "../../_hash_map_list.h"
+#include "../../_multiple_void_hash_map_list.h"
 extern void freedata_Double(void* data, void* content);
 
 extern ull hashdata_Double(void* data, void* content);

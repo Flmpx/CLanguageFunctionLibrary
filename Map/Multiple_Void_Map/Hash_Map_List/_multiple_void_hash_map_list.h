@@ -1,5 +1,5 @@
-#ifndef _HASH_MAP_LIST_H
-#define _HASH_MAP_LIST_H
+#ifndef _MULTIPLE_VOID_HASH_MAP_LIST_H
+#define _MULTIPLE_VOID_HASH_MAP_LIST_H
 #include <stdbool.h>
 #define NOT_FOUND -1
 #define DIFFERENT -1

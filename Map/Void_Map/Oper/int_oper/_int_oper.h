@@ -1,6 +1,6 @@
 #ifndef _INT_OPER_H
 #define _INT_OPER_H
-#include "../../_hash_map_list.h"
+#include "../../_void_hash_map_list.h"
 extern void freedata_Int(void* data, void* content);
 
 

@@ -1,6 +1,6 @@
 #ifndef _BOOL_OPER_H
 #define _BOOL_OPER_H
-#include "../../void_list.h"
+#include "../../multiple_void_list.h"
 
 /*
     注意:布尔类型一般做val,而不是key

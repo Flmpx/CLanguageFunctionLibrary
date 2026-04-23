@@ -1,5 +1,5 @@
-#ifndef VOID_LIST_H
-#define VOID_LIST_H
+#ifndef MULTIPLE_VOID_LIST_H
+#define MULTIPLE_VOID_LIST_H
 #define NOT_FOUND -1
 #define DIFFERENT -1
 #define SAME 0

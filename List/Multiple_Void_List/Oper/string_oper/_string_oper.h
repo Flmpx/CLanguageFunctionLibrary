@@ -1,6 +1,6 @@
 #ifndef _STRING_OPER_H
 #define _STRING_OPER_H
-#include "../../void_list.h"
+#include "../../multiple_void_list.h"
 
 
 

@@ -1,6 +1,6 @@
 #ifndef _INT_OPER_H
 #define _INT_OPER_H
-#include "../../void_list.h"
+#include "../../multiple_void_list.h"
 extern void freedata_Int(void* data, void* content);
 
 extern int cmpdata_Int(void* data_a, void* content_a, void* data_b, void* content_b);
