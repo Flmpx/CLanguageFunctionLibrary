@@ -8,7 +8,7 @@ void freedata_Int(void* data, void* content) {
 }
 
 
-int cmpdata_Int(void* data_a, void* content_a, void* data_b, void* content_b) {
+CmpResult cmpdata_Int(void* data_a, void* content_a, void* data_b, void* content_b) {
     return *(int*)data_a == *(int*)data_b ? SAME : DIFFERENT;
 }
 

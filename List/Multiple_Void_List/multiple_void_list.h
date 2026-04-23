@@ -1,17 +1,20 @@
 #ifndef MULTIPLE_VOID_LIST_H
 #define MULTIPLE_VOID_LIST_H
-#define NOT_FOUND -1
-#define DIFFERENT -1
-#define SAME 0
-
-
 #include <stdbool.h>
+#define NOT_FOUND -1
 
-enum info {
+typedef enum cmpresult {
+    SAME = 0,
+    DIFFERENT = 1,
+} CmpResult;
+
+
+
+typedef enum info {
     Warning = -1,
     None = 0,
     Success = 1
-};
+} InfoOfReturn;
 
 //以下函数都需要自己提供
 
@@ -21,7 +24,7 @@ typedef void (*_freedata)(void* data, void* content);
 
 
 /// @brief 对void* data进行比较的函数
-typedef int (*_cmpdata)(void* data_a, void* content_a, void* data_b, void* content_b);
+typedef CmpResult (*_cmpdata)(void* data_a, void* content_a, void* data_b, void* content_b);
 
 /// @brief 对void* data进行复制的函数
 typedef void* (*_copydata)(void* data, void* content);
@@ -56,7 +59,7 @@ typedef struct InfoOfData {
 typedef struct Data {
     void* data;
     void* content;
-    InfoOfData valInfo;
+    InfoOfData* valInfo;
     int type;
     bool isEmpty;
 } Data;
@@ -113,44 +116,44 @@ extern bool hasDataInList(List* plist, Data inputData);
 /// @param plist 链表指针
 /// @param inputData Data类型数据
 /// @return | -1-->节点创建失败 | 1-->节点创建成功,并成功写入数据 |
-extern int insertDataAtEndInList(List* plist, Data inputData);
+extern InfoOfReturn insertDataAtEndInList(List* plist, Data inputData);
 
 
 /// @brief 在链表的头部插入节点
 /// @param plist 链表指针
 /// @param inputData Data类型数据
 /// @return | -1-->节点创建失败 | 1-->节点创建成功,并成功写入数据 |
-extern int insertDataAtStartInList(List* plist, Data inputData);
+extern InfoOfReturn insertDataAtStartInList(List* plist, Data inputData);
 
 /// @brief 在指定位置插入数据
 /// @param plist 链表指针
 /// @param inputData Data类型数据
 /// @param pos 位置的范围在[0, list.size],范围的两端分别代表头插和尾插
 /// @return | -1-->节点创建失败或者位置无效 | 1-->节点创建成功,并成功写入数据 |
-extern int insertDataAtPosInList(List* plist, Data inputData, int pos);
+extern InfoOfReturn insertDataAtPosInList(List* plist, Data inputData, int pos);
 
 /// @brief 删除链表头节点
 /// @param plist 链表指针
 /// @return 如果链表为空返回-1, 否则返回1
-extern int delEndNodeInList(List* plist);
+extern InfoOfReturn delEndNodeInList(List* plist);
 
 
 /// @brief 删除链表尾节点
 /// @param plist 链表指针
 /// @return 如果链表为空返回-1, 否则返回1
-int delStartNodeInList(List* plist);
+extern InfoOfReturn delStartNodeInList(List* plist);
 
 /// @brief 通过data来删除节点
 /// @param plist 链表指针
 /// @param inputData Data类型数据
 /// @return 链表为空返回-1, 找不到对应的节点返回0, 删除成功返回1
-extern int delNodeByData(List* plist, Data inputData);
+extern InfoOfData delNodeByData(List* plist, Data inputData);
 
 /// @brief 通过位置删除节点
 /// @param plist 链表指针
 /// @param pos 要删除的位置
 /// @return 如果链表为空或者位置有误返回-1, 删除成功返回1
-extern int delNodeByPos(List* plist, int pos);
+extern InfoOfReturn delNodeByPos(List* plist, int pos);
 
 
 /// @brief 整合数据(不会复制,只是整合)
@@ -159,7 +162,7 @@ extern int delNodeByPos(List* plist, int pos);
 /// @param type 数据标签,尽量不要使用-1
 /// @param valInfo InfoOfData类型数
 /// @return 整合好的Data数据
-extern Data stackData(void* data, void* content, int type, InfoOfData valInfo);
+extern Data stackData(void* data, void* content, int type, InfoOfData* valInfo);
 
 
 /// @brief 反转链表

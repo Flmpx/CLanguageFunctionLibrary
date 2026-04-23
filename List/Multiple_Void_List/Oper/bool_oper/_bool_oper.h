@@ -12,7 +12,7 @@ extern void freedata_Bool(void* data, void* content);
 
 
 
-extern int cmpdata_Bool(void* data_a, void* content_a, void* data_b, void* content_b);
+extern CmpResult cmpdata_Bool(void* data_a, void* content_a, void* data_b, void* content_b);
 
 
 extern void* copydata_Bool(void* data, void* content);

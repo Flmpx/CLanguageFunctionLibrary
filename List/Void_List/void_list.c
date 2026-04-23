@@ -23,7 +23,7 @@ static bool isEmptyList(List* plist) {
     return plist->size == 0;
 }
 
-void initializeList(List* plist, InfoOfData valInfo) {
+void initializeList(List* plist, InfoOfData* valInfo) {
     plist->head = plist->tail = NULL;
     plist->size = 0;
     plist->valInfo = valInfo;
@@ -41,7 +41,7 @@ static Node* findNodeByData(List* plist, Data data) {
     if (isEmptyList(plist)) return NULL;
     Node* p = plist->head;
     for (; p; p = p->next) {
-        if (plist->valInfo.oper->cmpdata(p->val.data, p->val.content, data.data, data.content) == SAME) {
+        if (plist->valInfo->oper->cmpdata(p->val.data, p->val.content, data.data, data.content) == SAME) {
             return p;
         }
     }
@@ -128,14 +128,14 @@ bool hasDataInList(List* plist, void* data, void* content) {
 
 static Data copyData(List* plist, Data oldData) {
     Data newData;
-    newData.data = plist->valInfo.oper->copydata(oldData.data, oldData.content);
+    newData.data = plist->valInfo->oper->copydata(oldData.data, oldData.content);
     if (newData.data == NULL) {
         return returnEmptyData();
     }
-    if (plist->valInfo.hasContent) {
-        newData.content = plist->valInfo.oper->copycontent(oldData.content);
+    if (plist->valInfo->hasContent) {
+        newData.content = plist->valInfo->oper->copycontent(oldData.content);
         if (newData.content == NULL) {
-            plist->valInfo.oper->freedata(newData.data, oldData.content);
+            plist->valInfo->oper->freedata(newData.data, oldData.content);
             return returnEmptyData();
         }
     }
@@ -159,7 +159,7 @@ static Node* createNode(List* plist, Data oldData) {
 }
 
 /*********** */
-int insertDataAtEndInList(List* plist, void* data, void* content) {
+InfoOfReturn insertDataAtEndInList(List* plist, void* data, void* content) {
     Data oldData = {data, content, false};
     
     //创建节点
@@ -185,7 +185,7 @@ int insertDataAtEndInList(List* plist, void* data, void* content) {
 }
 
 
-int insertDataAtStartInList(List* plist, void* data, void* content) {
+InfoOfReturn insertDataAtStartInList(List* plist, void* data, void* content) {
     Data oldData = {data, content, false};
     
     //创建节点
@@ -211,7 +211,7 @@ int insertDataAtStartInList(List* plist, void* data, void* content) {
 }
 
 /************ */
-int insertDataAtPosInList(List* plist, void* data, void* content, int pos) {
+InfoOfReturn insertDataAtPosInList(List* plist, void* data, void* content, int pos) {
     if ((pos < 0) || (pos > plist->size)) return Warning;
     if (pos == 0) return insertDataAtStartInList(plist, data, content);
     if (pos == plist->size) return insertDataAtEndInList(plist, data, content);
@@ -238,13 +238,13 @@ int insertDataAtPosInList(List* plist, void* data, void* content, int pos) {
     return Success;
 }
 
-int delEndNodeInList(List* plist) {
+InfoOfReturn delEndNodeInList(List* plist) {
     if (isEmptyList(plist)) return Warning;
 
     Node* p = plist->tail;
-    plist->valInfo.oper->freedata(p->val.data, p->val.content);
-    if (plist->valInfo.hasContent) {
-        plist->valInfo.oper->freecontent(p->val.content);
+    plist->valInfo->oper->freedata(p->val.data, p->val.content);
+    if (plist->valInfo->hasContent) {
+        plist->valInfo->oper->freecontent(p->val.content);
     }
 
     if (plist->size > 1) {
@@ -257,13 +257,13 @@ int delEndNodeInList(List* plist) {
     plist->size--;
     return Success;
 }
-int delStartNodeInList(List* plist) {
+InfoOfReturn delStartNodeInList(List* plist) {
     if (isEmptyList(plist)) return Warning;
 
     Node* p = plist->head;
-    plist->valInfo.oper->freedata(p->val.data, p->val.content);
-    if (plist->valInfo.hasContent) {
-        plist->valInfo.oper->freecontent(p->val.content);
+    plist->valInfo->oper->freedata(p->val.data, p->val.content);
+    if (plist->valInfo->hasContent) {
+        plist->valInfo->oper->freecontent(p->val.content);
     }
 
     if (plist->size > 1) {
@@ -277,7 +277,7 @@ int delStartNodeInList(List* plist) {
     return Success;
 }
 
-int delNodeByData(List* plist, void* data, void* content) {
+InfoOfReturn delNodeByData(List* plist, void* data, void* content) {
     if (isEmptyList(plist)) return Warning;
     Data inputData = {data, content, false};
     Node* p = findNodeByData(plist, inputData);
@@ -288,15 +288,15 @@ int delNodeByData(List* plist, void* data, void* content) {
     p->prev->next = p->next;
     p->next->prev = p->prev;
 
-    plist->valInfo.oper->freedata(p->val.data, p->val.content);
-    if (plist->valInfo.hasContent) {
-        plist->valInfo.oper->freecontent(p->val.content);
+    plist->valInfo->oper->freedata(p->val.data, p->val.content);
+    if (plist->valInfo->hasContent) {
+        plist->valInfo->oper->freecontent(p->val.content);
     }
     free(p);
     plist->size--;
     return Success;
 }
-int delNodeByPos(List* plist, int pos) {
+InfoOfReturn delNodeByPos(List* plist, int pos) {
     if (isEmptyList(plist)) return Warning;
     if ((pos < 0) || (pos >= plist->size)) return Warning;
     Node* p = findNodeByPos(plist, pos);
@@ -306,9 +306,9 @@ int delNodeByPos(List* plist, int pos) {
     p->prev->next = p->next;
     p->next->prev = p->prev;
 
-    plist->valInfo.oper->freedata(p->val.data, p->val.content);
-    if (plist->valInfo.hasContent) {
-        plist->valInfo.oper->freecontent(p->val.content);
+    plist->valInfo->oper->freedata(p->val.data, p->val.content);
+    if (plist->valInfo->hasContent) {
+        plist->valInfo->oper->freecontent(p->val.content);
     }
     free(p);
     plist->size--;
@@ -340,7 +340,7 @@ void printList(List* plist) {
         if (cnt != 0) {
             printf("-->");
         }
-        plist->valInfo.oper->printdata(p->val.data, p->val.content);
+        plist->valInfo->oper->printdata(p->val.data, p->val.content);
         cnt++;
     }
     printf("]");
@@ -355,9 +355,9 @@ void freeList(List* plist) {
     while (p) {
         q = p;
         p = p->next;
-        plist->valInfo.oper->freedata(q->val.data, q->val.content);
-        if (plist->valInfo.hasContent) {
-            plist->valInfo.oper->freecontent(q->val.content);
+        plist->valInfo->oper->freedata(q->val.data, q->val.content);
+        if (plist->valInfo->hasContent) {
+            plist->valInfo->oper->freecontent(q->val.content);
         }
         free(q);
     }

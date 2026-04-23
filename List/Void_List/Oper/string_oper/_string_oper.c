@@ -10,7 +10,7 @@ void freedata_String(void* data, void* content) {
 
 
 
-int cmpdata_String(void* data_a, void* content_a, void* data_b, void* content_b) {
+CmpResult cmpdata_String(void* data_a, void* content_a, void* data_b, void* content_b) {
     const char* string_a = (char*)data_a;
     const char* string_b = (char*)data_b;
     return strcmp(string_a, string_b);

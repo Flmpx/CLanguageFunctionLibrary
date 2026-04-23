@@ -5,7 +5,7 @@ extern void freedata_Double(void* data, void* content);
 
 
 
-extern int cmpdata_Double(void* data_a, void* content_a, void* data_b, void* content_b);
+extern CmpResult cmpdata_Double(void* data_a, void* content_a, void* data_b, void* content_b);
 
 
 extern void* copydata_Double(void* data, void* content);

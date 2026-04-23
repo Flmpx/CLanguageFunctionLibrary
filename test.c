@@ -1350,3 +1350,8 @@ int main()
     freeList(&list);
     return 0;
 }
+
+
+/*
+        可以尝试把InfoOfData设置为指针,减少空间
+*/

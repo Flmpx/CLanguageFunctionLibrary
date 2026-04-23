@@ -7,7 +7,7 @@ void freedata_Bool(void* data, void* content) {
     free(data);
 }
 
-int cmpdata_Bool(void* data_a, void* content_a, void* data_b, void* content_b) {
+CmpResult cmpdata_Bool(void* data_a, void* content_a, void* data_b, void* content_b) {
     bool num_a = *(bool*)data_a;
     bool num_b = *(bool*)data_b;
     return num_a == num_b ? SAME : DIFFERENT;

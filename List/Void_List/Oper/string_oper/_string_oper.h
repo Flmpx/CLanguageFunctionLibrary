@@ -9,7 +9,7 @@ extern void freedata_String(void* data, void* content);
 
 
 
-extern int cmpdata_String(void* data_a, void* content_a, void* data_b, void* content_b);
+extern CmpResult cmpdata_String(void* data_a, void* content_a, void* data_b, void* content_b);
 
 
 
