@@ -62,6 +62,13 @@ static Node* findNodeByPos(List* plist, int pos) {
     return p;
 }
 
+
+/*
+
+    缺少freeData函数
+
+*/
+
 Data returnPtrDataByData(List* plist, void* data, void* content) {
     Data inputData = {data, content, false};
     Node* p = findNodeByData(plist, inputData);

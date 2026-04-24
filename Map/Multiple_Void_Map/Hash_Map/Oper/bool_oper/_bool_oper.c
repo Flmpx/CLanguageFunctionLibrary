@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../_hash_map_list.h"
+#include "_bool_oper.h"
 
 
 void freedata_Bool(void* data, void* content) {
@@ -12,7 +12,7 @@ ull hashdata_Bool(void* data, void* content) {
     return num == true ? 99ull : 100ull;
 }
 
-int cmpdata_Bool(void* data_a, void* content_a, void* data_b, void* content_b) {
+CmpResult cmpdata_Bool(void* data_a, void* content_a, void* data_b, void* content_b) {
     bool num_a = *(bool*)data_a;
     bool num_b = *(bool*)data_b;
     return num_a == num_b ? SAME : DIFFERENT;

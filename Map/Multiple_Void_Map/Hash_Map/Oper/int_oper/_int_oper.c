@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "../../_hash_map_list.h"
+#include "_int_oper.h"
 
 void freedata_Int(void* data, void* content) {
     free(data);
@@ -11,7 +11,7 @@ ull hashdata_Int(void* data, void* content) {
     return (ull)n;
 }
 
-int cmpdata_Int(void* data_a, void* content_a, void* data_b, void* content_b) {
+CmpResult cmpdata_Int(void* data_a, void* content_a, void* data_b, void* content_b) {
     return *(int*)data_a == *(int*)data_b ? SAME : DIFFERENT;
 }
 

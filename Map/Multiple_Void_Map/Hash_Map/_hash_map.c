@@ -18,12 +18,6 @@ static Operation emptyOperation = {
     NULL, NULL, NULL, NULL, NULL, NULL, NULL
 };
 
-static InfoOfData returnEmptyInfo() {
-    InfoOfData info;
-    info.hasContent = false;
-    info.oper = NULL;
-    return info;
-}
 
 
 //返回空Data
@@ -31,7 +25,7 @@ static Data returnEmptyData() {
     Data data;
     data.data = NULL;
     data.isEmpty = true;
-    data.dataInfo = returnEmptyInfo();
+    data.dataInfo = NULL;
     data.content = NULL;
     
     return data;
@@ -82,12 +76,6 @@ void initializeMap(Map* pMap) {
 ///////////////////////////////////////////////////////////////////////////////////
 //比较类
 
-//这个函数通过判断函数指针是否相同来判断函数是否相同
-static int compareOper(Operation* oper_b, Operation* oper_a) {
-    return oper_a == oper_b ? SAME : DIFFERENT;
-    
-}
-
 
 
 
@@ -96,21 +84,21 @@ static int compareOper(Operation* oper_b, Operation* oper_a) {
 /// @param Data_b b
 /// @param cmp _compare类型的函数
 /// @return SAME-->相同 | DIFFERENT-->不同
-static int compareKey(Data* Data_a, Data* Data_b) {
+static CmpResult compareKey(Data* Data_a, Data* Data_b) {
     if (Data_a->isEmpty || Data_b->isEmpty) {
         return DIFFERENT;
     }
     if (Data_a->type != Data_b->type) {
         return DIFFERENT;
     }
-    if (compareOper(Data_a->dataInfo.oper, Data_b->dataInfo.oper) == DIFFERENT) {
-        //类型相同带操作函数不同,说明有问题
+    if (Data_a->dataInfo != Data_b->dataInfo) {
+        //类型相同但数据自带的操作函数及信息不同,说明有问题
         printf("\nType is the same but operation is different! Please check!\n");
         return DIFFERENT;
     }
     
     _cmpdata cmp;
-    cmp = Data_a->dataInfo.oper->cmpdata;    //能走到这一步,说明二者的比较函数相同
+    cmp = Data_a->dataInfo->oper->cmpdata;    //能走到这一步,说明二者的比较函数相同
     if (cmp(Data_a->data, Data_a->content, Data_b->data, Data_b->content) == DIFFERENT) {
         return DIFFERENT;
     }
@@ -127,16 +115,16 @@ void freeData(Data* data) {
     //为空不释放
     if (data->isEmpty) return;
     //data的释放
-    data->dataInfo.oper->freedata(data->data, data->content);
+    data->dataInfo->oper->freedata(data->data, data->content);
     //有content时才释放
-    if (data->dataInfo.hasContent) {
-        data->dataInfo.oper->freecontent(data->content);
+    if (data->dataInfo->hasContent) {
+        data->dataInfo->oper->freecontent(data->content);
     }
 
     data->content = NULL;
     data->data = NULL;
 
-    data->dataInfo.oper = &emptyOperation;
+    data->dataInfo->oper = &emptyOperation;
     data->type = NOT_FOUND;
     data->isEmpty = true;
 }
@@ -173,20 +161,20 @@ static Data copyData(Data oldData) {
     Data newData;
 
     //copy函数不仅仅只是把指针赋值,还要把整个void* data赋值一遍
-    newData.data = oldData.dataInfo.oper->copydata(oldData.data, oldData.content);
+    newData.data = oldData.dataInfo->oper->copydata(oldData.data, oldData.content);
 
     if (newData.data == NULL) {
         printf("\nMemory allocation failed\n");
         return returnEmptyData();
     }
 
-    newData.dataInfo.hasContent = oldData.dataInfo.hasContent;
+    newData.dataInfo->hasContent = oldData.dataInfo->hasContent;
     //有content才复制content
-    if (oldData.dataInfo.hasContent) {
-        newData.content = oldData.dataInfo.oper->copycontent(oldData.content);
+    if (oldData.dataInfo->hasContent) {
+        newData.content = oldData.dataInfo->oper->copycontent(oldData.content);
         if (newData.content == NULL) {
             printf("\nMemory allocation failed\n");
-            oldData.dataInfo.oper->freedata(newData.data, oldData.content);
+            oldData.dataInfo->oper->freedata(newData.data, oldData.content);
             return returnEmptyData();
         }
     } else {
@@ -195,7 +183,7 @@ static Data copyData(Data oldData) {
     newData.type = oldData.type;
 
     //提供的相应操作函数因该是全局的
-    newData.dataInfo.oper = oldData.dataInfo.oper;
+    newData.dataInfo->oper = oldData.dataInfo->oper;
     newData.isEmpty = false;
     return newData;
 }
@@ -226,9 +214,9 @@ static Entry copyEntry(Entry oldEntry) {
 
 
 //这个函数保证可以添加
-static int addEntryFunction(Map* pMap, Data key, Data value) {
+static InfoOfReturn addEntryFunction(Map* pMap, Data key, Data value) {
     //hash
-    ull index = (key.dataInfo.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
     //找到一个NONE或者DEl标记的位置
     while (pMap->arr[index].state != NONE_IN_MAP && pMap->arr[index].state != DEL_IN_MAP) {
         //如果发现是同一个key,则更新数据
@@ -266,8 +254,8 @@ static int addEntryFunction(Map* pMap, Data key, Data value) {
 
 
 //专门为重哈希做的软拷贝方式添加的Entry
-static int addEntryForFreshMap(Map* pMap, Data key, Data value) {
-    ull index = (key.dataInfo.oper->hashdata(key.data, key.content))%pMap->mod;
+static InfoOfReturn addEntryForFreshMap(Map* pMap, Data key, Data value) {
+    ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
     while (pMap->arr[index].state != NONE_IN_MAP) {
         index++;
         index %= pMap->len;
@@ -282,7 +270,7 @@ static int addEntryForFreshMap(Map* pMap, Data key, Data value) {
 
 
 //重hash
-static int freshMap(Map* pMap) {
+static InfoOfReturn freshMap(Map* pMap) {
     int newLen = 0;
     if (pMap->len == 0) {
         newLen = 16;    //如果为空,直接给16的空间
@@ -326,7 +314,7 @@ static int freshMap(Map* pMap) {
 
 
 
-int insertEntryInMap(Map* pMap, Data key, Data val) {
+InfoOfReturn insertEntryInMap(Map* pMap, Data key, Data val) {
     //当填充因子大于75%时自动扩容
     if (4*(pMap->size) >= 3*(pMap->len)) {
         if (freshMap(pMap) == Warning) {
@@ -343,9 +331,9 @@ int insertEntryInMap(Map* pMap, Data key, Data val) {
 
 
 //通过key返回key在Map中的位置
-static int returnIndexByKey(Map* pMap, Data key) {
+static Position returnIndexByKey(Map* pMap, Data key) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return NOT_FOUND;
-    ull index = (key.dataInfo.oper->hashdata(key.data, key.content))%pMap->mod;
+    ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
     for (int i = 0; i < pMap->len; i++) {
         if (pMap->arr[index].state == NONE_IN_MAP) {
             return NOT_FOUND;
@@ -440,7 +428,7 @@ int delEntryByKey(Map* pMap, Data key) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //整合类
 
-Data stackData(void* data, void* content, int type, InfoOfData dataInfo) {
+Data stackData(void* data, void* content, int type, InfoOfData* dataInfo) {
     Data newData;
     newData.data = data;
     newData.isEmpty = false;
@@ -459,7 +447,7 @@ void printData(Data data, char* tip) {
         return;
     }
     printf("[%s:", tip);
-    data.dataInfo.oper->printdata(data.data, data.content);
+    data.dataInfo->oper->printdata(data.data, data.content);
     printf("]");
 }
 
@@ -470,11 +458,11 @@ void printEntry(Entry entry) {
     }
     //key
     printf("[key:");
-    entry.key.dataInfo.oper->printdata(entry.key.data, entry.key.content);
+    entry.key.dataInfo->oper->printdata(entry.key.data, entry.key.content);
     
     //value
     printf(", value:");
-    entry.value.dataInfo.oper->printdata(entry.value.data, entry.value.content);
+    entry.value.dataInfo->oper->printdata(entry.value.data, entry.value.content);
     printf("]");
 }
 

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "_string_oper.h"
-#include "../../_hash_map_list.h"
+#include "_string_oper.h"
 #include <string.h>
 #include <stdlib.h>
 
@@ -22,7 +22,7 @@ ull hashdata_String(void* data, void* content) {
     return result;
 }
 
-int cmpdata_String(void* data_a, void* content_a, void* data_b, void* content_b) {
+CmpResult cmpdata_String(void* data_a, void* content_a, void* data_b, void* content_b) {
     const char* string_a = (char*)data_a;
     const char* string_b = (char*)data_b;
     return strcmp(string_a, string_b);

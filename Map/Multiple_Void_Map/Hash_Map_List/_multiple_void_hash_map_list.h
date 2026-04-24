@@ -2,8 +2,18 @@
 #define _MULTIPLE_VOID_HASH_MAP_LIST_H
 #include <stdbool.h>
 #define NOT_FOUND -1
-#define DIFFERENT -1
-#define SAME 0
+typedef enum cmpresult {
+    SAME = 0,
+    DIFFERENT = 1,
+} CmpResult;
+
+
+
+typedef enum info {
+    Warning = -1,
+    None = 0,
+    Success = 1
+} InfoOfReturn;
 
 //注:Data和Entry的空不能作为有效的内容,只是为了在出现问题时返回空
 
@@ -34,11 +44,7 @@ typedef unsigned long long ull;
 typedef struct Data Data;
 
 
-enum info {
-    Warning = -1,
-    None = 0,
-    Success = 1
-};
+
 
 //以下函数都需要自己提供
 
@@ -50,7 +56,7 @@ typedef void (*_freedata)(void* data, void* content);
 typedef ull (*_hashdata)(void* data, void* content);
 
 /// @brief 对void* data进行比较的函数
-typedef int (*_cmpdata)(void* data_a, void* content_a, void* data_b, void* content_b);
+typedef CmpResult (*_cmpdata)(void* data_a, void* content_a, void* data_b, void* content_b);
 
 /// @brief 对void* data进行复制的函数
 typedef void* (*_copydata)(void* data, void* content);
@@ -90,7 +96,7 @@ typedef struct InfoOfData {
 struct Data {
     void* data;
     void* content;  //用于描述data数据的特点的
-    InfoOfData dataInfo;
+    InfoOfData* dataInfo;
     int type;
     bool isEmpty;
 };
@@ -147,7 +153,7 @@ extern void freeMap(Map* pMap);
 /// @param key key
 /// @param val value
 /// @return 插入成功返回1
-extern int insertKeyAndValInMap(Map* pMap, Data key, Data val);
+extern InfoOfReturn insertKeyAndValInMap(Map* pMap, Data key, Data val);
 
 /// @brief 通过key返回Data(会全部复制)
 /// @param pMap Mpa类型指针
@@ -179,7 +185,7 @@ extern bool hasKeyInMap(Map* pMap, Data key);
 /// @param pMap Mpa类型指针
 /// @param key key
 /// @return 没找到返回0,删除成功返回1
-extern int delEntryByKey(Map* pMap, Data key);
+extern InfoOfReturn delEntryByKey(Map* pMap, Data key);
 
 
 /// @brief 将Data的数据整合在一起(注意:这个Data数据里面的不是动态分配的,不可以使用freeData函数释放)
@@ -188,7 +194,7 @@ extern int delEntryByKey(Map* pMap, Data key);
 /// @param type 数据类型
 /// @param dataInfo InfoOfData类型
 /// @return 返回Data数据(注意:这个Data数据里面的不是动态分配的,不可以使用freeData函数释放)
-extern Data stackData(void* data, void* content, int type, InfoOfData dataInfo);
+extern Data stackData(void* data, void* content, int type, InfoOfData* dataInfo);
 
 
 

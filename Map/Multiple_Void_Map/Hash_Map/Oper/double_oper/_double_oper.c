@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "../../_hash_map_list.h"
+#include "_double_oper.h"
 
 static const char* format_Double = "double%.12edouble"; 
 
@@ -25,7 +25,7 @@ ull hashdata_Double(void* data, void* content) {
     return result;
 }
 
-int cmpdata_Double(void* data_a, void* content_a, void* data_b, void* content_b) {
+CmpResult cmpdata_Double(void* data_a, void* content_a, void* data_b, void* content_b) {
     char string_a[101], string_b[101];
     sprintf(string_a, format_Double, *(double*)data_a);
     sprintf(string_b, format_Double, *(double*)data_b);

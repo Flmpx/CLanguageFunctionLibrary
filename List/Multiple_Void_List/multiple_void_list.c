@@ -150,6 +150,14 @@ bool hasDataInList(List* plist, Data inputData) {
 
 
 
+
+/*
+
+    缺少freeData函数
+
+*/
+
+
 static Data copyData(Data oldData) {
     Data newData;
     newData.data = oldData.valInfo->oper->copydata(oldData.data, oldData.content);

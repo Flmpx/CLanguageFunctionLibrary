@@ -2,8 +2,18 @@
 #define _VOID_HASH_MAP_LIST_H
 #include <stdbool.h>
 #define NOT_FOUND -1
-#define DIFFERENT -1
-#define SAME 0
+typedef enum cmpresult {
+    SAME = 0,
+    DIFFERENT = 1,
+} CmpResult;
+
+
+
+typedef enum info {
+    Warning = -1,
+    None = 0,
+    Success = 1
+} InfoOfReturn;
 
 //注:Data和Entry的空不能作为有效的内容,只是为了在出现问题时返回空
 
@@ -34,11 +44,6 @@ typedef unsigned long long ull;
 typedef struct Data Data;
 
 
-enum info {
-    Warning = -1,
-    None = 0,
-    Success = 1
-};
 
 //以下函数都需要自己提供
 
@@ -50,7 +55,7 @@ typedef void (*_freedata)(void* data, void* content);
 typedef ull (*_hashdata)(void* data, void* content);
 
 /// @brief 对void* data进行比较的函数
-typedef int (*_cmpdata)(void* data_a, void* content_a, void* data_b, void* content_b);
+typedef CmpResult (*_cmpdata)(void* data_a, void* content_a, void* data_b, void* content_b);
 
 /// @brief 对void* data进行复制的函数
 typedef void* (*_copydata)(void* data, void* content);
@@ -116,8 +121,8 @@ typedef struct InfoOfData {
 /// @brief Map
 typedef struct Map {
     List* arr;
-    InfoOfData keyInfo;
-    InfoOfData valInfo;
+    InfoOfData* keyInfo;
+    InfoOfData* valInfo;
     int mod;
     int len;
     int size;
@@ -127,13 +132,13 @@ typedef struct Map {
 /// @param pMap Map类型数据指针
 /// @param keyInfo key的InfoOfData
 /// @param valInfo val的InfoOfData
-extern void initializeMap(Map* pMap, InfoOfData keyInfo, InfoOfData valInfo);
+extern void initializeMap(Map* pMap, InfoOfData* keyInfo, InfoOfData* valInfo);
 
 
 /// @brief 释放Data类型数据
 /// @param data Data类型数据指针
 /// @param infoOfKeyOrVal 要释放的Data类型数据的InfoOfData,主要用于释放void* data和void* content
-extern void freeData(Data* data, InfoOfData infoOfKeyOrVal);
+extern void freeData(Data* data, InfoOfData* infoOfKeyOrVal);
 
 /// @brief 释放Entry类型数据
 /// @param entry Entry类型数据指针
@@ -152,7 +157,7 @@ extern void freeMap(Map* pMap);
 /// @param valdata val
 /// @param valcontent content, 如果没有输入NULL
 /// @return 插入成功返回1, 内存分配失败返回-1
-extern int insertKeyAndValInMap(Map* pMap, void* keydata, void* keycontent, void* valdata, void* valcontent);
+extern InfoOfReturn insertKeyAndValInMap(Map* pMap, void* keydata, void* keycontent, void* valdata, void* valcontent);
 
 /// @brief 通过key返回Data类型数据(会自动创建一份,用完记得释放)
 /// @param pMap Map类型指针
@@ -188,13 +193,13 @@ extern bool hasKeyInMap(Map* pMap, void* keydata, void* keycontent);
 /// @param keydata key
 /// @param keycontent content, 如果没有输入NULL
 /// @return Map为空返回-1, 没找到返回0, 删除成功返回1
-extern int delEntryByKey(Map* pMap, void* keydata, void* keycontent);
+extern InfoOfReturn delEntryByKey(Map* pMap, void* keydata, void* keycontent);
 
 /// @brief 打印Data类型数据
 /// @param data Data类型数据
 /// @param tip 提示次,比如[key: ...]
 /// @param InfoOfKeyOrVal 当前数据类型的InfoOfData
-extern void printData(Data data, char* tip, InfoOfData InfoOfKeyOrVal);
+extern void printData(Data data, char* tip, InfoOfData* InfoOfKeyOrVal);
 
 /// @brief 打印Entry数据
 /// @param entry Entry数据类型
