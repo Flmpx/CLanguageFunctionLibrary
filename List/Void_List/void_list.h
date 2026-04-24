@@ -84,6 +84,11 @@ typedef struct {
 extern void initializeList(List* plist, InfoOfData* valInfo);
 
 
+/// @brief 释放Data类型数据
+/// @param plist List的指针
+/// @param inputData Data类型指针
+extern void freeData(List* plist, Data* inputData);
+
 /// @brief 通过Data类型返回Data(主要用于改变List中的这个数据)
 /// @param plist List类型指针
 /// @param data void* data
