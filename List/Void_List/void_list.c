@@ -63,11 +63,18 @@ static Node* findNodeByPos(List* plist, int pos) {
 }
 
 
-/*
+void freeData(List* plist, Data* inputData) {
+    if (inputData->isEmpty) return;
 
-    缺少freeData函数
+    plist->valInfo->oper->freedata(inputData->data, inputData->content);
+    if (plist->valInfo->hasContent) {
+        plist->valInfo->oper->freecontent(inputData->content);
+    }
+    inputData->content = NULL;
+    inputData->data = NULL;
+    inputData->isEmpty = true;
+}
 
-*/
 
 Data returnPtrDataByData(List* plist, void* data, void* content) {
     Data inputData = {data, content, false};

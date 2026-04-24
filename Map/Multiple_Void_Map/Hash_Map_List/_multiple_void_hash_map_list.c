@@ -11,10 +11,6 @@ static void initializeList(List* plist);
 /////////////////////////////////////////////////////////////////////////////////
 
 
-/// @brief 空oper,代表一种错误状态
-static Operation emptyOperation = {
-    NULL, NULL, NULL, NULL, NULL, NULL, NULL
-};
 
 
 //返回空Data
@@ -130,7 +126,7 @@ void freeData(Data* data) {
     data->content = NULL;
     data->data = NULL;
 
-    data->dataInfo->oper = &emptyOperation;
+    data->dataInfo = NULL;
     data->type = NOT_FOUND;
     data->isEmpty = true;
 }

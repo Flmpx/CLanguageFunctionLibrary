@@ -150,12 +150,23 @@ bool hasDataInList(List* plist, Data inputData) {
 
 
 
+void freeData(Data* inputData) {
+    if (inputData->isEmpty) return;
 
-/*
+    inputData->valInfo->oper->freedata(inputData->data, inputData->content);
+    
+    if (inputData->valInfo->hasContent) {
+        inputData->valInfo->oper->freecontent(inputData->content);
+    }
+    inputData->content = NULL;
+    inputData->data = NULL;
 
-    缺少freeData函数
+    inputData->isEmpty = true;
+    inputData->valInfo = NULL;
+    inputData->type = NOT_FOUND;
 
-*/
+}
+
 
 
 static Data copyData(Data oldData) {
