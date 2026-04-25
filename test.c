@@ -1356,6 +1356,62 @@
         可以尝试把InfoOfData设置为指针,减少空间
 */
 
+// #include "Void\List\Multiple_Void_List\_multiple_void_list.h"
+// #include "Void\List\Single_Void_List\_single_void_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_List\_multiple_void_map_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_OA\_multiple_void_map_oa.h"
+// #include "Void\Map\Single_Void_Map\Hash_Map_List\_single_void_map_list.h"
+// #include "Void\Oper\bool_oper\_bool_oper.h"
+// #include "Void\Oper\double_oper\_double_oper.h"
+// #include "Void\Oper\int_oper\_int_oper.h"
+// #include "Void\Oper\string_oper\_string_oper.h"
+// #include "Void\_void_base.h"
+// #include <stdio.h>
+// #include <stdbool.h>
+// int main()
+// {
+//     _SMapWithList map;
+//     initSMapWithList(&map, &Info_String, &Info_Int);
+//     int n = 10;
+//     _SList list;
+//     _MList list_1;
+//     initSList(&list, &Info_Int);
+//     initMList(&list_1);
+//     for (int i = 0; i < 1000000; i++) {
+//         insertDataAtEndInSList(&list, &i, NULL);
+//         _MData val = stackDataInMList(&i, NULL, 0, &Info_Int);
+//         insertDataAtStartInMList(&list_1, val);
+//     }
+//     // printSList(&list);
+//     printf("\n");
+//     // printMList(&list_1);
+//     printf("\n");
+//     insertKeyAndValInSMapWithList(&map, "djfal", NULL, &n, NULL);
+//     printSMapWithList(&map);
+//     _MMapWithList map_2;
+//     initMMapwithList(&map_2);
+//     _MData a = stackDataInMMapWithList("ddd", NULL, 0, &Info_String);
+
+//     _MData b = stackDataInMMapWithList(&n, NULL, 1, &Info_Int);
+
+//     insertKeyAndValInMMapWithList(&map_2, a, b);
+//     insertKeyAndValInMMapWithList(&map_2, b, a);
+//     printMMapWithList(&map_2);
+//     freeMMapWithList(&map_2);
+    
+//     freeSMapWithList(&map);
+//     freeSList(&list);
+//     freeMList(&list_1);
+//     return 0;
+// }
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
+#include <windows.h>
+// 包含你提供的所有头文件
 #include "Void\List\Multiple_Void_List\_multiple_void_list.h"
 #include "Void\List\Single_Void_List\_single_void_list.h"
 #include "Void\Map\Multiple_Void_Map\Hash_Map_List\_multiple_void_map_list.h"
@@ -1366,27 +1422,173 @@
 #include "Void\Oper\int_oper\_int_oper.h"
 #include "Void\Oper\string_oper\_string_oper.h"
 #include "Void\_void_base.h"
-#include <stdio.h>
-#include <stdbool.h>
-int main()
-{
-    _SMapWithList map;
-    initSMapWithList(&map, &Info_String, &Info_Int);
-    int n = 10;
-    insertKeyAndValInSMapWithList(&map, "djfal", NULL, &n, NULL);
-    printSMapWithList(&map);
-    _MMapWithList map_2;
-    initMMapwithList(&map_2);
-    _MData a = stackDataInMMapWithList("ddd", NULL, 0, &Info_String);
 
-    _MData b = stackDataInMMapWithList(&n, NULL, 1, &Info_Int);
+// 计时辅助宏
+// 使用大括号 { } 开启局部作用域，避免变量名冲突
+#define TIMER_START { clock_t start = clock();
+#define TIMER_END(name) clock_t end = clock(); \
+    printf("[%s] 耗时: %.4f 秒\n", name, (double)(end - start) / CLOCKS_PER_SEC); }
 
-    insertKeyAndValInMMapWithList(&map_2, a, b);
-    insertKeyAndValInMMapWithList(&map_2, b, a);
-    printMMapWithList(&map_2);
-    freeMMapWithList(&map_2);
-    
-    freeSMapWithList(&map);
-    return 0;
+// --- 1. 测试 Single Void List (SList) ---
+void test_SList(int count) {
+    printf("=== 开始测试 SList (数量: %d) ===\n", count);
+    _SList list;
+    initSList(&list, &Info_Int);
+
+    TIMER_START
+    for (int i = 0; i < count; i++) {
+        insertDataAtEndInSList(&list, &i, NULL);
+    }
+    TIMER_END("SList 尾部插入")
+
+    // 测试获取与修改
+    _SData ptrData = getPtrDataByPosInSList(&list, count / 2);
+    if (!ptrData.isEmpty) *(int*)ptrData.data = 999999;
+
+    TIMER_START
+    freeSList(&list);
+    printf("\n!!!!!已停止!!!!!!!!\n\n");
+    Sleep(5000);
+    TIMER_END("SList 内存释放")
+    printf("\n");
 }
 
+// --- 2. 测试 Multiple Void List (MList) ---
+void test_MList(int count) {
+    printf("=== 开始测试 MList (异构数据测试) ===\n");
+    _MList list;
+    initMList(&list);
+    
+    // 测试混合类型插入
+    int i_val = 100;
+    double d_val = 3.1415;
+    char* s_val = "Hello Multiple List";
+    
+    insertDataAtEndInMList(&list, stackDataInMList(&i_val, NULL, 0, &Info_Int));
+    insertDataAtEndInMList(&list, stackDataInMList(&d_val, NULL, 1, &Info_Double));
+    insertDataAtEndInMList(&list, stackDataInMList(s_val, NULL, 2, &Info_String));
+    
+    printf("混合列表内容: ");
+    printMList(&list);
+    printf("\n");
+    
+    // 大规模释放压力测试
+    printf("正在进行 MList %d 次插入...\n", count);
+    for (int i = 0; i < count; i++) {
+        insertDataAtStartInMList(&list, stackDataInMList(&i, NULL, 0, &Info_Int));
+    }
+    
+    TIMER_START
+    freeMList(&list);
+    printf("\n!!!!!已停止!!!!!!!!\n\n");
+    Sleep(5000);
+    TIMER_END("MList 内存释放 (含异构逻辑)")
+    printf("\n");
+}
+
+// --- 3. 测试 Single Map (SMap With List) ---
+void test_SMap(int count) {
+    printf("=== 开始测试 SMap (String -> Int) ===\n");
+    _SMapWithList map;
+    initSMapWithList(&map, &Info_String, &Info_Int);
+    
+    TIMER_START
+    for (int i = 0; i < count; i++) {
+        char key[20];
+        sprintf(key, "key_%d", i);
+        insertKeyAndValInSMapWithList(&map, key, NULL, &i, NULL);
+    }
+    TIMER_END("SMap 插入")
+    
+    // 测试查询
+    _SData res = getPtrValByKeyInSMapWithList(&map, "key_500", NULL);
+    if (!res.isEmpty) printf("查询 key_500 结果: %d\n", *(int*)res.data);
+    
+    TIMER_START
+    freeSMapWithList(&map);
+    printf("\n!!!!!已停止!!!!!!!!\n\n");
+    Sleep(5000);
+    TIMER_END("SMap 释放")
+    printf("\n");
+}
+
+// --- 4. 测试 Multiple Map (MMap With List) ---
+void test_MMap_List() {
+    printf("=== 开始测试 MMap (List Chaining) ===\n");
+    _MMapWithList mmap;
+    initMMapwithList(&mmap);
+
+    int age = 25;
+    double score = 95.5;
+
+    // 存入: String -> Int
+    insertKeyAndValInMMapWithList(&mmap, 
+        stackDataInMMapWithList("UserAge", NULL, 0, &Info_String),
+        stackDataInMMapWithList(&age, NULL, 1, &Info_Int));
+
+    // 存入: Int -> Double (演示异构 Key)
+    int key_id = 1001;
+    insertKeyAndValInMMapWithList(&mmap, 
+        stackDataInMMapWithList(&key_id, NULL, 1, &Info_Int),
+        stackDataInMMapWithList(&score, NULL, 2, &Info_Double));
+
+    printMMapWithList(&mmap);
+    printf("\n");
+
+    freeMMapWithList(&mmap);
+
+    printf("\n!!!!!已停止!!!!!!!!\n\n");
+    Sleep(5000);
+    printf("MMap_List 释放完成\n\n");
+}
+
+// --- 5. 测试 Multiple Map (MMap With OA) ---
+void test_MMap_OA(int count) {
+    printf("=== 开始测试 MMap (Open Addressing) ===\n");
+    _MMapWithOA mapOA;
+    initMMapWithOA(&mapOA);
+
+    TIMER_START
+    for (int i = 0; i < count; i++) {
+        // 使用整数作为 Key, 字符串作为 Val
+        char val_str[32];
+        sprintf(val_str, "value_is_%d", i);
+        
+        _MData k = stackDataInMMapWithOA(&i, NULL, 0, &Info_Int);
+        _MData v = stackDataInMMapWithOA(val_str, NULL, 1, &Info_String);
+        
+        insertKeyAndValInMMapWithOA(&mapOA, k, v);
+    }
+    TIMER_END("MMap_OA 插入")
+
+    // 删除测试
+    int target = count / 2;
+    _MData delKey = stackDataInMMapWithOA(&target, NULL, 0, &Info_Int);
+    delEntryByKeyInMMapWithOA(&mapOA, delKey);
+    printf("删除了 Key: %d\n", target);
+
+    TIMER_START
+    freeMMapWithOA(&mapOA);
+    printf("\n!!!!!已停止!!!!!!!!\n\n");
+    Sleep(5000);
+    TIMER_END("MMap_OA 释放")
+    printf("\n");
+}
+
+int main() {
+    // 设置大规模测试样本量
+    // int large_scale = 5000000; // 10万条数据压力测试
+
+    // printf("--- 开始系统综合测试 ---\n\n");
+
+    // test_SList(large_scale);
+    // test_MList(large_scale);
+    // test_SMap(large_scale);
+    // test_MMap_List();
+    // test_MMap_OA(large_scale / 2); // OA 模式通常对装载因子敏感，测试 5万条
+
+    printf("\n!!!!!已停止!!!!!!!!\n\n");
+    Sleep(5000);
+    printf("--- 所有测试完成 ---\n");
+    return 0;
+}
