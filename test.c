@@ -1317,41 +1317,76 @@
 // }
 
 
-#include <stdio.h>
-#include <stdbool.h>
-#include "List\Multiple_Void_List\multiple_void_list.h"
-#include "List\Multiple_Void_List\Oper\bool_oper\_bool_oper.h"
-#include "List\Multiple_Void_List\Oper\int_oper\_int_oper.h"
-#include "List\Multiple_Void_List\Oper\string_oper\_string_oper.h"
-int main()
-{
-    List list;
-    initializeList(&list);
+// #include <stdio.h>
+// #include <stdbool.h>
+// #include "List\Multiple_Void_List\multiple_void_list.h"
+// #include "List\Multiple_Void_List\Oper\bool_oper\_bool_oper.h"
+// #include "List\Multiple_Void_List\Oper\int_oper\_int_oper.h"
+// #include "List\Multiple_Void_List\Oper\string_oper\_string_oper.h"
+// int main()
+// {
+//     List list;
+//     initializeList(&list);
     
-    for (int i = 0; i < 12; i++) {
-        bool temp = (i&1) == 0;
-        Data val = stackData(&temp, NULL, 0, Info_Bool);
-        insertDataAtEndInList(&list, val);
+//     for (int i = 0; i < 12; i++) {
+//         bool temp = (i&1) == 0;
+//         Data val = stackData(&temp, NULL, 0, Info_Bool);
+//         insertDataAtEndInList(&list, val);
         
-    }
-    for (int i = 0; i < 12; i++) {
-        Data val = stackData(&i, NULL, 0, Info_Int);
-        insertDataAtEndInList(&list, val);
-    }
-    Data val;
-    int a = 10;
-    val = stackData(&a, NULL, 0, Info_Int);
+//     }
+//     for (int i = 0; i < 12; i++) {
+//         Data val = stackData(&i, NULL, 0, Info_Int);
+//         insertDataAtEndInList(&list, val);
+//     }
+//     Data val;
+//     int a = 10;
+//     val = stackData(&a, NULL, 0, Info_Int);
 
-    returnPtrDataByData(&list, val);
-    val = stackData("领主", NULL, 2, Info_String);
-    insertDataAtStartInList(&list, val);
-    insertDataAtPosInList(&list, val, 3);
-    printList(&list);
-    freeList(&list);
-    return 0;
-}
+//     returnPtrDataByData(&list, val);
+//     val = stackData("领主", NULL, 2, Info_String);
+//     insertDataAtStartInList(&list, val);
+//     insertDataAtPosInList(&list, val, 3);
+//     printList(&list);
+//     freeList(&list);
+//     return 0;
+// }
 
 
 /*
         可以尝试把InfoOfData设置为指针,减少空间
 */
+
+#include "Void\List\Multiple_Void_List\_multiple_void_list.h"
+#include "Void\List\Single_Void_List\_single_void_list.h"
+#include "Void\Map\Multiple_Void_Map\Hash_Map_List\_multiple_void_map_list.h"
+#include "Void\Map\Multiple_Void_Map\Hash_Map_OA\_multiple_void_map_oa.h"
+#include "Void\Map\Single_Void_Map\Hash_Map_List\_single_void_map_list.h"
+#include "Void\Oper\bool_oper\_bool_oper.h"
+#include "Void\Oper\double_oper\_double_oper.h"
+#include "Void\Oper\int_oper\_int_oper.h"
+#include "Void\Oper\string_oper\_string_oper.h"
+#include "Void\_void_base.h"
+#include <stdio.h>
+#include <stdbool.h>
+int main()
+{
+    _SMapWithList map;
+    initSMapWithList(&map, &Info_String, &Info_Int);
+    int n = 10;
+    insertKeyAndValInSMapWithList(&map, "djfal", NULL, &n, NULL);
+    printSMapWithList(&map);
+    _MMapWithList map_2;
+    initMMapwithList(&map_2);
+    _MData a = stackDataInMMapWithList("ddd", NULL, 0, &Info_String);
+
+    _MData b = stackDataInMMapWithList(&n, NULL, 1, &Info_Int);
+
+    insertKeyAndValInMMapWithList(&map_2, a, b);
+    insertKeyAndValInMMapWithList(&map_2, b, a);
+    printMMapWithList(&map_2);
+    freeMMapWithList(&map_2);
+    
+    freeSMapWithList(&map);
+    return 0;
+}
+
