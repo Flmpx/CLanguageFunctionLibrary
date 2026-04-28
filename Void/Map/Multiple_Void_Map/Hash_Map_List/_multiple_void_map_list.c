@@ -1,10 +1,11 @@
+#define LIST_AND_NODE_M_INCHAINMAP
 #include "_multiple_void_map_list.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-static bool isEmptyList(MultiListInMap* plist);
-static void initializeList(MultiListInMap* plist);
+static bool isEmptyMList(List_M_inChainMap* plist);
+static void initMList(List_M_inChainMap* plist);
 
 
 
@@ -14,8 +15,8 @@ static void initializeList(MultiListInMap* plist);
 
 
 //返回空Data
-static _MData returnEmptyData() {
-    _MData data;
+static Data_M getEmptyMData() {
+    Data_M data;
     data.data = NULL;
     data.isEmpty = true;
     data.dataInfo = NULL;
@@ -24,10 +25,10 @@ static _MData returnEmptyData() {
     return data;
 }
 
-static _MEntryWithList returnEmptyEntry() {
-    _MEntryWithList entry;
-    entry.key = returnEmptyData();
-    entry.value = returnEmptyData();
+static Entry_M_inChainMap getEmptyMEntry() {
+    Entry_M_inChainMap entry;
+    entry.key = getEmptyMData();
+    entry.value = getEmptyMData();
     entry.isEmpty = true;
     return entry;
 }
@@ -48,7 +49,7 @@ static bool isPrime(int n) {
 /// @brief 返回小于等于n的最大质数
 /// @param n n
 /// @return 最大质数
-static int returnLargestPrime(int n) {
+static int getLargestPrime(int n) {
     if (n <= 3) return n;
     if (n%2 == 0) n--;
     for (int i = n; ; i-=2) {
@@ -58,7 +59,7 @@ static int returnLargestPrime(int n) {
 }
 
 
-void initMMapwithList(_MMapWithList* pMap) {
+void initMChainMap(ChainMap_M* pMap) {
     pMap->arr = NULL;
     pMap->len = pMap->size = 0;
     pMap->mod = 2;
@@ -86,7 +87,7 @@ void initMMapwithList(_MMapWithList* pMap) {
 /// @param Data_b b
 /// @param cmp _compare类型的函数
 /// @return SAME-->相同 | DIFFERENT-->不同
-static CmpResult compareKey(_MData* Data_a, _MData* Data_b) {
+static CmpResult compareMKey(Data_M* Data_a, Data_M* Data_b) {
     if (Data_a->isEmpty || Data_b->isEmpty) {
         return DIFFERENT;
     }
@@ -113,7 +114,7 @@ static CmpResult compareKey(_MData* Data_a, _MData* Data_b) {
 //释放类
 
 //释放Data数据
-void freeDataInMMapWithList(_MData* data) {
+void freeMDataInMChainMap(Data_M* data) {
     //为空不释放
     if (data->isEmpty) return;
     //data的释放
@@ -132,38 +133,38 @@ void freeDataInMMapWithList(_MData* data) {
 }
 
 //这个仅仅只会把Entry中的key和value的data和others(不会释放oper,因为同种类型数据是要共用同一个opertion类型的指针)
-void freeEntryInMMapWithList(_MEntryWithList* entry) {
+void freeMEntryInMChainMap(Entry_M_inChainMap* entry) {
     if (entry->isEmpty) return;
-    freeDataInMMapWithList(&(entry->key));
-    freeDataInMMapWithList(&(entry->value));
+    freeMDataInMChainMap(&(entry->key));
+    freeMDataInMChainMap(&(entry->value));
     entry->isEmpty = true;
 }
 
 
 //释放一个链表,包括它里面Data类型数据所指向的内容
-static void freeList(MultiListInMap* plist) {
+static void freeMList(List_M_inChainMap* plist) {
     if (plist->size == 0) {
         return;
     }
-    MultiNodeInMap* p = plist->head;
-    MultiNodeInMap* q = NULL;
+    Node_M_inChainMap* p = plist->head;
+    Node_M_inChainMap* q = NULL;
     while (p) {
         q = p;
         p = p->next;
-        freeEntryInMMapWithList(&(q->entry));
+        freeMEntryInMChainMap(&(q->entry));
         free(q);
     }
-    initializeList(plist);
+    initMList(plist);
 }
 
 
 
-void freeMMapWithList(_MMapWithList* pMap) {
+void freeMChainMap(ChainMap_M* pMap) {
     for (int i = 0; i < pMap->len; i++) {
-        freeList(&(pMap->arr[i]));
+        freeMList(&(pMap->arr[i]));
     }
     free(pMap->arr);
-    initMMapwithList(pMap);
+    initMChainMap(pMap);
 }
 
 
@@ -173,23 +174,23 @@ void freeMMapWithList(_MMapWithList* pMap) {
 //链表的构建
 
 
-static bool isEmptyList(MultiListInMap* plist) {
+static bool isEmptyMList(List_M_inChainMap* plist) {
     return plist->size == 0;
 }
 
 
 /// @brief 初始化链表
 /// @param plist 链表指针
-static void initializeList(MultiListInMap* plist) {
+static void initMList(List_M_inChainMap* plist) {
     plist->head = plist->tail = NULL;
     plist->size = 0;
 }
 
-static MultiNodeInMap* findNodeByKey(MultiListInMap* plist, _MData key) {
-    if (isEmptyList(plist)) return NULL;
-    MultiNodeInMap* p = plist->head;
+static Node_M_inChainMap* getNodeByMKey(List_M_inChainMap* plist, Data_M key) {
+    if (isEmptyMList(plist)) return NULL;
+    Node_M_inChainMap* p = plist->head;
     for (int i = 0; i < plist->size; i++, p = p->next) {
-        if (compareKey(&(p->entry.key), &key) == SAME) {
+        if (compareMKey(&(p->entry.key), &key) == SAME) {
             return p;
         }
     } 
@@ -197,8 +198,8 @@ static MultiNodeInMap* findNodeByKey(MultiListInMap* plist, _MData key) {
 }
 
 //这个是直接在后面插入的,不会判断key是否已经存在
-static InfoOfReturn insertEntryInList(MultiListInMap* plist, _MEntryWithList entry) {
-    MultiNodeInMap* newNode = (MultiNodeInMap*)malloc(sizeof(MultiNodeInMap));
+static InfoOfReturn insertMEntryInMList(List_M_inChainMap* plist, Entry_M_inChainMap entry) {
+    Node_M_inChainMap* newNode = (Node_M_inChainMap*)malloc(sizeof(Node_M_inChainMap));
     if (newNode == NULL) {
         printf("\nMemory allocation failed\n");
         return Warning;
@@ -218,12 +219,12 @@ static InfoOfReturn insertEntryInList(MultiListInMap* plist, _MEntryWithList ent
     return Success;
 }
 
-static InfoOfReturn delStartNode(MultiListInMap* plist) {
-    if (isEmptyList(plist)) {
+static InfoOfReturn delStartNode(List_M_inChainMap* plist) {
+    if (isEmptyMList(plist)) {
         printf("\nNot found! Cannot del\n");
         return None;
     }
-    MultiNodeInMap* p = plist->head;
+    Node_M_inChainMap* p = plist->head;
     
     if (plist->size > 1) {
         plist->head = plist->head->next;
@@ -232,7 +233,7 @@ static InfoOfReturn delStartNode(MultiListInMap* plist) {
         plist->head = plist->tail = NULL;
     }
 
-    freeEntryInMMapWithList(&(p->entry));
+    freeMEntryInMChainMap(&(p->entry));
     free(p);
     plist->size--;
     return Success;
@@ -241,12 +242,12 @@ static InfoOfReturn delStartNode(MultiListInMap* plist) {
 
 
 
-static InfoOfReturn delEndNode(MultiListInMap* plist) {
-    if (isEmptyList(plist)) {
+static InfoOfReturn delEndNode(List_M_inChainMap* plist) {
+    if (isEmptyMList(plist)) {
         printf("\nNot found! Cannot del\n");
         return None;
     }
-    MultiNodeInMap* p = plist->tail;
+    Node_M_inChainMap* p = plist->tail;
     
     if (plist->size > 1) {
         plist->tail = plist->tail->prev;
@@ -255,7 +256,7 @@ static InfoOfReturn delEndNode(MultiListInMap* plist) {
         plist->head = plist->tail = NULL;
     }
 
-    freeEntryInMMapWithList(&(p->entry));
+    freeMEntryInMChainMap(&(p->entry));
     free(p);
     plist->size--;
     return Success;
@@ -263,12 +264,12 @@ static InfoOfReturn delEndNode(MultiListInMap* plist) {
 
 
 
-static InfoOfReturn delNodeByKey(MultiListInMap* plist, _MData key) {
-    if (isEmptyList(plist)) {
+static InfoOfReturn delNodeByMKey(List_M_inChainMap* plist, Data_M key) {
+    if (isEmptyMList(plist)) {
         printf("\nNot found! Cannot del\n");
         return None;
     }
-    MultiNodeInMap* p = findNodeByKey(plist, key);
+    Node_M_inChainMap* p = getNodeByMKey(plist, key);
     if (p == NULL) {
         printf("\nNot found! Cannot del\n");
         return None;
@@ -280,7 +281,7 @@ static InfoOfReturn delNodeByKey(MultiListInMap* plist, _MData key) {
     p->prev->next = p->next;
     p->next->prev = p->prev;
 
-    freeEntryInMMapWithList(&(p->entry));
+    freeMEntryInMChainMap(&(p->entry));
     free(p);
     plist->size--;
     return Success;
@@ -296,20 +297,20 @@ static InfoOfReturn delNodeByKey(MultiListInMap* plist, _MData key) {
 //复制类
 
 //复制Data
-static _MData copyData(_MData oldData) {
+static Data_M copyMData(Data_M oldData) {
 
     if (oldData.isEmpty) {
-        return returnEmptyData();
+        return getEmptyMData();
     }
     //复制void* data
-    _MData newData;
+    Data_M newData;
 
     //copy函数不仅仅只是把指针赋值,还要把整个void* data赋值一遍
     newData.data = oldData.dataInfo->oper->copydata(oldData.data, oldData.content);
 
     if (newData.data == NULL) {
         printf("\nMemory allocation failed\n");
-        return returnEmptyData();
+        return getEmptyMData();
     }
 
     newData.dataInfo = oldData.dataInfo;
@@ -319,7 +320,7 @@ static _MData copyData(_MData oldData) {
         if (newData.content == NULL) {
             printf("\nMemory allocation failed\n");
             oldData.dataInfo->oper->freedata(newData.data, oldData.content);
-            return returnEmptyData();
+            return getEmptyMData();
         }
     } else {
         newData.content = NULL;
@@ -333,19 +334,19 @@ static _MData copyData(_MData oldData) {
 }
 
 //复制一个Entry,注意:entry.state自动赋值,必须要自己赋值
-static _MEntryWithList copyEntry(_MEntryWithList oldEntry) {
+static Entry_M_inChainMap copyMEntry(Entry_M_inChainMap oldEntry) {
     if (oldEntry.isEmpty) {
-        return returnEmptyEntry();
+        return getEmptyMEntry();
     }
-    _MEntryWithList newEntry;
-    newEntry.key = copyData(oldEntry.key);
+    Entry_M_inChainMap newEntry;
+    newEntry.key = copyMData(oldEntry.key);
     if (newEntry.key.isEmpty) {
-        return returnEmptyEntry();
+        return getEmptyMEntry();
     }
-    newEntry.value = copyData(oldEntry.value);
+    newEntry.value = copyMData(oldEntry.value);
     if (newEntry.value.isEmpty) {
-        freeDataInMMapWithList(&(newEntry.key));
-        return returnEmptyEntry();
+        freeMDataInMChainMap(&(newEntry.key));
+        return getEmptyMEntry();
     }
     newEntry.isEmpty = false;
     return newEntry;
@@ -358,32 +359,32 @@ static _MEntryWithList copyEntry(_MEntryWithList oldEntry) {
 
 
 //这个函数保证可以添加
-static InfoOfReturn addEntryFunction(_MMapWithList* pMap, _MData key, _MData value) {
+static InfoOfReturn addMEntryFunction(ChainMap_M* pMap, Data_M key, Data_M value) {
     //hash
     ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
 
-    MultiNodeInMap* p = findNodeByKey(&(pMap->arr[index]), key);
+    Node_M_inChainMap* p = getNodeByMKey(&(pMap->arr[index]), key);
     if (p) {
-        _MData newVal = copyData(value);
+        Data_M newVal = copyMData(value);
         if (newVal.isEmpty) {
             printf("\nMemory allocation failed\n");
             return Warning;
         }
-        freeDataInMMapWithList(&(p->entry.value));
+        freeMDataInMChainMap(&(p->entry.value));
         p->entry.value = newVal;
         return Success;
     }
-    _MEntryWithList oldEntry;
+    Entry_M_inChainMap oldEntry;
     oldEntry.isEmpty = false;
     oldEntry.key = key;
     oldEntry.value = value;
     
-    _MEntryWithList newEntry = copyEntry(oldEntry);
+    Entry_M_inChainMap newEntry = copyMEntry(oldEntry);
     if (newEntry.isEmpty) {
         printf("\nMemory allocation failed\n");
         return Warning;
     }
-    if (insertEntryInList(&(pMap->arr[index]), newEntry) == Warning) {
+    if (insertMEntryInMList(&(pMap->arr[index]), newEntry) == Warning) {
         printf("\nMemory allocation failed\n");
         return Warning;
     }
@@ -395,13 +396,13 @@ static InfoOfReturn addEntryFunction(_MMapWithList* pMap, _MData key, _MData val
 
 
 //专门为重哈希做的软拷贝方式添加的Entry
-static InfoOfReturn addEntryForFreshMap(_MMapWithList* pMap, _MData key, _MData value) {
+static InfoOfReturn addMEntryForFreshMChainMap(ChainMap_M* pMap, Data_M key, Data_M value) {
     ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
-    _MEntryWithList entry;
+    Entry_M_inChainMap entry;
     entry.isEmpty = false;
     entry.key = key;
     entry.value = value;
-    if (insertEntryInList(&(pMap->arr[index]), entry) == Warning) {
+    if (insertMEntryInMList(&(pMap->arr[index]), entry) == Warning) {
         printf("\nMemory allocation failed\n");
         return Warning;
     }
@@ -410,23 +411,23 @@ static InfoOfReturn addEntryForFreshMap(_MMapWithList* pMap, _MData key, _MData 
 }
 
 
-static void freeListForFreshMap(MultiListInMap* plist) {
-    if (isEmptyList(plist)) {
+static void freeMListForFreshMChainMap(List_M_inChainMap* plist) {
+    if (isEmptyMList(plist)) {
         return;
     }
-    MultiNodeInMap* p = plist->head;
-    MultiNodeInMap* q = NULL;
+    Node_M_inChainMap* p = plist->head;
+    Node_M_inChainMap* q = NULL;
     while (p) {
         q = p;
         p = p->next;
         free(q);
     }
-    initializeList(plist);
+    initMList(plist);
 }
 
 
 //重hash
-static InfoOfReturn freshMap(_MMapWithList* pMap) {
+static InfoOfReturn freshMChainMap(ChainMap_M* pMap) {
     int newLen = 0;
     if (pMap->len == 0) {
         newLen = 16;    //如果为空,直接给16的空间
@@ -435,18 +436,18 @@ static InfoOfReturn freshMap(_MMapWithList* pMap) {
     }
 
     int newSize = pMap->size;
-    int newMod = returnLargestPrime(newLen);
+    int newMod = getLargestPrime(newLen);
     
     //新创建一个newMap;
-    _MMapWithList newMap;
-    MultiListInMap* newArray = (MultiListInMap*)malloc(newLen*sizeof(MultiListInMap));
+    ChainMap_M newMap;
+    List_M_inChainMap* newArray = (List_M_inChainMap*)malloc(newLen*sizeof(List_M_inChainMap));
     if (newArray == NULL) {
         printf("\nMemory allocation failed\n");
         return Warning;
     }
     for (int i = 0; i < newLen; i++) {
         //初始化
-        initializeList(newArray+i);
+        initMList(newArray+i);
     }
 
 
@@ -456,9 +457,9 @@ static InfoOfReturn freshMap(_MMapWithList* pMap) {
     newMap.size = 0;    //再添加函数中会自动加,这里设置为0
 
     for (int i = 0; i < pMap->len; i++) {
-        MultiNodeInMap* p = pMap->arr[i].head;
+        Node_M_inChainMap* p = pMap->arr[i].head;
         for (int j = 0; j < pMap->arr[i].size; j++, p = p->next) {
-            if (addEntryForFreshMap(&newMap, p->entry.key, p->entry.value) == Warning) {
+            if (addMEntryForFreshMChainMap(&newMap, p->entry.key, p->entry.value) == Warning) {
                 printf("\nMemory allocation failed\n");
                 return Warning;
             }
@@ -466,7 +467,7 @@ static InfoOfReturn freshMap(_MMapWithList* pMap) {
     }
 
     for (int i = 0; i < pMap->len; i++) {
-        freeListForFreshMap(&(pMap->arr[i]));
+        freeMListForFreshMChainMap(&(pMap->arr[i]));
     }
     free(pMap->arr);
     *pMap = newMap;
@@ -475,15 +476,15 @@ static InfoOfReturn freshMap(_MMapWithList* pMap) {
 
 
 
-InfoOfReturn insertKeyAndValInMMapWithList(_MMapWithList* pMap, _MData key, _MData val) {
+InfoOfReturn insertMKeyAndMValInMChainMap(ChainMap_M* pMap, Data_M key, Data_M val) {
     //当填充因子大于75%时或者Map为空时自动扩容
     if (4*(pMap->size) >= 3*(pMap->len) || pMap->size == 0) {
-        if (freshMap(pMap) == Warning) {
+        if (freshMChainMap(pMap) == Warning) {
             printf("\nMemory allocation failed\n");
             return Warning;
         }
     }
-    return addEntryFunction(pMap, key, val);
+    return addMEntryFunction(pMap, key, val);
 }
 
 
@@ -493,16 +494,16 @@ InfoOfReturn insertKeyAndValInMMapWithList(_MMapWithList* pMap, _MData key, _MDa
 
 
 //返回的Data数据为新建,用完后记得释放
-_MData getCopyValByKeyInMMapWithList(_MMapWithList* pMap, _MData key) {
-    if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyData();
+Data_M getCopyMValByMKeyInMChainMap(ChainMap_M* pMap, Data_M key) {
+    if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return getEmptyMData();
     ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
     
-    MultiNodeInMap* p = findNodeByKey(&(pMap->arr[index]), key);
+    Node_M_inChainMap* p = getNodeByMKey(&(pMap->arr[index]), key);
     if (p == NULL) {
-        return returnEmptyData();
+        return getEmptyMData();
     } else {
-        _MData newData;
-        newData = copyData(p->entry.value);
+        Data_M newData;
+        newData = copyMData(p->entry.value);
         if (newData.isEmpty) {
             printf("\nMemory allocation failed\n");
         }
@@ -510,29 +511,29 @@ _MData getCopyValByKeyInMMapWithList(_MMapWithList* pMap, _MData key) {
     }
 }
 
-_MData getPtrValByKeyInMMapWithList(_MMapWithList* pMap, _MData key) {
-    if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyData();
+Data_M getPtrMValByMKeyInMChainMap(ChainMap_M* pMap, Data_M key) {
+    if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return getEmptyMData();
     ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
     
-    MultiNodeInMap* p = findNodeByKey(&(pMap->arr[index]), key);
+    Node_M_inChainMap* p = getNodeByMKey(&(pMap->arr[index]), key);
     if (p == NULL) {
-        return returnEmptyData();
+        return getEmptyMData();
     } else {
         return p->entry.value;
     }
 }
 
 
-_MEntryWithList getCopyEntryByKeyInMMapWithList(_MMapWithList* pMap, _MData key) {
-    if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyEntry();
+Entry_M_inChainMap getCopyMEntryByMKeyInMChainMap(ChainMap_M* pMap, Data_M key) {
+    if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return getEmptyMEntry();
     ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
     
-    MultiNodeInMap* p = findNodeByKey(&(pMap->arr[index]), key);
+    Node_M_inChainMap* p = getNodeByMKey(&(pMap->arr[index]), key);
     if (p == NULL) {
-        return returnEmptyEntry();
+        return getEmptyMEntry();
     } else {
-        _MEntryWithList newEntry;
-        newEntry = copyEntry(p->entry);
+        Entry_M_inChainMap newEntry;
+        newEntry = copyMEntry(p->entry);
         if (newEntry.isEmpty) {
             printf("\nMemory allocation failed\n");
         }
@@ -541,11 +542,11 @@ _MEntryWithList getCopyEntryByKeyInMMapWithList(_MMapWithList* pMap, _MData key)
 }
 
 
-bool hasKeyInMMapWithList(_MMapWithList* pMap, _MData key) {
+bool hasMKeyInMChainMap(ChainMap_M* pMap, Data_M key) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return false;
     ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
     
-    MultiNodeInMap* p = findNodeByKey(&(pMap->arr[index]), key);
+    Node_M_inChainMap* p = getNodeByMKey(&(pMap->arr[index]), key);
     if (p == NULL) {
         return false;
     } else {
@@ -559,11 +560,11 @@ bool hasKeyInMMapWithList(_MMapWithList* pMap, _MData key) {
 //删除类
 
 
-InfoOfReturn delEntryByKeyInMMapWithList(_MMapWithList* pMap, _MData key) {
+InfoOfReturn delMEntryByMKeyInMChainMap(ChainMap_M* pMap, Data_M key) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return Warning;
     ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
     
-    if (delNodeByKey(&(pMap->arr[index]), key) == None) {
+    if (delNodeByMKey(&(pMap->arr[index]), key) == None) {
         printf("\nNot found! Cannot del\n");
         return None;
     }
@@ -577,8 +578,8 @@ InfoOfReturn delEntryByKeyInMMapWithList(_MMapWithList* pMap, _MData key) {
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //整合类
 
-_MData stackDataInMMapWithList(void* data, void* content, int type, InfoOfData* dataInfo) {
-    _MData newData;
+Data_M stackMDataInMChainMap(void* data, void* content, int type, InfoOfData* dataInfo) {
+    Data_M newData;
     newData.data = data;
     newData.isEmpty = false;
     newData.dataInfo = dataInfo;
@@ -590,7 +591,7 @@ _MData stackDataInMMapWithList(void* data, void* content, int type, InfoOfData* 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //打印类
 
-void printDataInMMapWithList(_MData data, char* tip) {
+void printMDataInMChainMap(Data_M data, char* tip) {
     if (data.isEmpty) {
         printf("\nData is empty, cannot print\n");
         return;
@@ -600,7 +601,7 @@ void printDataInMMapWithList(_MData data, char* tip) {
     printf("]");
 }
 
-void printEntryInMMapWithList(_MEntryWithList entry) {
+void printMEntryInMChainMap(Entry_M_inChainMap entry) {
     if (entry.isEmpty) {
         printf("\nEntry is empty, cannot print\n");
         return;
@@ -615,7 +616,7 @@ void printEntryInMMapWithList(_MEntryWithList entry) {
     printf("]");
 }
 
-void printMMapWithList(_MMapWithList* pMap) {
+void printMChainMap(ChainMap_M* pMap) {
     if (pMap->size == 0) {
         printf("\nMap is empty, cannot print\n");
         return;
@@ -623,12 +624,12 @@ void printMMapWithList(_MMapWithList* pMap) {
     int cnt = 0;
     printf("[");
     for (int i = 0; i < pMap->len; i++) {
-        MultiNodeInMap* p = pMap->arr[i].head;
+        Node_M_inChainMap* p = pMap->arr[i].head;
         for (int j = 0; j < pMap->arr[i].size; j++, p = p->next) {
             if (cnt != 0) {
                 printf(", ");
             }
-            printEntryInMMapWithList(p->entry);
+            printMEntryInMChainMap(p->entry);
             cnt++;
         }
     }

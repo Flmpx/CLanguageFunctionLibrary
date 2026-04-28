@@ -1,10 +1,12 @@
+#define LIST_AND_NODE_M_IN_CHAINMAP
 #include "_single_void_map_list.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
-static bool isEmptyList(SingleListInMap* plist);
-static void initializeList(SingleListInMap* plist);
+
+static bool isEmptySList(List_S_inChainMap* plist);
+static void initSList(List_S_inChainMap* plist);
 
 //只要是需要两个InfoOfData的函数,直接传入Map类型指针!!!
 
@@ -13,18 +15,18 @@ static void initializeList(SingleListInMap* plist);
 
 
 //返回空Data
-static _SData returnEmptyData() {
-    _SData data;
+static Data_S getEmptySData() {
+    Data_S data;
     data.data = NULL;
     data.isEmpty = true;
     data.content = NULL;
     return data;
 }
 
-static _SEntryWithList returnEmptyEntry() {
-    _SEntryWithList entry;
-    entry.key = returnEmptyData();
-    entry.value = returnEmptyData();
+static Entry_S_inChainMap getEmptySEntry() {
+    Entry_S_inChainMap entry;
+    entry.key = getEmptySData();
+    entry.value = getEmptySData();
     entry.isEmpty = true;
     return entry;
 }
@@ -45,7 +47,7 @@ static bool isPrime(int n) {
 /// @brief 返回小于等于n的最大质数
 /// @param n n
 /// @return 最大质数
-static int returnLargestPrime(int n) {
+static int getLargestPrime(int n) {
     if (n <= 3) return n;
     if (n%2 == 0) n--;
     for (int i = n; ; i-=2) {
@@ -55,7 +57,7 @@ static int returnLargestPrime(int n) {
 }
 
 /************** */
-void initSMapWithList(_SMapWithList* pMap, InfoOfData* keyInfo, InfoOfData* valInfo) {
+void initSChainMap(ChainMap_S* pMap, InfoOfData* keyInfo, InfoOfData* valInfo) {
     pMap->arr = NULL;
     pMap->len = pMap->size = 0;
     pMap->mod = 2;
@@ -84,7 +86,7 @@ void initSMapWithList(_SMapWithList* pMap, InfoOfData* keyInfo, InfoOfData* valI
 /// @param Data_b b
 /// @param cmp _compare类型的函数
 /// @return SAME-->相同 | DIFFERENT-->不同
-static CmpResult compareKey(_SData* Data_a, _SData* Data_b, InfoOfData* keyInfo) {
+static CmpResult compareSKey(Data_S* Data_a, Data_S* Data_b, InfoOfData* keyInfo) {
     if (Data_a->isEmpty || Data_b->isEmpty) {
         return DIFFERENT;
     }   
@@ -104,7 +106,7 @@ static CmpResult compareKey(_SData* Data_a, _SData* Data_b, InfoOfData* keyInfo)
 
 /**************** */
 //释放Data数据
-void freeDataInSMapWithList(_SData* data, InfoOfData* infoOfKeyOrVal) {
+void freeSDataInSChainMap(Data_S* data, InfoOfData* infoOfKeyOrVal) {
     //为空不释放
     if (data->isEmpty) return;
     //data的释放
@@ -122,41 +124,41 @@ void freeDataInSMapWithList(_SData* data, InfoOfData* infoOfKeyOrVal) {
 
 /************ */
 //这个仅仅只会把Entry中的key和value的data和others(不会释放oper,因为同种类型数据是要共用同一个opertion类型的指针)
-void freeEntryInSMapWithList(_SEntryWithList* entry, _SMapWithList* pMap) {
+void freeSEntryInSChianMap(Entry_S_inChainMap* entry, ChainMap_S* pMap) {
     if (entry->isEmpty) return;
-    freeDataInSMapWithList(&(entry->key), pMap->keyInfo);
-    freeDataInSMapWithList(&(entry->value), pMap->valInfo);
+    freeSDataInSChainMap(&(entry->key), pMap->keyInfo);
+    freeSDataInSChainMap(&(entry->value), pMap->valInfo);
     entry->isEmpty = true;
 }
 
 
 /************** */
 //释放一个链表,包括它里面Data类型数据所指向的内容
-static void freeList(SingleListInMap* plist, _SMapWithList* pMap) {
+static void freeSList(List_S_inChainMap* plist, ChainMap_S* pMap) {
     if (plist->size == 0) {
         return;
     }
-    SingleNodeInMap* p = plist->head;
-    SingleNodeInMap* q = NULL;
+    Node_S_inChainMap* p = plist->head;
+    Node_S_inChainMap* q = NULL;
     while (p) {
         q = p;
         p = p->next;
-        freeEntryInSMapWithList(&(q->entry), pMap);
+        freeSEntryInSChianMap(&(q->entry), pMap);
         free(q);
     }
-    initializeList(plist);
+    initSList(plist);
 }
 
 
 
 
 /**************** */
-void freeSMapWithList(_SMapWithList* pMap) {
+void freeSChainMap(ChainMap_S* pMap) {
     for (int i = 0; i < pMap->len; i++) {
-        freeList(&(pMap->arr[i]), pMap);
+        freeSList(&(pMap->arr[i]), pMap);
     }
     free(pMap->arr);
-    initSMapWithList(pMap, pMap->keyInfo, pMap->valInfo);
+    initSChainMap(pMap, pMap->keyInfo, pMap->valInfo);
 }
 
 
@@ -166,25 +168,25 @@ void freeSMapWithList(_SMapWithList* pMap) {
 //链表的构建
 
 
-static bool isEmptyList(SingleListInMap* plist) {
+static bool isEmptySList(List_S_inChainMap* plist) {
     return plist->size == 0;
 }
 
 
 /// @brief 初始化链表
 /// @param plist 链表指针
-static void initializeList(SingleListInMap* plist) {
+static void initSList(List_S_inChainMap* plist) {
     plist->head = plist->tail = NULL;
     plist->size = 0;
 }
 
 
 /************* */
-static SingleNodeInMap* findNodeByKey(SingleListInMap* plist, _SData key, InfoOfData* keyInfo) {
-    if (isEmptyList(plist)) return NULL;
-    SingleNodeInMap* p = plist->head;
+static Node_S_inChainMap* getNodeBySKey(List_S_inChainMap* plist, Data_S key, InfoOfData* keyInfo) {
+    if (isEmptySList(plist)) return NULL;
+    Node_S_inChainMap* p = plist->head;
     for (int i = 0; i < plist->size; i++, p = p->next) {
-        if (compareKey(&(p->entry.key), &key, keyInfo) == SAME) {
+        if (compareSKey(&(p->entry.key), &key, keyInfo) == SAME) {
             return p;
         }
     } 
@@ -192,8 +194,8 @@ static SingleNodeInMap* findNodeByKey(SingleListInMap* plist, _SData key, InfoOf
 }
 
 //这个是直接在后面插入的,不会判断key是否已经存在
-static int insertEntryInList(SingleListInMap* plist, _SEntryWithList entry) {
-    SingleNodeInMap* newNode = (SingleNodeInMap*)malloc(sizeof(SingleNodeInMap));
+static int insertSEntryInSList(List_S_inChainMap* plist, Entry_S_inChainMap entry) {
+    Node_S_inChainMap* newNode = (Node_S_inChainMap*)malloc(sizeof(Node_S_inChainMap));
     if (newNode == NULL) {
         printf("\nMemory allocation failed\n");
         return Warning;
@@ -215,12 +217,12 @@ static int insertEntryInList(SingleListInMap* plist, _SEntryWithList entry) {
 
 
 
-static int delStartNode(SingleListInMap* plist, _SMapWithList* pMap) {
-    if (isEmptyList(plist)) {
+static int delStartNode(List_S_inChainMap* plist, ChainMap_S* pMap) {
+    if (isEmptySList(plist)) {
         printf("\nNot found! Cannot del\n");
         return None;
     }
-    SingleNodeInMap* p = plist->head;
+    Node_S_inChainMap* p = plist->head;
     
     if (plist->size > 1) {
         plist->head = plist->head->next;
@@ -229,7 +231,7 @@ static int delStartNode(SingleListInMap* plist, _SMapWithList* pMap) {
         plist->head = plist->tail = NULL;
     }
 
-    freeEntryInSMapWithList(&(p->entry), pMap);
+    freeSEntryInSChianMap(&(p->entry), pMap);
     free(p);
     plist->size--;
     return Success;
@@ -238,12 +240,12 @@ static int delStartNode(SingleListInMap* plist, _SMapWithList* pMap) {
 
 
 
-static int delEndNode(SingleListInMap* plist, _SMapWithList* pMap) {
-    if (isEmptyList(plist)) {
+static int delEndNode(List_S_inChainMap* plist, ChainMap_S* pMap) {
+    if (isEmptySList(plist)) {
         printf("\nNot found! Cannot del\n");
         return None;
     }
-    SingleNodeInMap* p = plist->tail;
+    Node_S_inChainMap* p = plist->tail;
     
     if (plist->size > 1) {
         plist->tail = plist->tail->prev;
@@ -252,7 +254,7 @@ static int delEndNode(SingleListInMap* plist, _SMapWithList* pMap) {
         plist->head = plist->tail = NULL;
     }
 
-    freeEntryInSMapWithList(&(p->entry), pMap);
+    freeSEntryInSChianMap(&(p->entry), pMap);
     free(p);
     plist->size--;
     return Success;
@@ -260,12 +262,12 @@ static int delEndNode(SingleListInMap* plist, _SMapWithList* pMap) {
 
 
 
-static int delNodeByKey(SingleListInMap* plist, _SData key, _SMapWithList* pMap) {
-    if (isEmptyList(plist)) {
+static int delNodeBySKey(List_S_inChainMap* plist, Data_S key, ChainMap_S* pMap) {
+    if (isEmptySList(plist)) {
         printf("\nNot found! Cannot del\n");
         return None;
     }
-    SingleNodeInMap* p = findNodeByKey(plist, key, pMap->keyInfo);
+    Node_S_inChainMap* p = getNodeBySKey(plist, key, pMap->keyInfo);
     if (p == NULL) {
         printf("\nNot found! Cannot del\n");
         return None;
@@ -277,7 +279,7 @@ static int delNodeByKey(SingleListInMap* plist, _SData key, _SMapWithList* pMap)
     p->prev->next = p->next;
     p->next->prev = p->prev;
 
-    freeEntryInSMapWithList(&(p->entry), pMap);
+    freeSEntryInSChianMap(&(p->entry), pMap);
     free(p);
     plist->size--;
     return Success;
@@ -293,20 +295,20 @@ static int delNodeByKey(SingleListInMap* plist, _SData key, _SMapWithList* pMap)
 //复制类
 
 //复制Data
-static _SData copyData(_SData oldData, InfoOfData* InfoOfKeyOrVal) {
+static Data_S copySData(Data_S oldData, InfoOfData* InfoOfKeyOrVal) {
 
     if (oldData.isEmpty) {
-        return returnEmptyData();
+        return getEmptySData();
     }
     //复制void* data
-    _SData newData;
+    Data_S newData;
 
     //copy函数不仅仅只是把指针赋值,还要把整个void* data复制一遍
     newData.data = InfoOfKeyOrVal->oper->copydata(oldData.data, oldData.content);
 
     if (newData.data == NULL) {
         printf("\nMemory allocation failed\n");
-        return returnEmptyData();
+        return getEmptySData();
     }
 
     //有content才复制content
@@ -315,7 +317,7 @@ static _SData copyData(_SData oldData, InfoOfData* InfoOfKeyOrVal) {
         if (newData.content == NULL) {
             printf("\nMemory allocation failed\n");
             InfoOfKeyOrVal->oper->freedata(newData.data, oldData.content);
-            return returnEmptyData();
+            return getEmptySData();
         }
     } else {
         newData.content = NULL;
@@ -325,19 +327,19 @@ static _SData copyData(_SData oldData, InfoOfData* InfoOfKeyOrVal) {
 }
 
 //复制一个Entry,注意:entry.state自动赋值,必须要自己赋值
-static _SEntryWithList copyEntry(_SEntryWithList oldEntry, _SMapWithList* pMap) {
+static Entry_S_inChainMap copySEntry(Entry_S_inChainMap oldEntry, ChainMap_S* pMap) {
     if (oldEntry.isEmpty) {
-        return returnEmptyEntry();
+        return getEmptySEntry();
     }
-    _SEntryWithList newEntry;
-    newEntry.key = copyData(oldEntry.key, pMap->keyInfo);
+    Entry_S_inChainMap newEntry;
+    newEntry.key = copySData(oldEntry.key, pMap->keyInfo);
     if (newEntry.key.isEmpty) {
-        return returnEmptyEntry();
+        return getEmptySEntry();
     }
-    newEntry.value = copyData(oldEntry.value, pMap->valInfo);
+    newEntry.value = copySData(oldEntry.value, pMap->valInfo);
     if (newEntry.value.isEmpty) {
-        freeDataInSMapWithList(&(newEntry.key), pMap->keyInfo);
-        return returnEmptyEntry();
+        freeSDataInSChainMap(&(newEntry.key), pMap->keyInfo);
+        return getEmptySEntry();
     }
     newEntry.isEmpty = false;
     return newEntry;
@@ -350,32 +352,32 @@ static _SEntryWithList copyEntry(_SEntryWithList oldEntry, _SMapWithList* pMap) 
 
 
 //这个函数保证可以添加
-static int addEntryFunction(_SMapWithList* pMap, _SData key, _SData value) {
+static int addSEntryFunction(ChainMap_S* pMap, Data_S key, Data_S value) {
     //hash
     ull index = (pMap->keyInfo->oper->hashdata(key.data, key.content))%pMap->mod;
 
-    SingleNodeInMap* p = findNodeByKey(&(pMap->arr[index]), key, pMap->keyInfo);
+    Node_S_inChainMap* p = getNodeBySKey(&(pMap->arr[index]), key, pMap->keyInfo);
     if (p) {
-        _SData newVal = copyData(value, pMap->valInfo);
+        Data_S newVal = copySData(value, pMap->valInfo);
         if (newVal.isEmpty) {
             printf("\nMemory allocation failed\n");
             return Warning;
         }
-        freeDataInSMapWithList(&(p->entry.value), pMap->valInfo);
+        freeSDataInSChainMap(&(p->entry.value), pMap->valInfo);
         p->entry.value = newVal;
         return Success;
     }
-    _SEntryWithList oldEntry;
+    Entry_S_inChainMap oldEntry;
     oldEntry.isEmpty = false;
     oldEntry.key = key;
     oldEntry.value = value;
     
-    _SEntryWithList newEntry = copyEntry(oldEntry, pMap);
+    Entry_S_inChainMap newEntry = copySEntry(oldEntry, pMap);
     if (newEntry.isEmpty) {
         printf("\nMemory allocation failed\n");
         return Warning;
     }
-    if (insertEntryInList(&(pMap->arr[index]), newEntry) == Warning) {
+    if (insertSEntryInSList(&(pMap->arr[index]), newEntry) == Warning) {
         printf("\nMemory allocation failed\n");
         return Warning;
     }
@@ -387,13 +389,13 @@ static int addEntryFunction(_SMapWithList* pMap, _SData key, _SData value) {
 
 
 //专门为重哈希做的软拷贝方式添加的Entry
-static int addEntryForFreshMap(_SMapWithList* pMap, _SData key, _SData value) {
+static int addSEntryForFreshSChainMap(ChainMap_S* pMap, Data_S key, Data_S value) {
     ull index = (pMap->keyInfo->oper->hashdata(key.data, key.content))%pMap->mod;
-    _SEntryWithList entry;
+    Entry_S_inChainMap entry;
     entry.isEmpty = false;
     entry.key = key;
     entry.value = value;
-    if (insertEntryInList(&(pMap->arr[index]), entry) == Warning) {
+    if (insertSEntryInSList(&(pMap->arr[index]), entry) == Warning) {
         printf("\nMemory allocation failed\n");
         return Warning;
     }
@@ -402,23 +404,24 @@ static int addEntryForFreshMap(_SMapWithList* pMap, _SData key, _SData value) {
 }
 
 
-static void freeListForFreshMap(SingleListInMap* plist) {
-    if (isEmptyList(plist)) {
+//专门做的一个软删除的freeList
+static void freeSListForFreshSChainMap(List_S_inChainMap* plist) {
+    if (isEmptySList(plist)) {
         return;
     }
-    SingleNodeInMap* p = plist->head;
-    SingleNodeInMap* q = NULL;
+    Node_S_inChainMap* p = plist->head;
+    Node_S_inChainMap* q = NULL;
     while (p) {
         q = p;
         p = p->next;
         free(q);
     }
-    initializeList(plist);
+    initSList(plist);
 }
 
 
 //重hash
-static int freshMap(_SMapWithList* pMap) {
+static int freshSChainMap(ChainMap_S* pMap) {
     int newLen = 0;
     if (pMap->len == 0) {
         newLen = 16;    //如果为空,直接给16的空间
@@ -427,18 +430,18 @@ static int freshMap(_SMapWithList* pMap) {
     }
 
     int newSize = pMap->size;
-    int newMod = returnLargestPrime(newLen);
+    int newMod = getLargestPrime(newLen);
     
     //新创建一个newMap;
-    _SMapWithList newMap;
-    SingleListInMap* newArray = (SingleListInMap*)malloc(newLen*sizeof(SingleListInMap));
+    ChainMap_S newMap;
+    List_S_inChainMap* newArray = (List_S_inChainMap*)malloc(newLen*sizeof(List_S_inChainMap));
     if (newArray == NULL) {
         printf("\nMemory allocation failed\n");
         return Warning;
     }
     for (int i = 0; i < newLen; i++) {
         //初始化
-        initializeList(newArray+i);
+        initSList(newArray+i);
     }
 
     newMap.keyInfo = pMap->keyInfo;
@@ -449,9 +452,9 @@ static int freshMap(_SMapWithList* pMap) {
     newMap.size = 0;    //再添加函数中会自动加,这里设置为0
 
     for (int i = 0; i < pMap->len; i++) {
-        SingleNodeInMap* p = pMap->arr[i].head;
+        Node_S_inChainMap* p = pMap->arr[i].head;
         for (int j = 0; j < pMap->arr[i].size; j++, p = p->next) {
-            if (addEntryForFreshMap(&newMap, p->entry.key, p->entry.value) == Warning) {
+            if (addSEntryForFreshSChainMap(&newMap, p->entry.key, p->entry.value) == Warning) {
                 printf("\nMemory allocation failed\n");
                 return Warning;
             }
@@ -459,7 +462,7 @@ static int freshMap(_SMapWithList* pMap) {
     }
 
     for (int i = 0; i < pMap->len; i++) {
-        freeListForFreshMap(&(pMap->arr[i]));
+        freeSListForFreshSChainMap(&(pMap->arr[i]));
     }
     free(pMap->arr);
     *pMap = newMap;
@@ -467,22 +470,22 @@ static int freshMap(_SMapWithList* pMap) {
     return Success;
 }
 
-static int shrinkMap(_SMapWithList* pMap) {
+static int shrinkSChainMap(ChainMap_S* pMap) {
 
 }
 
-int insertKeyAndValInSMapWithList(_SMapWithList* pMap, void* keydata, void* keycontent, void* valdata, void* valcontent) {
+int insertSKeyAndSValInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent, void* valdata, void* valcontent) {
     //当填充因子大于75%时或者Map为空时自动扩容
     if (4*(pMap->size) >= 3*(pMap->len) || pMap->size == 0) {
-        if (freshMap(pMap) == Warning) {
+        if (freshSChainMap(pMap) == Warning) {
             printf("\nMemory allocation failed\n");
             return Warning;
         }
     }
     //原来的stackData函数去除,直接创建
-    _SData key = {keydata, keycontent, false};
-    _SData val = {valdata, valcontent, false};
-    return addEntryFunction(pMap, key, val);
+    Data_S key = {keydata, keycontent, false};
+    Data_S val = {valdata, valcontent, false};
+    return addSEntryFunction(pMap, key, val);
 }
 
 
@@ -492,18 +495,18 @@ int insertKeyAndValInSMapWithList(_SMapWithList* pMap, void* keydata, void* keyc
 
 
 //返回的Data数据为新建,用完后记得释放
-_SData getCopyValByKeyInSMapWithList(_SMapWithList* pMap, void* keydata, void* keycontent) {
-    if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyData();
+Data_S getCopySValBySKeyInSChianMap(ChainMap_S* pMap, void* keydata, void* keycontent) {
+    if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return getEmptySData();
     ull index = (pMap->keyInfo->oper->hashdata(keydata, keycontent))%pMap->mod;
     
-    _SData key = {keydata, keycontent, false};
+    Data_S key = {keydata, keycontent, false};
     
-    SingleNodeInMap* p = findNodeByKey(&(pMap->arr[index]), key, pMap->keyInfo);
+    Node_S_inChainMap* p = getNodeBySKey(&(pMap->arr[index]), key, pMap->keyInfo);
     if (p == NULL) {
-        return returnEmptyData();
+        return getEmptySData();
     } else {
-        _SData newData;
-        newData = copyData(p->entry.value, pMap->valInfo);
+        Data_S newData;
+        newData = copySData(p->entry.value, pMap->valInfo);
         if (newData.isEmpty) {
             printf("\nMemory allocation failed\n");
         }
@@ -512,33 +515,33 @@ _SData getCopyValByKeyInSMapWithList(_SMapWithList* pMap, void* keydata, void* k
 }
 
 
-_SData getPtrValByKeyInSMapWithList(_SMapWithList* pMap, void* keydata, void* keycontent) {
-    if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyData();
+Data_S getPtrSValBySKeyInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent) {
+    if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return getEmptySData();
     ull index = (pMap->keyInfo->oper->hashdata(keydata, keycontent))%pMap->mod;
     
-    _SData key = {keydata, keycontent, false};
+    Data_S key = {keydata, keycontent, false};
     
-    SingleNodeInMap* p = findNodeByKey(&(pMap->arr[index]), key, pMap->keyInfo);
+    Node_S_inChainMap* p = getNodeBySKey(&(pMap->arr[index]), key, pMap->keyInfo);
     if (p == NULL) {
-        return returnEmptyData();
+        return getEmptySData();
     } else {
         return p->entry.value;
     }
 }
 
 
-_SEntryWithList getCopyEntryByKeyInSMapWithList(_SMapWithList* pMap, void* keydata, void* keycontent) {
-    if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return returnEmptyEntry();
+Entry_S_inChainMap getCopySEntryBySKeyInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent) {
+    if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return getEmptySEntry();
     ull index = (pMap->keyInfo->oper->hashdata(keydata, keycontent))%pMap->mod;
     
-    _SData key = {keydata, keycontent, false};
+    Data_S key = {keydata, keycontent, false};
     
-    SingleNodeInMap* p = findNodeByKey(&(pMap->arr[index]), key, pMap->keyInfo);
+    Node_S_inChainMap* p = getNodeBySKey(&(pMap->arr[index]), key, pMap->keyInfo);
     if (p == NULL) {
-        return returnEmptyEntry();
+        return getEmptySEntry();
     } else {
-        _SEntryWithList newEntry;
-        newEntry = copyEntry(p->entry, pMap);
+        Entry_S_inChainMap newEntry;
+        newEntry = copySEntry(p->entry, pMap);
         if (newEntry.isEmpty) {
             printf("\nMemory allocation failed\n");
         }
@@ -547,12 +550,12 @@ _SEntryWithList getCopyEntryByKeyInSMapWithList(_SMapWithList* pMap, void* keyda
 }
 
 
-bool hasKeyInSMapWithList(_SMapWithList* pMap, void* keydata, void* keycontent) {
+bool hasSKeyInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return false;
     ull index = (pMap->keyInfo->oper->hashdata(keydata, keycontent))%pMap->mod;
     
-    _SData key = {keydata, keycontent, false};
-    SingleNodeInMap* p = findNodeByKey(&(pMap->arr[index]), key, pMap->keyInfo);
+    Data_S key = {keydata, keycontent, false};
+    Node_S_inChainMap* p = getNodeBySKey(&(pMap->arr[index]), key, pMap->keyInfo);
     if (p == NULL) {
         return false;
     } else {
@@ -566,12 +569,12 @@ bool hasKeyInSMapWithList(_SMapWithList* pMap, void* keydata, void* keycontent) 
 //删除类
 
 
-int delEntryByKeyInSMapWithList(_SMapWithList* pMap, void* keydata, void* keycontent) {
+int delSEntryBySKeyInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return Warning;
     ull index = (pMap->keyInfo->oper->hashdata(keydata, keycontent))%pMap->mod;
     
-    _SData key = {keydata, keycontent, false};
-    if (delNodeByKey(&(pMap->arr[index]), key, pMap) ==  None) {
+    Data_S key = {keydata, keycontent, false};
+    if (delNodeBySKey(&(pMap->arr[index]), key, pMap) ==  None) {
         printf("\nNot found! Cannot del\n");
         return None;
     }
@@ -588,7 +591,7 @@ int delEntryByKeyInSMapWithList(_SMapWithList* pMap, void* keydata, void* keycon
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //打印类
 
-void printDataInSMapWithList(_SData data, char* tip, InfoOfData* InfoOfKeyOrVal) {
+void printSDataInSChainMap(Data_S data, char* tip, InfoOfData* InfoOfKeyOrVal) {
     if (data.isEmpty) {
         printf("\nData is empty, cannot print\n");
         return;
@@ -598,7 +601,7 @@ void printDataInSMapWithList(_SData data, char* tip, InfoOfData* InfoOfKeyOrVal)
     printf("]");
 }
 
-void printEntryInSMapWithList(_SEntryWithList entry, _SMapWithList* pMap) {
+void printSEntryInSChainMap(Entry_S_inChainMap entry, ChainMap_S* pMap) {
     if (entry.isEmpty) {
         printf("\nEntry is empty, cannot print\n");
         return;
@@ -613,7 +616,7 @@ void printEntryInSMapWithList(_SEntryWithList entry, _SMapWithList* pMap) {
     printf("]");
 }
 
-void printSMapWithList(_SMapWithList* pMap) {
+void printSChainMap(ChainMap_S* pMap) {
     if (pMap->size == 0) {
         printf("\nMap is empty, cannot print\n");
         return;
@@ -621,12 +624,12 @@ void printSMapWithList(_SMapWithList* pMap) {
     int cnt = 0;
     printf("[");
     for (int i = 0; i < pMap->len; i++) {
-        SingleNodeInMap* p = pMap->arr[i].head;
+        Node_S_inChainMap* p = pMap->arr[i].head;
         for (int j = 0; j < pMap->arr[i].size; j++, p = p->next) {
             if (cnt != 0) {
                 printf(", ");
             }
-            printEntryInSMapWithList(p->entry, pMap);
+            printSEntryInSChainMap(p->entry, pMap);
             cnt++;
         }
     }

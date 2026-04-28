@@ -1370,40 +1370,1113 @@
 // #include <stdbool.h>
 // int main()
 // {
-//     _SMapWithList map;
-//     initSMapWithList(&map, &Info_String, &Info_Int);
+//     ChainMap_S map;
+//     initSChainMap(&map, &Info_String, &Info_Int);
 //     int n = 10;
-//     _SList list;
-//     _MList list_1;
+//     List_S list;
+//     List_M list_1;
 //     initSList(&list, &Info_Int);
 //     initMList(&list_1);
 //     for (int i = 0; i < 1000000; i++) {
 //         insertDataAtEndInSList(&list, &i, NULL);
 //         _MData val = stackDataInMList(&i, NULL, 0, &Info_Int);
-//         insertDataAtStartInMList(&list_1, val);
+//         insertMDataAtStartInMList(&list_1, val);
 //     }
 //     // printSList(&list);
 //     printf("\n");
 //     // printMList(&list_1);
 //     printf("\n");
-//     insertKeyAndValInSMapWithList(&map, "djfal", NULL, &n, NULL);
-//     printSMapWithList(&map);
-//     _MMapWithList map_2;
-//     initMMapwithList(&map_2);
-//     _MData a = stackDataInMMapWithList("ddd", NULL, 0, &Info_String);
+//     insertSKeyAndSValInSChainMap(&map, "djfal", NULL, &n, NULL);
+//     printSChainMap(&map);
+//     ChainMap_M map_2;
+//     initMChainMap(&map_2);
+//     Data_M a = stackMDataInMChainMap("ddd", NULL, 0, &Info_String);
 
-//     _MData b = stackDataInMMapWithList(&n, NULL, 1, &Info_Int);
+//     Data_M b = stackMDataInMChainMap(&n, NULL, 1, &Info_Int);
 
-//     insertKeyAndValInMMapWithList(&map_2, a, b);
-//     insertKeyAndValInMMapWithList(&map_2, b, a);
-//     printMMapWithList(&map_2);
-//     freeMMapWithList(&map_2);
+//     insertMKeyAndMValInMChainMap(&map_2, a, b);
+//     insertMKeyAndMValInMChainMap(&map_2, b, a);
+//     printMChainMap(&map_2);
+//     freeMChainMap(&map_2);
     
-//     freeSMapWithList(&map);
+//     freeSChainMap(&map);
 //     freeSList(&list);
 //     freeMList(&list_1);
 //     return 0;
 // }
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <time.h>
+// #include <string.h>
+// #include <windows.h>
+// // 包含你提供的所有头文件
+// #include "Void\List\Multiple_Void_List\_multiple_void_list.h"
+// #include "Void\List\Single_Void_List\_single_void_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_List\_multiple_void_map_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_OA\_multiple_void_map_oa.h"
+// #include "Void\Map\Single_Void_Map\Hash_Map_List\_single_void_map_list.h"
+// #include "Void\Oper\bool_oper\_bool_oper.h"
+// #include "Void\Oper\double_oper\_double_oper.h"
+// #include "Void\Oper\int_oper\_int_oper.h"
+// #include "Void\Oper\string_oper\_string_oper.h"
+// #include "Void\_void_base.h"
+
+// // 计时辅助宏
+// // 使用大括号 { } 开启局部作用域，避免变量名冲突
+// #define TIMER_START { clock_t start = clock();
+// #define TIMER_END(name) clock_t end = clock(); \
+//     printf("[%s] 耗时: %.4f 秒\n", name, (double)(end - start) / CLOCKS_PER_SEC); }
+
+// // --- 1. 测试 Single Void List (SList) ---
+// void test_SList(int count) {
+//     printf("=== 开始测试 SList (数量: %d) ===\n", count);
+//     List_S list;
+//     initSList(&list, &Info_Int);
+
+//     TIMER_START
+//     for (int i = 0; i < count; i++) {
+//         insertSDataAtEndInSList(&list, &i, NULL);
+//     }
+//     TIMER_END("SList 尾部插入")
+
+//     // 测试获取与修改
+//     Data_S ptrData = getPtrSDataByPosInSList(&list, count / 2);
+//     if (!ptrData.isEmpty) *(int*)ptrData.data = 999999;
+
+//     TIMER_START
+//     freeSList(&list);
+//     printf("\n!!!!!已停止!!!!!!!!\n\n");
+    
+//     TIMER_END("SList 内存释放")
+//     printf("\n");
+// }
+
+// // --- 2. 测试 Multiple Void List (MList) ---
+// void test_MList(int count) {
+//     printf("=== 开始测试 MList (异构数据测试) ===\n");
+//     List_M list;
+//     initMList(&list);
+    
+//     // 测试混合类型插入
+//     int i_val = 100;
+//     double d_val = 3.1415;
+//     char* s_val = "Hello Multiple List";
+    
+//     insertMDataAtEndInMList(&list, stackMDataInMList(&i_val, NULL, 0, &Info_Int));
+//     insertMDataAtEndInMList(&list, stackMDataInMList(&d_val, NULL, 1, &Info_Double));
+//     insertMDataAtEndInMList(&list, stackMDataInMList(s_val, NULL, 2, &Info_String));
+    
+//     printf("混合列表内容: ");
+//     printMList(&list);
+//     printf("\n");
+    
+//     // 大规模释放压力测试
+//     printf("正在进行 MList %d 次插入...\n", count);
+//     for (int i = 0; i < count; i++) {
+//         insertMDataAtStartInMList(&list, stackMDataInMList(&i, NULL, 0, &Info_Int));
+//     }
+    
+//     TIMER_START
+//     freeMList(&list);
+//     printf("\n!!!!!已停止!!!!!!!!\n\n");
+    
+//     TIMER_END("MList 内存释放 (含异构逻辑)")
+//     printf("\n");
+// }
+
+// // --- 3. 测试 Single Map (SMap With List) ---
+// void test_SMap(int count) {
+//     printf("=== 开始测试 SMap (String -> Int) ===\n");
+//     ChainMap_S map;
+//     initSChainMap(&map, &Info_String, &Info_Int);
+    
+//     TIMER_START
+//     for (int i = 0; i < count; i++) {
+//         char key[20];
+//         sprintf(key, "key_%d", i);
+//         insertSKeyAndSValInSChainMap(&map, key, NULL, &i, NULL);
+//     }
+//     TIMER_END("SMap 插入")
+    
+//     // 测试查询
+//     Data_S res = getPtrSValBySKeyInSChainMap(&map, "key_500", NULL);
+//     if (!res.isEmpty) printf("查询 key_500 结果: %d\n", *(int*)res.data);
+    
+//     TIMER_START
+//     freeSChainMap(&map);
+//     printf("\n!!!!!已停止!!!!!!!!\n\n");
+    
+//     TIMER_END("SMap 释放")
+//     printf("\n");
+// }
+
+// // --- 4. 测试 Multiple Map (MMap With List) ---
+// void test_MMap_List() {
+//     printf("=== 开始测试 MMap (List Chaining) ===\n");
+//     ChainMap_M mmap;
+//     initMChainMap(&mmap);
+
+//     int age = 25;
+//     double score = 95.5;
+
+//     // 存入: String -> Int
+//     insertMKeyAndMValInMChainMap(&mmap, 
+//         stackMDataInMChainMap("UserAge", NULL, 0, &Info_String),
+//         stackMDataInMChainMap(&age, NULL, 1, &Info_Int));
+
+//     // 存入: Int -> Double (演示异构 Key)
+//     int key_id = 1001;
+//     insertMKeyAndMValInMChainMap(&mmap, 
+//         stackMDataInMChainMap(&key_id, NULL, 1, &Info_Int),
+//         stackMDataInMChainMap(&score, NULL, 2, &Info_Double));
+
+//     printMChainMap(&mmap);
+//     printf("\n");
+
+//     freeMChainMap(&mmap);
+
+//     printf("\n!!!!!已停止!!!!!!!!\n\n");
+    
+//     printf("MMap_List 释放完成\n\n");
+// }
+
+// // --- 5. 测试 Multiple Map (MMap With OA) ---
+// void test_MMap_OA(int count) {
+//     printf("=== 开始测试 MMap (Open Addressing) ===\n");
+//     OAMap_M mapOA;
+//     initMOAMap(&mapOA);
+
+//     TIMER_START
+//     for (int i = 0; i < count; i++) {
+//         // 使用整数作为 Key, 字符串作为 Val
+//         char val_str[32];
+//         sprintf(val_str, "value_is_%d", i);
+        
+//         Data_M k = stackMDataInMOAMap(&i, NULL, 0, &Info_Int);
+//         Data_M v = stackMDataInMOAMap(val_str, NULL, 1, &Info_String);
+        
+//         insertMKeyAndMValInMOAMap(&mapOA, k, v);
+//     }
+//     TIMER_END("MMap_OA 插入")
+
+//     // 删除测试
+//     int target = count / 2;
+//     Data_M delKey = stackMDataInMOAMap(&target, NULL, 0, &Info_Int);
+//     delMEntryByMKeyInMOAMap(&mapOA, delKey);
+//     printf("删除了 Key: %d\n", target);
+
+//     TIMER_START
+//     freeMOAMap(&mapOA);
+//     printf("\n!!!!!已停止!!!!!!!!\n\n");
+    
+//     TIMER_END("MMap_OA 释放")
+//     printf("\n");
+// }
+
+// int main() {
+//     //设置大规模测试样本量
+//     int large_scale = 5000000; // 10万条数据压力测试
+
+//     printf("--- 开始系统综合测试 ---\n\n");
+
+//     test_SList(large_scale);
+//     test_MList(large_scale);
+//     test_SMap(large_scale);
+//     test_MMap_List();
+//     test_MMap_OA(large_scale / 2); // OA 模式通常对装载因子敏感，测试 5万条
+//     printf("\n!!!!!已停止!!!!!!!!\n\n");
+    
+//     printf("--- 所有测试完成 ---\n");
+    
+//     return 0;
+// }
+
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <time.h>
+// #include <string.h>
+// #include <windows.h>
+// // 包含你提供的所有头文件
+// #include "Void\List\Multiple_Void_List\_multiple_void_list.h"
+// #include "Void\List\Single_Void_List\_single_void_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_List\_multiple_void_map_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_OA\_multiple_void_map_oa.h"
+// #include "Void\Map\Single_Void_Map\Hash_Map_List\_single_void_map_list.h"
+// #include "Void\Oper\bool_oper\_bool_oper.h"
+// #include "Void\Oper\double_oper\_double_oper.h"
+// #include "Void\Oper\int_oper\_int_oper.h"
+// #include "Void\Oper\string_oper\_string_oper.h"
+// #include "Void\_void_base.h"
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <time.h>
+// #ifdef _WIN32
+// #include <windows.h>
+// #define sleep(x) Sleep((x) * 1000)
+// #else
+// #include <unistd.h>
+// #endif
+
+// // // 包含底层基础头文件
+// // #include "Void/_void_base.h"
+
+// // // 包含操作函数头文件 (假设路径如下)
+// // #include "Oper/int_oper/_int_oper.h"
+// // #include "Oper/string_oper/_string_oper.h"
+
+// // // 包含 List 头文件
+// // #include "List/Single_Void_List/_single_void_list.h"
+// // #include "List/Multiple_Void_List/_multiple_void_list.h"
+
+// // // 包含 Map 头文件
+// // #include "Map/Single_Void_Map/Hash_Map_List/_single_void_map_list.h"
+// // #include "Map/Multiple_Void_Map/Hash_Map_List/_multiple_void_map_list.h"
+// // #include "Map/Multiple_Void_Map/Hash_Map_OA/_multiple_void_map_oa.h"
+
+// /**
+//  * 测试参数配置
+//  */
+// #define TEST_VOLUME 10000   // 测试数据量，可以根据需要修改此值
+// #define PRINT_LIMIT 10      // 打印预览的数量限制，防止控制台刷屏
+
+// // 外部引用的全局静态操作信息（由您的 Oper 模块提供）
+// extern InfoOfData int_info;
+// extern InfoOfData Info_String;
+
+// // 计时辅助宏
+// #define START_TIMER() clock_t start_t = clock()
+// #define STOP_TIMER(name) \
+//     clock_t end_t = clock(); \
+//     printf("[计时] %s 耗时: %.3f 秒\n", name, (double)(end_t - start_t) / CLOCKS_PER_SEC)
+
+// /**
+//  * 释放并停留
+//  */
+// void release_and_pause(const char* name) {
+//     printf("[系统] 正在释放 %s 的内存...\n", name);
+//     // 这里调用具体的释放函数在各测试函数内部完成
+//     printf("[系统] 释放完毕，进入 3 秒观察期（请观察任务管理器/top）...\n");
+//     sleep(3);
+//     printf("--------------------------------------------------\n\n");
+// }
+
+// /**
+//  * 1. 测试 List_S (单一类型链表 - 整数)
+//  */
+// void test_SList() {
+//     printf(">>> 开始测试 List_S (单一类型: int) 数据量: %d\n", TEST_VOLUME);
+//     List_S list;
+//     initSList(&list, &int_info);
+
+//     START_TIMER();
+//     for (int i = 0; i < TEST_VOLUME; i++) {
+//         int* val = (int*)malloc(sizeof(int));
+//         *val = i;
+//         insertSDataAtEndInSList(&list, val, NULL);
+//     }
+//     STOP_TIMER("List_S 插入");
+
+//     printf("[状态] 插入完成，准备释放...\n");
+//     freeSList(&list);
+//     release_and_pause("List_S");
+// }
+
+// /**
+//  * 2. 测试 List_M (多类型链表 - int & string 混合)
+//  */
+// void test_MList() {
+//     printf(">>> 开始测试 List_M (多类型混合) 数据量: %d\n", TEST_VOLUME);
+//     List_M list;
+//     initMList(&list);
+
+//     START_TIMER();
+//     for (int i = 0; i < TEST_VOLUME; i++) {
+//         if (i % 2 == 0) {
+//             int* v = malloc(sizeof(int)); *v = i;
+//             Data_M dm = stackMDataInMList(v, NULL, 0, &int_info);
+//             insertMDataAtEndInMList(&list, dm);
+//         } else {
+//             char* s = malloc(20); sprintf(s, "str_%d", i);
+//             Data_M dm = stackMDataInMList(s, NULL, 1, &string_info);
+//             insertMDataAtEndInMList(&list, dm);
+//         }
+//     }
+//     STOP_TIMER("List_M 插入");
+
+//     freeMList(&list);
+//     release_and_pause("List_M");
+// }
+
+// /**
+//  * 3. 测试 ChainMap_S (单类型链表哈希表: int -> string)
+//  */
+// void test_SChainMap() {
+//     printf(">>> 开始测试 ChainMap_S (int -> string) 数据量: %d\n", TEST_VOLUME);
+//     ChainMap_S map;
+//     initSChainMap(&map, &int_info, &string_info);
+
+//     START_TIMER();
+//     for (int i = 0; i < TEST_VOLUME; i++) {
+//         int* k = malloc(sizeof(int)); *k = i;
+//         char* v = malloc(20); sprintf(v, "val_%d", i);
+//         insertSKeyAndSValInSChainMap(&map, k, NULL, v, NULL);
+//     }
+//     STOP_TIMER("ChainMap_S 插入");
+
+//     // 随机查询测试
+//     int search_k = TEST_VOLUME / 2;
+//     printf("[验证] 查询键 %d...\n", search_k);
+//     Data_S res = getPtrSValBySKeyInSChainMap(&map, &search_k, NULL);
+//     if (res.data != NULL) printf("[验证] 找到结果: %s\n", (char*)res.data);
+
+//     freeSChainMap(&map);
+//     release_and_pause("ChainMap_S");
+// }
+
+// /**
+//  * 4. 测试 OAMap_M (多类型开放定址哈希表)
+//  */
+// void test_MOAMap() {
+//     printf(">>> 开始测试 OAMap_M (多类型开放定址) 数据量: %d\n", TEST_VOLUME / 2); // OA通常不建议太满
+//     OAMap_M map;
+//     initMOAMap(&map);
+
+//     START_TIMER();
+//     for (int i = 0; i < TEST_VOLUME / 2; i++) {
+//         int* k_ptr = malloc(sizeof(int)); *k_ptr = i;
+//         int* v_ptr = malloc(sizeof(int)); *v_ptr = i * 10;
+        
+//         Data_M key = stackMDataInMOAMap(k_ptr, NULL, 0, &int_info);
+//         Data_M val = stackMDataInMOAMap(v_ptr, NULL, 0, &int_info);
+//         insertMKeyAndMValInMOAMap(&map, key, val);
+//     }
+//     STOP_TIMER("OAMap_M 插入");
+
+//     freeMOAMap(&map);
+//     release_and_pause("OAMap_M");
+// }
+
+// int main() {
+//     printf("==================================================\n");
+//     printf("   Void 泛型数据结构库 - 压力与内存自动化测试\n");
+//     printf("==================================================\n\n");
+
+//     test_SList();
+//     test_MList();
+//     test_SChainMap();
+//     test_MOAMap();
+
+//     printf("所有测试已完成。\n");
+//     return 0;
+// }
+
+
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <time.h>
+// #include <string.h>
+// #include <windows.h>
+
+// // 包含你提供的所有头文件
+// #include "Void\List\Multiple_Void_List\_multiple_void_list.h"
+// #include "Void\List\Single_Void_List\_single_void_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_List\_multiple_void_map_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_OA\_multiple_void_map_oa.h"
+// #include "Void\Map\Single_Void_Map\Hash_Map_List\_single_void_map_list.h"
+// #include "Void\Oper\bool_oper\_bool_oper.h"
+// #include "Void\Oper\double_oper\_double_oper.h"
+// #include "Void\Oper\int_oper\_int_oper.h"
+// #include "Void\Oper\string_oper\_string_oper.h"
+// #include "Void\_void_base.h"
+
+// /**
+//  * 测试配置
+//  */
+// #define TEST_VOLUME 5000000  // 测试数据量，你可以随意修改这个值进行压力测试
+
+// // 假设这些全局静态变量已经在对应的 _oper.c 中定义
+// // extern InfoOfData int_info;
+// // extern InfoOfData string_info;
+// // extern InfoOfData double_info;
+
+// // 计时辅助
+// void print_duration(const char* label, clock_t start) {
+//     clock_t end = clock();
+//     double duration = (double)(end - start) / CLOCKS_PER_SEC;
+//     printf("[%s] 耗时: %.4f 秒\n", label, duration);
+// }
+
+// // 释放后的缓冲观察
+// void memory_pause(const char* msg) {
+//     printf(">> %s 释放完成。暂停 3 秒观察内存回收情况...\n", msg);
+//     Sleep(3000);
+//     printf("--------------------------------------------------\n");
+// }
+
+// /**
+//  * 1. 测试 List_S (单一类型: int)
+//  */
+// void test_SList() {
+//     printf("开始测试: List_S (Single Type List - Int)\n");
+//     List_S list;
+//     initSList(&list, &Info_Int);
+
+//     clock_t start = clock();
+//     for (int i = 0; i < TEST_VOLUME; i++) {
+//         int* data = (int*)malloc(sizeof(int));
+//         *data = i;
+//         insertSDataAtEndInSList(&list, data, NULL);
+//     }
+//     print_duration("List_S 批量插入", start);
+
+//     freeSList(&list);
+//     memory_pause("List_S");
+// }
+
+// /**
+//  * 2. 测试 List_M (多类型混合)
+//  */
+// void test_MList() {
+//     printf("开始测试: List_M (Multiple Type List - Int & String)\n");
+//     List_M list;
+//     initMList(&list);
+
+//     clock_t start = clock();
+//     for (int i = 0; i < TEST_VOLUME; i++) {
+//         if (i % 2 == 0) {
+//             int* d = malloc(sizeof(int)); *d = i;
+//             insertMDataAtEndInMList(&list, stackMDataInMList(d, NULL, 1, &Info_Int));
+//         } else {
+//             char* s = _strdup("Multiple_Void_Test");
+//             insertMDataAtEndInMList(&list, stackMDataInMList(s, NULL, 2, &Info_String));
+//         }
+//     }
+//     print_duration("List_M 批量插入", start);
+
+//     freeMList(&list);
+//     memory_pause("List_M");
+// }
+
+// /**
+//  * 3. 测试 ChainMap_S (单一类型哈希表: int -> int)
+//  */
+// void test_SChainMap() {
+//     printf("开始测试: ChainMap_S (Single Type Map - Int to Int)\n");
+//     ChainMap_S map;
+//     initSChainMap(&map, &Info_Int, &Info_Int);
+
+//     clock_t start = clock();
+//     for (int i = 0; i < TEST_VOLUME; i++) {
+//         int* k = malloc(sizeof(int)); *k = i;
+//         int* v = malloc(sizeof(int)); *v = i * 2;
+//         insertSKeyAndSValInSChainMap(&map, k, NULL, v, NULL);
+//     }
+//     print_duration("ChainMap_S 批量插入", start);
+
+//     // 测试查询
+//     int search_key = TEST_VOLUME / 2;
+//     Data_S result = getPtrSValBySKeyInSChainMap(&map, &search_key, NULL);
+//     if (result.data) {
+//         printf("查询成功: Key=%d, Val=%d\n", search_key, *(int*)result.data);
+//     }
+
+//     freeSChainMap(&map);
+//     memory_pause("ChainMap_S");
+// }
+
+// /**
+//  * 4. 测试 ChainMap_M (多类型哈希表)
+//  */
+// void test_MChainMap() {
+//     printf("开始测试: ChainMap_M (Multiple Type Map)\n");
+//     ChainMap_M map;
+//     initMChainMap(&map);
+
+//     clock_t start = clock();
+//     for (int i = 0; i < TEST_VOLUME; i++) {
+//         int* k = malloc(sizeof(int)); *k = i;
+//         double* v = malloc(sizeof(double)); *v = (double)i + 0.5;
+        
+//         Data_M key = stackMDataInMChainMap(k, NULL, 1, &Info_Int);
+//         Data_M val = stackMDataInMChainMap(v, NULL, 3, &Info_Double);
+//         insertMKeyAndMValInMChainMap(&map, key, val);
+//     }
+//     print_duration("ChainMap_M 批量插入", start);
+
+//     freeMChainMap(&map);
+//     memory_pause("ChainMap_M");
+// }
+
+// /**
+//  * 5. 测试 OAMap_M (开放定址法)
+//  */
+// void test_MOAMap() {
+//     printf("开始测试: OAMap_M (Open Address Multiple Type Map)\n");
+//     OAMap_M map;
+//     initMOAMap(&map);
+
+//     // 注意：开放定址法在 TEST_VOLUME 很大且没有自动扩容时会很慢或失败
+//     // 这里取一个小一点的量或者确保你的实现支持扩容
+//     int oa_volume = TEST_VOLUME / 5; 
+
+//     clock_t start = clock();
+//     for (int i = 0; i < oa_volume; i++) {
+//         int* k = malloc(sizeof(int)); *k = i;
+//         int* v = malloc(sizeof(int)); *v = i;
+//         insertMKeyAndMValInMOAMap(&map, 
+//             stackMDataInMOAMap(k, NULL, 1, &Info_Int), 
+//             stackMDataInMOAMap(v, NULL, 1, &Info_Int));
+//     }
+//     print_duration("OAMap_M 批量插入", start);
+
+//     freeMOAMap(&map);
+//     memory_pause("OAMap_M");
+// }
+
+// int main() {
+//     printf("==================================================\n");
+//     printf("   Void 库 自动化压力与内存测试启动\n");
+//     printf("   当前单项测试规模: %d\n", TEST_VOLUME);
+//     printf("==================================================\n\n");
+
+//     test_SList();
+//     test_MList();
+//     test_SChainMap();
+//     test_MChainMap();
+//     test_MOAMap();
+
+//     printf("所有测试完成。按回车键退出...\n");
+//     getchar();
+//     return 0;
+// }
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <time.h>
+// #include <string.h>
+// #include <windows.h>
+
+// // 包含你提供的所有头文件
+// #include "Void\List\Multiple_Void_List\_multiple_void_list.h"
+// #include "Void\List\Single_Void_List\_single_void_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_List\_multiple_void_map_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_OA\_multiple_void_map_oa.h"
+// #include "Void\Map\Single_Void_Map\Hash_Map_List\_single_void_map_list.h"
+// #include "Void\Oper\bool_oper\_bool_oper.h"
+// #include "Void\Oper\double_oper\_double_oper.h"
+// #include "Void\Oper\int_oper\_int_oper.h"
+// #include "Void\Oper\string_oper\_string_oper.h"
+// #include "Void\_void_base.h"
+
+/**
+ * 测试参数
+ */
+// #define TEST_VOLUME 10000000
+
+// // 引用全局操作信息
+// // extern InfoOfData int_info;
+// // extern InfoOfData string_info;
+// // extern InfoOfData double_info;
+
+// // 计时辅助
+// void print_timer(const char* msg, clock_t start) {
+//     printf("[%s] 耗时: %.3f 秒\n", msg, (double)(clock() - start) / CLOCKS_PER_SEC);
+// }
+
+// // 释放并观察
+// void pause_3s(const char* name) {
+//     printf(">> %s 已调用 free。进入 3 秒观察期...\n", name);
+//     Sleep(3000);
+//     printf("--------------------------------------------------\n");
+// }
+
+// /**
+//  * 1. 测试 List_S (整数)
+//  * 核心：直接传局部变量地址 &i
+//  */
+// void test_SList() {
+//     printf("开始测试 List_S (数据量: %d)\n", TEST_VOLUME);
+//     List_S list;
+//     initSList(&list, &Info_Int);
+
+//     clock_t start = clock();
+//     for (int i = 0; i < TEST_VOLUME; i++) {
+//         // 你的库会复制数据，所以直接传 i 的地址是安全的
+//         insertSDataAtEndInSList(&list, &i, NULL);
+//     }
+//     print_timer("List_S 插入", start);
+
+//     freeSList(&list);
+//     pause_3s("List_S");
+// }
+
+// /**
+//  * 2. 测试 List_M (混合类型)
+//  */
+// void test_MList() {
+//     printf("开始测试 List_M (数据量: %d)\n", TEST_VOLUME);
+//     List_M list;
+//     initMList(&list);
+
+//     clock_t start = clock();
+//     for (int i = 0; i < TEST_VOLUME; i++) {
+//         if (i % 2 == 0) {
+//             insertMDataAtEndInMList(&list, stackMDataInMList(&i, NULL, 0, &Info_Int));
+//         } else {
+//             // 传常量字符串地址，库会复制字符串内容
+//             insertMDataAtEndInMList(&list, stackMDataInMList("TestString", NULL, 1, &Info_String));
+//         }
+//     }
+//     print_timer("List_M 插入", start);
+
+//     freeMList(&list);
+//     pause_3s("List_M");
+// }
+
+// /**
+//  * 3. 测试 ChainMap_S (Int -> Double)
+//  */
+// void test_SChainMap() {
+//     printf("开始测试 ChainMap_S (数据量: %d)\n", TEST_VOLUME);
+//     ChainMap_S map;
+//     initSChainMap(&map, &Info_Int, &Info_Double);
+
+//     clock_t start = clock();
+//     for (int i = 0; i < TEST_VOLUME; i++) {
+//         int k = i;
+//         double v = i * 1.5;
+//         // 关键：这里完全没有 malloc，全靠你的库内部 copy
+//         insertSKeyAndSValInSChainMap(&map, &k, NULL, &v, NULL);
+//     }
+//     print_timer("ChainMap_S 插入", start);
+
+//     freeSChainMap(&map);
+//     pause_3s("ChainMap_S");
+// }
+
+// /**
+//  * 4. 测试 ChainMap_M (混合键值对)
+//  */
+// void test_MChainMap() {
+//     printf("开始测试 ChainMap_M (数据量: %d)\n", TEST_VOLUME);
+//     ChainMap_M map;
+//     initMChainMap(&map);
+
+//     clock_t start = clock();
+//     for (int i = 0; i < TEST_VOLUME; i++) {
+//         int k = i;
+//         char* v = "MapValue";
+//         insertMKeyAndMValInMChainMap(&map, 
+//             stackMDataInMChainMap(&k, NULL, 0, &Info_Int), 
+//             stackMDataInMChainMap(v, NULL, 1, &Info_String));
+//     }
+//     print_timer("ChainMap_M 插入", start);
+
+//     freeMChainMap(&map);
+//     pause_3s("ChainMap_M");
+// }
+
+// /**
+//  * 5. 测试 OAMap_M (开放定址法)
+//  */
+// void test_MOAMap() {
+//     printf("开始测试 OAMap_M (数据量: %d)\n", TEST_VOLUME / 2);
+//     OAMap_M map;
+//     initMOAMap(&map);
+
+//     clock_t start = clock();
+//     for (int i = 0; i < TEST_VOLUME / 2; i++) {
+//         int k = i;
+//         int v = i * 10;
+//         insertMKeyAndMValInMOAMap(&map, 
+//             stackMDataInMOAMap(&k, NULL, 0, &Info_Int), 
+//             stackMDataInMOAMap(&v, NULL, 0, &Info_Int));
+//     }
+//     print_timer("OAMap_M 插入", start);
+
+//     freeMOAMap(&map);
+//     pause_3s("OAMap_M");
+// }
+
+// int main() {
+//     printf("================================================\n");
+//     printf("   Void 库 自动化压力与内存测试 (非动态分配模式)\n");
+//     printf("   测试说明：外部不使用 malloc，完全由库内部复制数据\n");
+//     printf("================================================\n\n");
+
+//     test_SList();
+//     test_MList();
+//     test_SChainMap();
+//     test_MChainMap();
+//     test_MOAMap();
+
+//     printf("全部测试结束，请确认内存是否已完全回落至初始值。\n");
+//     printf("按回车键退出程序...");
+//     getchar();
+
+//     return 0;
+// }
+
+
+
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <time.h>
+// #include <string.h>
+// #include <windows.h>
+// #include "Void\List\Multiple_Void_List\_multiple_void_list.h"
+// #include "Void\List\Single_Void_List\_single_void_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_List\_multiple_void_map_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_OA\_multiple_void_map_oa.h"
+// #include "Void\Map\Single_Void_Map\Hash_Map_List\_single_void_map_list.h"
+// #include "Void\Oper\bool_oper\_bool_oper.h"
+// #include "Void\Oper\double_oper\_double_oper.h"
+// #include "Void\Oper\int_oper\_int_oper.h"
+// #include "Void\Oper\string_oper\_string_oper.h"
+// #include "Void\_void_base.h"
+
+
+// #define MAX 100000
+
+// const char all[] =  "abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";
+// void generate(char* string, int len) {
+//     for (int i = 0; i < len; i++) {
+//         int temp = rand()%(sizeof(all)-1);
+//         string[i] = all[temp];
+//     }
+//     string[len] = '\0';
+// }
+
+
+// void testChainMap_S() {
+//     ChainMap_S map;
+//     initSChainMap(&map, &Info_String, &Info_Int);
+//     for (int i = 0; i < MAX; i++) {
+//         char string[101];
+//         generate(string, 20);
+//         insertSKeyAndSValInSChainMap(&map, string, NULL, &i, NULL);
+//     }
+//     printf("\nChainMap_S插入结束\n\n");
+//     Sleep(5000);
+//     freeSChainMap(&map);
+//     printf("\nChainMap_S释放结束\n\n");
+//     Sleep(5000);
+    
+// }
+
+// void testChainMap_M() {
+//     ChainMap_M map;
+//     initMChainMap(&map);
+
+//     for (int i = 0; i < MAX; i++) {
+//         char string[101];
+//         generate(string, 20);
+//         Data_M k = stackMDataInMChainMap(string, NULL, 0, &Info_String);
+//         Data_M v = stackMDataInMChainMap(&i, NULL, 1, &Info_Int);
+//         insertMKeyAndMValInMChainMap(&map, k, v);
+//         insertMKeyAndMValInMChainMap(&map, v, k);
+//     }
+    
+//     printf("\nChainMap_M插入结束\n\n");
+//     Sleep(5000);
+//     freeMChainMap(&map);
+//     printf("\nChainMap_M释放结束\n\n");
+//     Sleep(5000);
+// }
+
+// void testOAMap_M() {
+//     OAMap_M map;
+//     initMOAMap(&map);
+    
+//     for (int i = 0; i < MAX; i++) {
+//         char string[101];
+//         generate(string, 20);
+//         Data_M k = stackMDataInMOAMap(string, NULL, 0, &Info_String);
+//         Data_M v = stackMDataInMOAMap(&i, NULL, 1, &Info_Int);
+//         insertMKeyAndMValInMOAMap(&map, k, v);
+//         insertMKeyAndMValInMOAMap(&map, v, k);
+//     }
+    
+//     printf("\nOAMap_M插入结束\n\n");
+//     Sleep(5000);
+//     freeMOAMap(&map);
+//     printf("\nOAMap_M释放结束\n\n");
+//     Sleep(5000);
+
+// }
+
+
+
+// int main()
+// {
+//     testChainMap_M();
+//     testChainMap_S();
+//     testOAMap_M();
+
+
+//     return 0;
+// }
+
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <time.h>
+// #include <string.h>
+// #include <windows.h>
+
+// // 包含你提供的所有头文件
+// #include "Void\List\Multiple_Void_List\_multiple_void_list.h"
+// #include "Void\List\Single_Void_List\_single_void_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_List\_multiple_void_map_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_OA\_multiple_void_map_oa.h"
+// #include "Void\Map\Single_Void_Map\Hash_Map_List\_single_void_map_list.h"
+// // #include "Void\Map\Single_Void_Map\Hash_Map_OA\_single_void_map_oa.h"
+// #include "Void\Oper\bool_oper\_bool_oper.h"
+// #include "Void\Oper\double_oper\_double_oper.h"
+// #include "Void\Oper\int_oper\_int_oper.h"
+// #include "Void\Oper\string_oper\_string_oper.h"
+// #include "Void\_void_base.h"
+
+// // 引用外部提供的 InfoOfData 指针
+// extern InfoOfData* Info_Int;
+// extern InfoOfData* Info_Double;
+// extern InfoOfData* Info_String;
+// extern InfoOfData* Info_Bool;
+
+// #define TEST_SIZE 20000  // 测试数据量
+
+// /**
+//  * 辅助函数：显示时间损耗
+//  */
+// void print_elapsed(const char* label, clock_t start) {
+//     double duration = (double)(clock() - start) / CLOCKS_PER_SEC;
+//     printf("[%s] 耗时: %.4f 秒\n", label, duration);
+// }
+
+// int main() {
+//     printf("==================================================\n");
+//     printf("   OAMap_S (单一类型开放定址法) 自动化验证程序\n");
+//     printf("   测试规模: %d | 模式: 深拷贝 (栈数据)\n", TEST_SIZE);
+//     printf("==================================================\n\n");
+
+//     OAMap_S map;
+//     // 初始化：Key 使用 Int，Value 使用 String
+//     initSOAMap(&map, Info_Int, Info_String);
+
+//     // --- 1. 批量插入测试 ---
+//     printf("1. 正在执行批量插入...\n");
+//     int success_count = 0;
+//     clock_t start = clock();
+    
+//     for (int i = 0; i < TEST_SIZE; i++) {
+//         int key = i;
+//         char buf[32];
+//         sprintf(buf, "Value_%d", i);
+
+//         // 直接传局部变量地址，库内部会执行 deep copy
+//         if (insertSKeyAndSValInSOAMap(&map, &key, NULL, buf, NULL) == Success) {
+//             success_count++;
+//         }
+//     }
+//     print_elapsed("批量插入", start);
+//     printf("成功插入数量: %d / %d\n\n", success_count, TEST_SIZE);
+
+//     // --- 2. 插入有效性验证 (准确性检查) ---
+//     printf("2. 正在验证数据准确性 (随机抽样)...\n");
+//     int check_keys[] = {0, TEST_SIZE / 2, TEST_SIZE - 1};
+//     for (int i = 0; i < 3; i++) {
+//         int target_key = check_keys[i];
+//         // 获取指针以读取数据
+//         Data_S result = getPtrSValBySKeyInSOAMap(&map, &target_key, NULL);
+        
+//         if (!result.isEmpty) {
+//             printf("  - 查找 Key[%d]: 得到 \"%s\" (校验通过)\n", target_key, (char*)result.data);
+//         } else {
+//             printf("  - 查找 Key[%d]: 失败 (验证未通过!)\n", target_key);
+//         }
+//     }
+//     printf("\n");
+
+//     // --- 3. 覆盖测试 (验证更新逻辑) ---
+//     printf("3. 验证 Key 覆盖更新...\n");
+//     int update_key = TEST_SIZE / 2;
+//     char* new_val = "Updated_Value";
+//     insertSKeyAndSValInSOAMap(&map, &update_key, NULL, new_val, NULL);
+    
+//     Data_S updated_res = getPtrSValBySKeyInSOAMap(&map, &update_key, NULL);
+//     printf("  - 更新 Key[%d] 为 \"%s\"\n", update_key, (char*)updated_res.data);
+//     printf("\n");
+
+//     // --- 4. 删除验证 ---
+//     printf("4. 验证删除功能...\n");
+//     int del_key = 100;
+//     if (delSEntryBySKeyInSOAMap(&map, &del_key, NULL) == Success) {
+//         bool exists = hasSKeyInSOAMap(&map, &del_key, NULL);
+//         printf("  - 删除 Key[%d] 成功，再次查询存在状态: %s\n", 
+//                del_key, exists ? "仍存在(异常)" : "已消失(正常)");
+//     }
+//     printf("\n");
+
+//     // --- 5. 内存清理与终期观察 ---
+//     printf("5. 执行 freeSOAMap 释放所有深拷贝副本...\n");
+//     start = clock();
+//     freeSOAMap(&map);
+//     print_elapsed("内存释放", start);
+
+//     printf("\n所有验证完成。请观察任务管理器，内存应已完全回落。\n");
+//     printf("按回车键退出...");
+//     getchar();
+
+//     return 0;
+// }
+
+
+
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <time.h>
+// #include <string.h>
+// #include <windows.h>
+
+// // 包含你要求的所有头文件
+// #include "Void\List\Multiple_Void_List\_multiple_void_list.h"
+// #include "Void\List\Single_Void_List\_single_void_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_List\_multiple_void_map_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_OA\_multiple_void_map_oa.h"
+// #include "Void\Map\Single_Void_Map\Hash_Map_List\_single_void_map_list.h"
+// // #include "Void\Map\Single_Void_Map\Hash_Map_OA\_single_void_map_oa.h"
+// #include "Void\Oper\bool_oper\_bool_oper.h"
+// #include "Void\Oper\double_oper\_double_oper.h"
+// #include "Void\Oper\int_oper\_int_oper.h"
+// #include "Void\Oper\string_oper\_string_oper.h"
+// #include "Void\_void_base.h"
+
+// #define MAX 100000
+
+// // 保持你提供的随机字符串生成逻辑
+// const char all[] = "abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";
+// void generate(char* string, int len) {
+//     for (int i = 0; i < len; i++) {
+//         int temp = rand() % (sizeof(all) - 1);
+//         string[i] = all[temp];
+//     }
+//     string[len] = '\0';
+// }
+
+// /**
+//  * OAMap_S 专项测试程序
+//  * 遵循深拷贝逻辑，外部不使用 malloc
+//  */
+// void testOAMap_S() {
+//     printf("===== 开始 OAMap_S (Int -> String) 测试 =====\n");
+//     OAMap_S map;
+//     // 使用你提供的全局 Info 变量指针
+//     initSOAMap(&map, &Info_Int, &Info_String);
+
+//     clock_t start_time = clock();
+//     int success_count = 0;
+
+//     // 1. 压力插入测试
+//     for (int i = 0; i < MAX; i++) {
+//         int key = i;
+//         char val_str[21];
+//         generate(val_str, 20);
+
+//         // 插入并验证返回值是否为 Success
+//         if (insertSKeyAndSValInSOAMap(&map, &key, NULL, val_str, NULL) == Success) {
+//             success_count++;
+//         }
+//     }
+    
+//     clock_t end_time = clock();
+//     printf("插入 %d 条数据耗时: %.3f 秒\n", MAX, (double)(end_time - start_time) / CLOCKS_PER_SEC);
+//     printf("成功插入数量: %d\n", success_count);
+
+//     // 2. 随机验证数据有效性
+//     printf("正在验证数据准确性...\n");
+//     int test_key = MAX / 2;
+//     // 使用 getPtr 获取数据指针进行校验
+//     Data_S result = getPtrSValBySKeyInSOAMap(&map, &test_key, NULL);
+    
+//     if (!result.isEmpty) {
+//         printf("验证成功: Key[%d] 对应 Value 为: %s\n", test_key, (char*)result.data);
+//     } else {
+//         printf("验证失败: 未找到 Key[%d]\n", test_key);
+//     }
+
+//     // 3. 删除测试
+//     int del_key = 10;
+//     if (delSEntryBySKeyInSOAMap(&map, &del_key, NULL) == Success) {
+//         printf("删除 Key[%d] 成功\n", del_key);
+//     }
+
+//     printf("等待 5 秒观察内存占用...\n");
+//     Sleep(5000);
+
+//     // 4. 释放内存
+//     freeSOAMap(&map);
+//     printf("OAMap_S 释放完成，请检查内存回落情况。\n");
+//     printf("==========================================\n\n");
+//     Sleep(5000);
+// }
+
+// // 保持你示例中的其他测试函数结构
+// void testChainMap_S() {
+//     ChainMap_S map;
+//     initSChainMap(&map, &Info_String, &Info_Int);
+//     for (int i = 0; i < MAX; i++) {
+//         char string[101];
+//         generate(string, 20);
+//         insertSKeyAndSValInSChainMap(&map, string, NULL, &i, NULL);
+//     }
+//     printf("\nChainMap_S插入结束\n\n");
+//     Sleep(5000);
+//     freeSChainMap(&map);
+//     printf("\nChainMap_S释放结束\n\n");
+//     Sleep(5000);
+// }
+
+// void testChainMap_M() {
+//     ChainMap_M map;
+//     initMChainMap(&map);
+//     for (int i = 0; i < MAX; i++) {
+//         char string[101];
+//         generate(string, 20);
+//         Data_M k = stackMDataInMChainMap(string, NULL, 0, &Info_String);
+//         Data_M v = stackMDataInMChainMap(&i, NULL, 1, &Info_Int);
+//         insertMKeyAndMValInMChainMap(&map, k, v);
+//     }
+//     printf("\nChainMap_M插入结束\n\n");
+//     Sleep(5000);
+//     freeMChainMap(&map);
+//     printf("\nChainMap_M释放结束\n\n");
+//     Sleep(5000);
+// }
+
+// int main() {
+//     srand((unsigned int)time(NULL));
+    
+//     // 运行你的示例测试
+//     testChainMap_M();
+//     testChainMap_S();
+    
+//     // 运行新写的 OAMap_S 测试
+//     testOAMap_S();
+
+//     return 0;
+// }
+
 
 
 #include <stdio.h>
@@ -1411,7 +2484,8 @@
 #include <time.h>
 #include <string.h>
 #include <windows.h>
-// 包含你提供的所有头文件
+
+// 包含你项目的所有核心头文件
 #include "Void\List\Multiple_Void_List\_multiple_void_list.h"
 #include "Void\List\Single_Void_List\_single_void_list.h"
 #include "Void\Map\Multiple_Void_Map\Hash_Map_List\_multiple_void_map_list.h"
@@ -1423,172 +2497,94 @@
 #include "Void\Oper\string_oper\_string_oper.h"
 #include "Void\_void_base.h"
 
-// 计时辅助宏
-// 使用大括号 { } 开启局部作用域，避免变量名冲突
-#define TIMER_START { clock_t start = clock();
-#define TIMER_END(name) clock_t end = clock(); \
-    printf("[%s] 耗时: %.4f 秒\n", name, (double)(end - start) / CLOCKS_PER_SEC); }
+#define MAX 1000000
 
-// --- 1. 测试 Single Void List (SList) ---
-void test_SList(int count) {
-    printf("=== 开始测试 SList (数量: %d) ===\n", count);
-    _SList list;
-    initSList(&list, &Info_Int);
-
-    TIMER_START
-    for (int i = 0; i < count; i++) {
-        insertDataAtEndInSList(&list, &i, NULL);
+// 保持你提供的随机字符串生成逻辑
+const char all[] = "abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";
+void generate(char* string, int len) {
+    for (int i = 0; i < len; i++) {
+        int temp = rand() % (sizeof(all) - 1);
+        string[i] = all[temp];
     }
-    TIMER_END("SList 尾部插入")
-
-    // 测试获取与修改
-    _SData ptrData = getPtrDataByPosInSList(&list, count / 2);
-    if (!ptrData.isEmpty) *(int*)ptrData.data = 999999;
-
-    TIMER_START
-    freeSList(&list);
-    printf("\n!!!!!已停止!!!!!!!!\n\n");
-    Sleep(5000);
-    TIMER_END("SList 内存释放")
-    printf("\n");
+    string[len] = '\0';
 }
 
-// --- 2. 测试 Multiple Void List (MList) ---
-void test_MList(int count) {
-    printf("=== 开始测试 MList (异构数据测试) ===\n");
-    _MList list;
-    initMList(&list);
-    
-    // 测试混合类型插入
-    int i_val = 100;
-    double d_val = 3.1415;
-    char* s_val = "Hello Multiple List";
-    
-    insertDataAtEndInMList(&list, stackDataInMList(&i_val, NULL, 0, &Info_Int));
-    insertDataAtEndInMList(&list, stackDataInMList(&d_val, NULL, 1, &Info_Double));
-    insertDataAtEndInMList(&list, stackDataInMList(s_val, NULL, 2, &Info_String));
-    
-    printf("混合列表内容: ");
-    printMList(&list);
-    printf("\n");
-    
-    // 大规模释放压力测试
-    printf("正在进行 MList %d 次插入...\n", count);
-    for (int i = 0; i < count; i++) {
-        insertDataAtStartInMList(&list, stackDataInMList(&i, NULL, 0, &Info_Int));
-    }
-    
-    TIMER_START
-    freeMList(&list);
-    printf("\n!!!!!已停止!!!!!!!!\n\n");
-    Sleep(5000);
-    TIMER_END("MList 内存释放 (含异构逻辑)")
-    printf("\n");
-}
+/**
+ * 针对 OAMap_M 的专项测试程序
+ */
+void testOAMap_M() {
+    OAMap_M map;
+    clock_t start, end;
+    initMOAMap(&map);
 
-// --- 3. 测试 Single Map (SMap With List) ---
-void test_SMap(int count) {
-    printf("=== 开始测试 SMap (String -> Int) ===\n");
-    _SMapWithList map;
-    initSMapWithList(&map, &Info_String, &Info_Int);
-    
-    TIMER_START
-    for (int i = 0; i < count; i++) {
-        char key[20];
-        sprintf(key, "key_%d", i);
-        insertKeyAndValInSMapWithList(&map, key, NULL, &i, NULL);
-    }
-    TIMER_END("SMap 插入")
-    
-    // 测试查询
-    _SData res = getPtrValByKeyInSMapWithList(&map, "key_500", NULL);
-    if (!res.isEmpty) printf("查询 key_500 结果: %d\n", *(int*)res.data);
-    
-    TIMER_START
-    freeSMapWithList(&map);
-    printf("\n!!!!!已停止!!!!!!!!\n\n");
-    Sleep(5000);
-    TIMER_END("SMap 释放")
-    printf("\n");
-}
+    printf("--- OAMap_M 压力与有效性测试开始 ---\n");
 
-// --- 4. 测试 Multiple Map (MMap With List) ---
-void test_MMap_List() {
-    printf("=== 开始测试 MMap (List Chaining) ===\n");
-    _MMapWithList mmap;
-    initMMapwithList(&mmap);
-
-    int age = 25;
-    double score = 95.5;
-
-    // 存入: String -> Int
-    insertKeyAndValInMMapWithList(&mmap, 
-        stackDataInMMapWithList("UserAge", NULL, 0, &Info_String),
-        stackDataInMMapWithList(&age, NULL, 1, &Info_Int));
-
-    // 存入: Int -> Double (演示异构 Key)
-    int key_id = 1001;
-    insertKeyAndValInMMapWithList(&mmap, 
-        stackDataInMMapWithList(&key_id, NULL, 1, &Info_Int),
-        stackDataInMMapWithList(&score, NULL, 2, &Info_Double));
-
-    printMMapWithList(&mmap);
-    printf("\n");
-
-    freeMMapWithList(&mmap);
-
-    printf("\n!!!!!已停止!!!!!!!!\n\n");
-    Sleep(5000);
-    printf("MMap_List 释放完成\n\n");
-}
-
-// --- 5. 测试 Multiple Map (MMap With OA) ---
-void test_MMap_OA(int count) {
-    printf("=== 开始测试 MMap (Open Addressing) ===\n");
-    _MMapWithOA mapOA;
-    initMMapWithOA(&mapOA);
-
-    TIMER_START
-    for (int i = 0; i < count; i++) {
-        // 使用整数作为 Key, 字符串作为 Val
-        char val_str[32];
-        sprintf(val_str, "value_is_%d", i);
+    // 1. 批量插入测试并显示时间
+    int success_count = 0;
+    start = clock();
+    for (int i = 0; i < MAX; i++) {
+        char key_buf[21];
+        generate(key_buf, 20);
         
-        _MData k = stackDataInMMapWithOA(&i, NULL, 0, &Info_Int);
-        _MData v = stackDataInMMapWithOA(val_str, NULL, 1, &Info_String);
+        // 使用 stackMData 封装数据，传入 &Info 指针
+        Data_M k = stackMDataInMOAMap(key_buf, NULL, 0, &Info_String);
+        Data_M v = stackMDataInMOAMap(&i, NULL, 1, &Info_Int);
         
-        insertKeyAndValInMMapWithOA(&mapOA, k, v);
+        // 验证插入是否成功 (返回值为 Success 即为 1)
+        if (insertMKeyAndMValInMOAMap(&map, k, v) == Success) {
+            success_count++;
+        }
+        if (insertMKeyAndMValInMOAMap(&map, v, k) == Success) {
+            success_count++;
+        }
+
     }
-    TIMER_END("MMap_OA 插入")
 
-    // 删除测试
-    int target = count / 2;
-    _MData delKey = stackDataInMMapWithOA(&target, NULL, 0, &Info_Int);
-    delEntryByKeyInMMapWithOA(&mapOA, delKey);
-    printf("删除了 Key: %d\n", target);
+    // 插入一个固定键值对用于最后的精确有效性检验
+    char test_key[] = "Verify_Key_999";
+    int test_val = 88888;
+    Data_M vk = stackMDataInMOAMap(test_key, NULL, 0, &Info_String);
+    Data_M vv = stackMDataInMOAMap(&test_val, NULL, 1, &Info_Int);
+    insertMKeyAndMValInMOAMap(&map, vk, vv);
 
-    TIMER_START
-    freeMMapWithOA(&mapOA);
-    printf("\n!!!!!已停止!!!!!!!!\n\n");
+    end = clock();
+    printf("批量插入 %d 条数据完成。\n", MAX);
+    printf("成功计数: %d | 耗时: %.3f 秒\n", success_count, (double)(end - start) / CLOCKS_PER_SEC);
+
+    // 2. 检验插入是否有效 (数据一致性检查)
+    printf("正在检验数据有效性...\n");
+    // 通过 getPtr 获取数据指针
+    Data_M result = getPtrMValByMKeyInMOAMap(&map, vk);
+    
+    if (!result.isEmpty) {
+        int val = *(int*)result.data;
+        if (val == test_val) {
+            printf("[成功] 数据验证通过: Key='%s' -> Val=%d\n", test_key, val);
+        } else {
+            printf("[失败] 数据损坏: 期望 %d, 实际得到 %d\n", test_val, val);
+        }
+    } else {
+        printf("[失败] 找不到预设的验证 Key！\n");
+    }
+
+    // 3. 内存释放测试
+    printf("等待 5 秒后释放内存...\n");
     Sleep(5000);
-    TIMER_END("MMap_OA 释放")
-    printf("\n");
+    
+    start = clock();
+    freeMOAMap(&map);
+    end = clock();
+    
+    printf("OAMap_M 释放完成，耗时: %.3f 秒\n", (double)(end - start) / CLOCKS_PER_SEC);
+    printf("--------------------------------------\n\n");
+    Sleep(5000);
 }
 
 int main() {
-    // 设置大规模测试样本量
-    // int large_scale = 5000000; // 10万条数据压力测试
+    srand((unsigned int)time(NULL));
 
-    // printf("--- 开始系统综合测试 ---\n\n");
+    // 执行 OAMap_M 测试
+    testOAMap_M();
 
-    // test_SList(large_scale);
-    // test_MList(large_scale);
-    // test_SMap(large_scale);
-    // test_MMap_List();
-    // test_MMap_OA(large_scale / 2); // OA 模式通常对装载因子敏感，测试 5万条
-
-    printf("\n!!!!!已停止!!!!!!!!\n\n");
-    Sleep(5000);
-    printf("--- 所有测试完成 ---\n");
     return 0;
 }

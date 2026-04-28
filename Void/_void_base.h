@@ -13,11 +13,11 @@ typedef int Position;
     2 把相关函数的指针整合成一个Operation类型的数据
     3 使用stackData函数和成Data类型(包括key和val)
     4 插入到Map或者List中
-    5 每次使用完Map(List)后必须释放掉Map(List),使用free函数
+    5 每次使用完Map(List)后必须释放掉Map(List),使用free的相关函数
 
 注: 1 同一中类型的操作函数应该一致
     2 stackData函数返回的时自动变量,不可以free
-    3 通过key等返回的Entry是malloc出来的,使用完记得释放,如果无法找到或者无法创建Data或者Entry,会输出提示信息,同时返回空Data或Entry
+    3 (函数带有Copy字样的)通过key等返回的Entry是malloc出来的,使用完记得释放,如果无法找到或者无法创建Data或者Entry,会输出提示信息,同时返回空Data或Entry
     4 content内容一般为结构体,比如二维动态数组content的应该为,注意要是指针
                         typedef struct {
                             int row;
@@ -84,26 +84,29 @@ typedef struct Operation {
 
 
 typedef struct InfoOfData {
+    //此为后期可能拓展
+    // InfoOfData** son;
+    // int sizeofInfoSon;
     Operation* oper;
     bool hasContent;
 } InfoOfData;
 
 
 /// @brief 只能容纳一种数据的Data类型, 操作函数会由List或者Map提供
-typedef struct _SData {
+typedef struct Data_S {
     void* data;
     void* content;
     bool isEmpty;
-} _SData;
+} Data_S;
 
 
 /// @brief 可容纳多种数据的Data类型, 操作函数自带
-typedef struct _MData {
+typedef struct Data_M {
     void* data;
     void* content;
     InfoOfData* dataInfo;
     int type;
     bool isEmpty;
-} _MData;
+} Data_M;
 
 #endif
