@@ -214,16 +214,16 @@ static InfoOfReturn addMEntryFunction(OAMap_M* pMap, Data_M key, Data_M value) {
     ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
 
     //用于记录第一次出现的的Del位置, 这么做的原因是即便碰到Del标记也不能直接插入
-    int falgFindDel = 0;
+    int flagFindDel = 0;
     ull firstDelIndex = pMap->len+10;
     //找到一个NONE或者DEl标记的位置
     while (pMap->arr[index].state != NONE_IN_MAP) {
-        if (pMap->arr[index].state == DEL_IN_MAP && falgFindDel == 0) {
+        if (pMap->arr[index].state == DEL_IN_MAP && flagFindDel == 0) {
             firstDelIndex = index;
-            falgFindDel = 1;
+            flagFindDel = 1;
         }
         //如果发现是同一个key,则更新数据
-        if (compareMKey(&(pMap->arr[index].key), &key) == 0) {
+        if (compareMKey(&(pMap->arr[index].key), &key) == SAME) {
             Data_M newVal = copyMData(value);
             if (newVal.isEmpty) {
                 printf("\nMemory allocation failed\n");
@@ -237,7 +237,7 @@ static InfoOfReturn addMEntryFunction(OAMap_M* pMap, Data_M key, Data_M value) {
         index %= pMap->len;
     }
     //如果之间找到了Del标记, 就在Del位置拆即可
-    if (firstDelIndex != pMap->len+10) {
+    if (flagFindDel) {
         index = firstDelIndex;
     }
     //使用copyEntry函数进行操作

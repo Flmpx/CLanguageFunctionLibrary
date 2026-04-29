@@ -49,13 +49,22 @@ void freeMap(Map* pMap) {
 //这个只是添加的功能
 int addFunctionOfEntry(Map* pMap, int key, int val) {
     int index = hash(key, pMap->mod);
-    while (pMap->arr[index].key != NONE && pMap->arr[index].key != DEL) {
+    int flagFindDel = 0;
+    int firstDelIndex = pMap->len+10;
+    while (pMap->arr[index].key != NONE) {
+        if (pMap->arr[index].key != DEL && flagFindDel == 0) {
+            firstDelIndex = index;
+            flagFindDel = 1;
+        } 
         if (pMap->arr[index].key == key) {
             pMap->arr[index].val = val;
             return Success;
         }
         index++;
         index %= pMap->len;
+    }
+    if (flagFindDel) {
+        index = firstDelIndex;
     }
     pMap->arr[index].key = key;
     pMap->arr[index].val = val;

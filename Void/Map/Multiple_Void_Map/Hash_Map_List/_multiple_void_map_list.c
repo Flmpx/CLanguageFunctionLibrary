@@ -363,6 +363,7 @@ static InfoOfReturn addMEntryFunction(ChainMap_M* pMap, Data_M key, Data_M value
     //hash
     ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
 
+    //在插入之前先进行一次查找
     Node_M_inChainMap* p = getNodeByMKey(&(pMap->arr[index]), key);
     if (p) {
         Data_M newVal = copyMData(value);
