@@ -1,5 +1,5 @@
-#ifndef _VOID_BASE_H
-#define _VOID_BASE_H
+#ifndef BASE_H
+#define BASE_H
 #include <stdbool.h>
 #include <stdio.h>
 #define NOT_FOUND -1

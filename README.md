@@ -1,47 +1,75 @@
-# Void
+# FocX
+
+
+
+## 设计理念
+1.基于Data_S和Data_M进行泛型设计, 结构体内容如下  
+```c
+
+
+typedef struct Data_S {
+    void* data; //存储数据的void* 指针
+    void* content;  //存储描述性信息的void* 指针(比如描述二维数组的col和row)
+    bool isEmpty;   //Data_S是否为空
+} Data_S;
+
+
+
+typedef struct Data_M {
+    void* data; //存储数据的void* 指针
+    void* content;  //存储描述性信息的void* 指针(比如描述二维数组的col和row)
+    InfoOfData* dataInfo;   //由于要存储多种类型数据, Data_M自带InfoOfData类型数据指针(Data_S由于存储的是单一类型(比如一个DList_S中只存int), 那完全可以让DList_S结构体来存储InfoOfData, 以达到解释内存的目的)
+    int type;   //数据标签(用于区分, 但不是主要区分标志)
+    bool isEmpty;   //Data_M是否为空
+} Data_M;
+
+```
+
 - 注: M(Multiple)为一种数据结构中可以插入任意类型, S(Single)为一种数据结构中只能插入一种类型, 但这种类型任意  
 - 在List中的数据叫做MData或者SData
 - 在Map中的数据叫做MVal, MKey, SVal, SKey, MEntry, SEntry
 - 具体什么类型, 在括号中解释
 ## 文件夹结构
-    Void/
-    ├── List/
-    │   ├── Multiple_Void_List/
-    │   │   ├── _multiple_void_list.h
-    │   │   └── _multiple_void_list.c
-    │   └── Single_Void_List/
-    │       ├── _single_void_list.h
-    │       └── _single_void_list.c
-    ├── Map/
-    │   ├── Multiple_Void_Map/
-    │   │   ├── Hash_Map_List/
-    │   │   │   ├── _multiple_void_map_list.h
-    │   │   │   └── _multiple_void_map_list.c
-    │   │   └── Hash_Map_OA/
-    │   │       ├── _multiple_void_map_oa.h
-    │   │       └── _multiple_void_map_oa.c
-    │   └── Single_Void_Map/
-    │       ├── Hash_Map_List/
-    │       │   ├── _single_void_map_list.h
-    │       │   └── _single_void_map_list.c
-    │       └── Hash_Map_OA/
-    │           ├── _single_void_map_oa.h
-    │           └── _single_void_map_oa.c
-    ├── Oper/
-    │   ├── bool_oper/
-    │   │   ├── _bool_oper.h
-    │   │   └── _bool_oper.c
-    │   ├── double_oper/
-    │   │   ├── _double_oper.h
-    │   │   └── _double_oper.c
-    │   ├── int_oper/
-    │   │   ├── _int_oper.h
-    │   │   └── _int_oper.c
-    │   └── string_oper/
-    │       ├── _string_oper.h
-    │       └── _string_oper.c
-    ├── _void_base.h
-    └── README.md
+    ├─base.c 
+    ├─base.h 
+    ├─List 
+    │ ├─DList 
+    │ │ ├─Multiple_Data 
+    │ │ │ ├─dlist_mdata.c 
+    │ │ │ └─dlist_mdata.h 
+    │ │ └─Single_Data 
+    │ │   ├─dlist_sdata.c 
+    │ │   └─dlist_sdata.h 
+    │ └─SList 
+    ├─Map 
+    │ ├─ChainMap 
+    │ │ ├─Multiple_Data 
+    │ │ │ ├─chainmap_mdata.c 
+    │ │ │ └─chainmap_mdata.h 
+    │ │ └─Single_Data 
+    │ │   ├─chainmap_sdata.c 
+    │ │   └─chainmap_sdata.h 
+    │ └─OAMap 
+    │   ├─Multiple_Data 
+    │   │ ├─oamap_mdata.c 
+    │   │ └─oamap_mdata.h 
+    │   └─Single_Data 
+    │     ├─oamap_sdata.c 
+    │     └─oamap_sdata.h 
+    ├─Oper 
+    │ ├─bool_oper 
+    │ │ ├─_bool_oper.c 
+    │ │ └─_bool_oper.h 
+    │ ├─double_oper 
+    │ │ ├─_double_oper.c 
+    │ │ └─_double_oper.h 
+    │ ├─int_oper 
+    │ │ ├─_int_oper.c 
+    │ │ └─_int_oper.h 
+    │ └─string_oper 
+    │   ├─_string_oper.c 
+    │   └─_string_oper.h 
+    └─README.md 
 
             
 ## 变量命名规则
@@ -63,24 +91,35 @@
     4. Operation-->当前数据的操作函数, 具体见自定义数据的使用方法
 
 ### List
+#### 1 DList
     
-    1. List_M-->存储任意类型数据的List
+    1. DList_M-->存储任意类型数据的DList
     
-    2. List_S-->存储单一类型数据的List
+    2. DList_S-->存储单一类型数据的DList
 
 
 ### Map
+#### 1 OAMap
+    
+    1. OAMap_M-->存储任意类型数据的OAMap
+    
+    2. OAMap_S-->存储单一类型数据的OAMap  
+    
+    3. Entry_M_inOAMap-->在OAMap中存储任意类型数据的Entry(即包含key和val)  
+    
+    4. Entry_S_inOAMap-->在OAMap中存储单一类型数据的Entry(即包含key和val)
+
+#### 2 ChainMap
+    
     1. ChainMap_M-->存储任意类型数据的ChainMap
     
-    2. Entry_M_inChainMap-->在ChainMap中的存储任意类型数据的Entry(即包含key和val)
+    2. ChainMap_S-->存储单一类型数据的ChainMap
     
-    3. OAMap_M-->存储任意类型数据的OAMap
+    3. Entry_M_inChainMap-->在ChainMap中的存储任意类型数据的Entry(即包含key和val)
     
-    4. Entry_M_inOAMap-->在OAMap中存储任意类型数据的Entry(即包含key和val)
+    4. Entry_S_inChainMap-->在ChainMap中的存储单一类型数据的Entry(即包含key和val)
     
-    5. ChainMap_S-->存储单一类型数据的ChainMap
     
-    6. Entry_S_inChainMap-->在ChainMap中的存储单一类型数据的Entry(即包含key和val)
     
 ### 其他
     1. CmpResult-->数据比较结果枚举类型, 里面右两个值  
@@ -117,171 +156,6 @@
     
     10. reverse-->反转(一般是链表)
 - 由于Node不公开, 故函数的命名直接使用Node就行了, 不公开的函数重名也没事, 但要可读性强
-
-## 函数内容
-- 注: 不可见函数的命名规则一致, 不展示
-#### 1 List(链表)
-##### 1 List_S(单一类型)
-    1. void initSList(List_S* plist, InfoOfData* valInfo);
-    
-    2. void freeSDataInSList(List_S* plist, Data_S* inputData);
-    
-    3. Data_S getPtrSDataBySDataInSList(List_S* plist, void* data, void* content);
-    
-    4. Data_S getCopySDataByPosInSList(List_S* plist, int pos);
-    
-    5. Data_S getPtrSDataByPosInSList(List_S* plist, int pos);
-    
-    6. bool hasSDataInSList(List_S* plist, void* data, void* content);
-    
-    7. InfoOfReturn insertSDataAtEndInSList(List_S* plist, void* data, void* content);
-    
-    8. InfoOfReturn insertSDataAtStartInSList(List_S* plist, void* data, void* content);
-    
-    9. InfoOfReturn insertSDataAtPosInSList(List_S* plist, void* data, void* content, 
-    int pos);
-    
-    10. InfoOfReturn delEndNodeInSList(List_S* plist);
-    
-    11. InfoOfReturn delStartNodeInSList(List_S* plist);
-    
-    12. InfoOfReturn delNodeBySDataInSList(List_S* plist, void* data, void* content);
-    
-    13. InfoOfReturn delNodeByPosInSList(List_S* plist, int pos);
-    
-    14. void reverseSList(List_S* plist);
-    
-    15. void printSList(List_S* plist);
-    
-    16. void freeSList(List_S* plist);
-
-
-##### 2 List_M(多类型)
-    1. void initMList(List_M* plist);
-    
-    2. void freeMDataInMList(Data_M* inputData);
-    
-    3. Data_M getPtrMDataByMDataInMList(List_M* plist, Data_M inputData);
-    
-    4. Data_M getCopyMDataByPosInMList(List_M* plist, int pos);
-    
-    5. Data_M getPtrMDataByPosInMList(List_M* plist, int pos);
-    
-    6. bool hasMDataInMList(List_M* plist, Data_M inputData);
-    
-    7. InfoOfReturn insertMDataAtEndInMList(List_M* plist, Data_M inputData);
-    
-    8. InfoOfReturn insertMDataAtStartInMList(List_M* plist, Data_M inputData);
-    
-    9. InfoOfReturn insertMDataAtPosInMList(List_M* plist, Data_M inputData, int pos);
-    
-    10. InfoOfReturn delEndNodeInMList(List_M* plist);
-    
-    11. InfoOfReturn delStartNodeInMList(List_M* plist);
-    
-    12. InfoOfReturn delNodeByMDataInMList(List_M* plist, Data_M inputData);
-    
-    13. InfoOfReturn delNodeByPosInMList(List_M* plist, int pos);
-    
-    14. Data_M stackMDataInMList(void* data, void* content, int type, InfoOfData* dataInfo);
-    
-    15. void reverseMList(List_M* plist);
-    
-    16. void printMList(List_M* plist);
-    
-    17. void freeMList(List_M* plist);
-
-#### 2 Map(散列表)
-##### 1 ChainMap_S(使用链表法处理冲突的SMap)
-    1. void initSChainMap(ChainMap_S* pMap, InfoOfData* keyInfo, InfoOfData* valInfo);
-    
-    2. void freeSKeyInSChainMap(ChainMap_S* pMap, Data_S* keyData);
-
-    3. void freeSValInSChainMap(ChainMap_S* pMap, Data_S* valData);
-    
-    4. void freeSEntryInSChianMap(Entry_S_inChainMap* entry, ChainMap_S* pMap);
-    
-    5. void freeSChainMap(ChainMap_S* pMap);
-    
-    6. InfoOfReturn insertSKeyAndSValInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent, void* 
-    valdata, void* valcontent);
-    
-    7. Data_S getCopySValBySKeyInSChianMap(ChainMap_S* pMap, void* keydata, void* keycontent);
-    
-    8. Data_S getPtrSValBySKeyInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent);
-    
-    9. Entry_S_inChainMap getCopySEntryBySKeyInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent);
-    
-    10. bool hasSKeyInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent);
-    
-    11. InfoOfReturn delSEntryBySKeyInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent);
-    
-    12. void printSDataInSChainMap(Data_S data, char* tip, InfoOfData* InfoOfKeyOrVal);
-    
-    13. void printSEntryInSChainMap(Entry_S_inChainMap entry, ChainMap_S* pMap);
-    
-    14. void printSChainMap(ChainMap_S* pMap);
-##### 2 ChainMap_M(使用链表法处理冲突的MMap)
-    1. void initMChainMap(ChainMap_M* pMap);
-    
-    2. void freeMKeyInMChainMap(Data_M* inputData);
-
-    3. void freeMValInMChainMap(Data_M* inputData);
-    
-    4. void freeMEntryInMChainMap(Entry_M_inChainMap* entry);
-    
-    5. void freeMChainMap(ChainMap_M* pMap);
-    
-    6. InfoOfReturn insertMKeyAndMValInMChainMap(ChainMap_M* pMap, Data_M key, Data_M val);
-    
-    7. Data_M getCopyMValByMKeyInMChainMap(ChainMap_M* pMap, Data_M key);
-    
-    8. Data_M getPtrMValByMKeyInMChainMap(ChainMap_M* pMap, Data_M key);
-    
-    9. Entry_M_inChainMap getCopyMEntryByMKeyInMChainMap(ChainMap_M* pMap, Data_M key);
-    
-    10. bool hasMKeyInMChainMap(ChainMap_M* pMap, Data_M key);
-    
-    11. InfoOfReturn delMEntryByMKeyInMChainMap(ChainMap_M* pMap, Data_M key);
-    
-    12. Data_M stackMDataInMChainMap(void* data, void* content, int type, InfoOfData* dataInfo);
-    
-    13. void printMDataInMChainMap(Data_M data, char* tip);
-    
-    14. void printMEntryInMChainMap(Entry_M_inChainMap entry);
-    
-    15. void printMChainMap(ChainMap_M* pMap);
-##### 3 OAMap_M(使用开放定址法(Open Address)处理冲突的MMap)
-
-    1. void initMOAMap(OAMap_M* pMap);
-    
-    2. void freeMKeyInMOAMap(Data_M* inputData);
-
-    3. void freeMValInMOAMap(Data_M* inputData);
-    
-    4. void freeMEntryInMOAMap(Entry_M_inOAMap* entry);
-    
-    5. void freeMOAMap(OAMap_M* pMap);
-    
-    6. InfoOfReturn insertMKeyAndMValInMOAMap(OAMap_M* pMap, Data_M key, Data_M val);
-    
-    7. Data_M getCopyMValByMKeyInMOAMap(OAMap_M* pMap, Data_M key);
-    
-    8. Data_M getPtrMValByMKeyInMOAMap(OAMap_M* pMap, Data_M key);
-    
-    8. Entry_M_inOAMap getCopyMEntryByKeyInMOAMap(OAMap_M* pMap, Data_M key);
-    
-    10. bool hasKeyInMOAMap(OAMap_M* pMap, Data_M key);
-    
-    11. InfoOfReturn delMEntryByMKeyInMOAMap(OAMap_M* pMap, Data_M key);
-    
-    12. Data_M stackMDataInMOAMap(void* data, void* content, int type, InfoOfData* dataInfo);
-    
-    13. void printMDataInMOAMap(Data_M data, char* tip);
-    
-    14. void printMEntryInMOAMap(Entry_M_inOAMap entry);
-    
-    15. void printMOAMap(OAMap_M* pMap);
 
 ## 其他注意事项
     1. 如果某种类型是S(单一类型), 那它函数传入的不再是Data类型, 而是void* data和void* content

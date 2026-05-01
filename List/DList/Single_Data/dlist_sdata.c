@@ -1,6 +1,6 @@
-#define NODE_M_INLIST
-#define DATA_M_OPER
-#include "_multiple_void_list.h"
+#define NODE_S_INDLIST
+#define DATA_S_OPER
+#include "dlist_sdata.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
@@ -13,20 +13,16 @@
 
 
 
-
-static bool isEmptyMList(List_M* plist) {
+static bool isEmptySList(DList_S* plist) {
     return plist->size == 0;
 }
 
-void initMList(List_M* plist) {
+void initSList(DList_S* plist, InfoOfData* valInfo) {
     plist->head = plist->tail = NULL;
-    plist->size = 0;    
+    plist->size = 0;
+    plist->valInfo = valInfo;
+    
 }
-
-
-//////////////////////////////////////////////////////////////////////////////////
-
-
 
 
 
@@ -35,11 +31,13 @@ void initMList(List_M* plist) {
 /// @param plist 链表指针
 /// @param data Data类型数据
 /// @return 若存在节点,返回节点, 如果位置无效,返回NULL
-static Node_M_inList* getNodeByMData(List_M* plist, Data_M data) {
-    if (isEmptyMList(plist)) return NULL;
-    Node_M_inList* p = plist->head;
+static Node_S_inDList* getNodeBySData(DList_S* plist, Data_S data) {
+    if (isEmptySList(plist)) return NULL;
+    Node_S_inDList* p = plist->head;
     for (; p; p = p->next) {
-        if (compareMData(p->val, data) == SAME) {
+        
+        //虽然可直接使用plist中的cmpdata函数, 但为了统一性, 使用统一的compareSData函数
+        if (compareSData(p->val, plist->valInfo, data, plist->valInfo) == SAME) {
             return p;
         }
     }
@@ -51,28 +49,37 @@ static Node_M_inList* getNodeByMData(List_M* plist, Data_M data) {
 /// @param plist 链表指针
 /// @param pos 位置(范围应在[0, list.size-1])
 /// @return 若存在节点,返回节点, 如果位置无效,返回NULL
-static Node_M_inList* getNodeByPos(List_M* plist, int pos) {
+static Node_S_inDList* getNodeByPos(DList_S* plist, int pos) {
     if ((pos < 0) || (pos >= plist->size)) return NULL;
-    Node_M_inList* p = plist->head;
+    Node_S_inDList* p = plist->head;
     for (int i = 0; i < pos; i++) {
         p = p->next;
     }
     return p;
 }
 
-Data_M getPtrMDataBySDataInMList(List_M* plist, Data_M inputData) {
-    Node_M_inList* p = getNodeByMData(plist, inputData);
+
+void freeSDataInSList(DList_S* plist, Data_S* inputData) {
+
+    //统一接口
+    freeSData(inputData, plist->valInfo);
+}
+
+
+Data_S getPtrSDataBySDataInSList(DList_S* plist, void* data, void* content) {
+    Data_S inputData = {data, content, false};
+    Node_S_inDList* p = getNodeBySData(plist, inputData);
     if (p == NULL) {
-        return getEmptyMData();
+        return getEmptySData();
     } else {
         return p->val;
     }
 }
 
 
-Data_M getCopyMDataByPosInMList(List_M* plist, int pos) {
-    if ((pos < 0) || (pos >= plist->size)) return getEmptyMData();
-    Node_M_inList* p = NULL;
+Data_S getCopySDataByPosInSList(DList_S* plist, int pos) {
+    if ((pos < 0) || (pos >= plist->size)) return getEmptySData();
+    Node_S_inDList* p = NULL;
     if (pos > plist->size/2) {
         p = plist->tail;
         int diff = plist->size - pos - 1;
@@ -85,17 +92,17 @@ Data_M getCopyMDataByPosInMList(List_M* plist, int pos) {
             p = p->next;
         }
     }
-    Data_M newData = copyMData(p->val);
+    Data_S newData = copySData(p->val, plist->valInfo);
     if (newData.isEmpty) {
         printf("\nMemory allocation failed\n");
-        return getEmptyMData();
+        return getEmptySData();
     }
     return newData;
 }
 
-Data_M getPtrMDataByPosInMList(List_M* plist, int pos) {
-    if ((pos < 0) || (pos >= plist->size)) return getEmptyMData();
-    Node_M_inList* p = NULL;
+Data_S getPtrSDataByPosInSList(DList_S* plist, int pos) {
+    if ((pos < 0) || (pos >= plist->size)) return getEmptySData();
+    Node_S_inDList* p = NULL;
     if (pos > plist->size/2) {
         p = plist->tail;
         int diff = plist->size - pos - 1;
@@ -111,8 +118,9 @@ Data_M getPtrMDataByPosInMList(List_M* plist, int pos) {
     return p->val;
 }
 
-bool hasMDataInMList(List_M* plist, Data_M inputData) {
-    Node_M_inList* p = getNodeByMData(plist, inputData);
+bool hasSDataInSList(DList_S* plist, void* data, void* content) {
+    Data_S inputData = {data, content, false};
+    Node_S_inDList* p = getNodeBySData(plist, inputData);
     if (p == NULL) {
         return false;
     } else {
@@ -122,39 +130,12 @@ bool hasMDataInMList(List_M* plist, Data_M inputData) {
 
 
 
-void freeMDataInMList(Data_M* inputData) {
-    //freeMData只能内部使用, 使用freeMDataInMList作为外部接口
-    freeMData(inputData);
-}
-
-
-
-static Data_M copyMData(Data_M oldData) {
-    Data_M newData;
-    newData.data = oldData.dataInfo->oper->copydata(oldData.data, oldData.content);
-    if (newData.data == NULL) {
-        return getEmptyMData();
-    }
-    if (oldData.dataInfo->hasContent) {
-        newData.content = oldData.dataInfo->oper->copycontent(oldData.content);
-        if (newData.content == NULL) {
-            oldData.dataInfo->oper->freedata(newData.data, oldData.content);
-            return getEmptyMData();
-        }
-    }
-    newData.dataInfo = oldData.dataInfo;
-    newData.type = oldData.type;
-    newData.isEmpty = oldData.isEmpty;
-    return newData;
-    
-}
-
 //这个创建创建一个Node,并整合数据,data和content会复制
 /******************* */
-static Node_M_inList* createNode(Data_M oldData) {
-    Node_M_inList* newNode = (Node_M_inList*)malloc(sizeof(Node_M_inList));
+static Node_S_inDList* createNode(DList_S* plist, Data_S oldData) {
+    Node_S_inDList* newNode = (Node_S_inDList*)malloc(sizeof(Node_S_inDList));
     if (newNode == NULL) return NULL; 
-    Data_M newData = copyMData(oldData);
+    Data_S newData = copySData(oldData, plist->valInfo);
     if (newData.isEmpty) {
         printf("\nMemory allocation failed\n");
         return NULL;
@@ -164,10 +145,11 @@ static Node_M_inList* createNode(Data_M oldData) {
 }
 
 /*********** */
-InfoOfReturn insertMDataAtEndInMList(List_M* plist, Data_M inputData) {
+InfoOfReturn insertSDataAtEndInSList(DList_S* plist, void* data, void* content) {
+    Data_S oldData = {data, content, false};
     
     //创建节点
-    Node_M_inList* newNode = createNode(inputData);
+    Node_S_inDList* newNode = createNode(plist, oldData);
     if (newNode == NULL) {
         printf("\nMemory allocation failed\n");
         return Warning; 
@@ -189,10 +171,11 @@ InfoOfReturn insertMDataAtEndInMList(List_M* plist, Data_M inputData) {
 }
 
 
-InfoOfReturn insertMDataAtStartInMList(List_M* plist, Data_M inputData) {
+InfoOfReturn insertSDataAtStartInSList(DList_S* plist, void* data, void* content) {
+    Data_S oldData = {data, content, false};
     
     //创建节点
-    Node_M_inList* newNode = createNode(inputData);
+    Node_S_inDList* newNode = createNode(plist, oldData);
     if (newNode == NULL) {
         printf("\nMemory allocation failed\n");
         return Warning; 
@@ -214,21 +197,21 @@ InfoOfReturn insertMDataAtStartInMList(List_M* plist, Data_M inputData) {
 }
 
 /************ */
-InfoOfReturn insertMDataAtPosInMList(List_M* plist, Data_M inputData, int pos) {
+InfoOfReturn insertSDataAtPosInSList(DList_S* plist, void* data, void* content, int pos) {
     if ((pos < 0) || (pos > plist->size)) return Warning;
-    if (pos == 0) return insertMDataAtStartInMList(plist, inputData);
-    if (pos == plist->size) return insertMDataAtEndInMList(plist, inputData);
+    if (pos == 0) return insertSDataAtStartInSList(plist, data, content);
+    if (pos == plist->size) return insertSDataAtEndInSList(plist, data, content);
 
-    
+    Data_S oldData = {data, content, false};
     
     //创建节点
-    Node_M_inList* newNode = createNode(inputData);
+    Node_S_inDList* newNode = createNode(plist, oldData);
     if (newNode == NULL) {
         printf("\nMemory allocation failed\n");
         return Warning; 
     }
     
-    Node_M_inList* p = getNodeByPos(plist, pos);
+    Node_S_inDList* p = getNodeByPos(plist, pos);
     
     //creatNode函函数已经处理了data, content的复制
     newNode->next = p;
@@ -241,14 +224,10 @@ InfoOfReturn insertMDataAtPosInMList(List_M* plist, Data_M inputData, int pos) {
     return Success;
 }
 
-InfoOfReturn delEndNodeInMList(List_M* plist) {
-    if (isEmptyMList(plist)) return Warning;
+InfoOfReturn delEndNodeInSList(DList_S* plist) {
+    if (isEmptySList(plist)) return Warning;
 
-    Node_M_inList* p = plist->tail;
-
-    
-    //释放掉Data_M内存
-    freeMData(p->val);
+    Node_S_inDList* p = plist->tail;
 
     if (plist->size > 1) {
         plist->tail = plist->tail->prev;
@@ -256,18 +235,15 @@ InfoOfReturn delEndNodeInMList(List_M* plist) {
     } else {
         plist->head = plist->tail = NULL;
     }
+    freeSData(p->val, plist->valInfo);
     free(p);
     plist->size--;
     return Success;
 }
+InfoOfReturn delStartNodeInSList(DList_S* plist) {
+    if (isEmptySList(plist)) return Warning;
 
-
-InfoOfReturn delStartNodeInMList(List_M* plist) {
-    if (isEmptyMList(plist)) return Warning;
-
-    Node_M_inList* p = plist->head;
-    
-    freeMData(p->val);
+    Node_S_inDList* p = plist->head;
 
     if (plist->size > 1) {
         plist->head = plist->head->next;
@@ -275,50 +251,52 @@ InfoOfReturn delStartNodeInMList(List_M* plist) {
     } else {
         plist->head = plist->tail = NULL;
     }
+
+    freeSData(p->val, plist->valInfo);
     free(p);
     plist->size--;
     return Success;
 }
 
-InfoOfReturn delNodeByMDataInMList(List_M* plist, Data_M inputData) {
-    if (isEmptyMList(plist)) return Warning;
-
-    Node_M_inList* p = getNodeByMData(plist, inputData);
+InfoOfReturn delNodeBySDataInSList(DList_S* plist, void* data, void* content) {
+    if (isEmptySList(plist)) return Warning;
+    Data_S inputData = {data, content, false};
+    Node_S_inDList* p = getNodeBySData(plist, inputData);
     if (p == NULL) return None;
-    if (p == plist->head) return delStartNodeInMList(plist);
-    if (p == plist->tail) return delEndNodeInMList(plist);
+    if (p == plist->head) return delStartNodeInSList(plist);
+    if (p == plist->tail) return delEndNodeInSList(plist);
     
     p->prev->next = p->next;
     p->next->prev = p->prev;
 
-
-    freeMData(p->val);
-
+    freeSData(p->val, plist->valInfo);
     free(p);
     plist->size--;
     return Success;
 }
-InfoOfReturn delNodeByPosInMList(List_M* plist, int pos) {
-    if (isEmptyMList(plist)) return Warning;
+
+
+
+InfoOfReturn delNodeByPosInSList(DList_S* plist, int pos) {
+    if (isEmptySList(plist)) return Warning;
     if ((pos < 0) || (pos >= plist->size)) return Warning;
-    Node_M_inList* p = getNodeByPos(plist, pos);
-    if (p == plist->head) return delStartNodeInMList(plist);
-    if (p == plist->tail) return delEndNodeInMList(plist);
+    Node_S_inDList* p = getNodeByPos(plist, pos);
+    if (p == plist->head) return delStartNodeInSList(plist);
+    if (p == plist->tail) return delEndNodeInSList(plist);
     
     p->prev->next = p->next;
     p->next->prev = p->prev;
 
-
-    freeMData(p->val);
+    freeSData(p->val, plist->valInfo);
     free(p);
     plist->size--;
     return Success;
 }
 
-void reverseMList(List_M* plist) {
+void reverseSList(DList_S* plist) {
     if (plist->size < 2) return;
-    Node_M_inList* temp = NULL;
-    Node_M_inList* p = plist->head;
+    Node_S_inDList* temp = NULL;
+    Node_S_inDList* p = plist->head;
     while (p) {
         temp = p->next;
         p->next = p->prev;
@@ -332,38 +310,27 @@ void reverseMList(List_M* plist) {
 }
 
 
-Data_M stackMDataInMList(void* data, void* content, int type, InfoOfData* dataInfo) {
-    Data_M newData;
-    newData.data = data;
-    newData.type = type;
-    newData.isEmpty = false;
-    newData.dataInfo = dataInfo;
-    newData.content = content;
-    return newData;
-}
-
-
-
-
-void printSDataInMList(Data_M inputData) {
+void printSDataInSList(DList_S* plist, Data_S inputData) {
     if (inputData.isEmpty) {
         printf("\ndata is empty, cannot print\n");
         return;
     }
     printf("[val:");
-    inputData.dataInfo->oper->printdata(inputData.data, inputData.content);
+    plist->valInfo->oper->printdata(inputData.data, inputData.content);
     printf("]");
 }
 
-void printMList(List_M* plist) {
-    Node_M_inList* p = plist->head;
+
+
+void printSList(DList_S* plist) {
+    Node_S_inDList* p = plist->head;
     printf("[");
     int cnt = 0;
     for (; p; p = p->next) {
         if (cnt != 0) {
             printf("-->");
         }
-        p->val.dataInfo->oper->printdata(p->val.data, p->val.content);
+        plist->valInfo->oper->printdata(p->val.data, p->val.content);
         cnt++;
     }
     printf("]");
@@ -372,15 +339,16 @@ void printMList(List_M* plist) {
 
 
 
-void freeMList(List_M* plist) {
-    Node_M_inList* p = plist->head;
-    Node_M_inList* q = NULL;
+void freeSList(DList_S* plist) {
+    Node_S_inDList* p = plist->head;
+    Node_S_inDList* q = NULL;
     while (p) {
         q = p;
         p = p->next;
-        freeMData(q->val);
+        
+        freeSData(p->val, plist->valInfo);
         free(q);
     }
-    initMList(plist);
+    initSList(plist, plist->valInfo);
 }
 

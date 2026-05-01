@@ -1,7 +1,7 @@
-#ifndef _MULTIPLE_VOID_MAP_OA_H
-#define _MULTIPLE_VOID_MAP_OA_H
+#ifndef OAMAP_MDATA_H
+#define OAMAP_MDATA_H
 #include <stdbool.h>
-#include "../../../_void_base.h"
+#include "../../../base.h"
 
 /// @brief 在OAMap_M中的Entry类型(Entry_M_inOAMap)
 typedef struct Entry_M_inOAMap {

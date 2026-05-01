@@ -1,7 +1,7 @@
 #define LIST_AND_NODE_M_IN_CHAINMAP
 #define GET_LARGESTPRIME
 #define DATA_S_OPER
-#include "_single_void_map_list.h"
+#include "chainmap_sdata.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>

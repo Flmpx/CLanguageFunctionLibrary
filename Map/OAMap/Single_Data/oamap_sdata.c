@@ -1,7 +1,7 @@
 #define ENTRY_STATE_IN_OAMAP
 #define GET_LARGESTPRIME
 #define DATA_S_OPER
-#include "_single_void_map_oa.h"
+#include "oamap_sdata.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>

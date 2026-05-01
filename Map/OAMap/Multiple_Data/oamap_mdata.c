@@ -1,7 +1,7 @@
 #define GET_LARGESTPRIME
 #define ENTRY_STATE_IN_OAMAP
 #define DATA_M_OPER
-#include "_multiple_void_map_oa.h"
+#include "oamap_mdata.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>

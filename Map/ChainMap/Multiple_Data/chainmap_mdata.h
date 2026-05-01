@@ -1,7 +1,7 @@
-#ifndef _MULTIPLE_VOID_MAP_LIST_H
-#define _MULTIPLE_VOID_MAP_LIST_H
+#ifndef CHAINMAP_MDATA_H
+#define CHAINMAP_MDATA_H
 #include <stdbool.h>
-#include "../../../_void_base.h"
+#include "../../../base.h"
 
 typedef struct Node_M_inChainMap Node_M_inChainMap;
 typedef struct List_M_inChainMap List_M_inChainMap;

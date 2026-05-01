@@ -1,7 +1,7 @@
-#ifndef _SINGLE_VOID_MAP_OA_H
-#define _SINGLE_VOID_MAP_OA_H
+#ifndef OAMAP_SDATA_H
+#define OAMAP_SDATA_H
 #include <stdbool.h>
-#include "../../../_void_base.h"
+#include "../../../base.h"
 
 
 
