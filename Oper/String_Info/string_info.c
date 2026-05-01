@@ -1,6 +1,5 @@
 #include <stdio.h>
-#include "_string_oper.h"
-#include "_string_oper.h"
+#include "string_info.h"
 #include <string.h>
 #include <stdlib.h>
 

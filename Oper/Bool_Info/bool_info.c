@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "_bool_oper.h"
+#include "bool_info.h"
 
 
 static void freedata_Bool(void* data, void* content) {

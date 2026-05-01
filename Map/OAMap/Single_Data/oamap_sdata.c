@@ -42,8 +42,8 @@ void freeSValInSOAMap(OAMap_S* pMap, Data_S* inputData) {
 //不会自动给entry的state进行赋值, 自己根据情况进行赋值
 void freeSEntryInSOAMap(OAMap_S* pMap, Entry_S_inOAMap* entry) {
     if (entry->isEmpty) return;
-    freeSData(entry->key, pMap->keyInfo);
-    freeSData(entry->val, pMap->valInfo);
+    freeSData(&(entry->key), pMap->keyInfo);
+    freeSData(&(entry->val), pMap->valInfo);
     entry->isEmpty = true;
     entry->state = NONE_IN_MAP;
 }
@@ -81,7 +81,7 @@ static Entry_S_inOAMap copySEntry(OAMap_S* pMap, Entry_S_inOAMap inputEntry) {
 
     newEntry.val = copySData(inputEntry.val, pMap->valInfo);
     if (newEntry.val.isEmpty) {
-        freeSData(newEntry.key, pMap->keyInfo);
+        freeSData(&(newEntry.key), pMap->keyInfo);
         printf("\nMemory allocation failed\n");
         return getEmptySEntry();
     }

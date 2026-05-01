@@ -124,7 +124,7 @@ static Node_M_inChainMap* getNodeByMKey(List_M_inChainMap* plist, Data_M key) {
     if (isEmptyMList(plist)) return NULL;
     Node_M_inChainMap* p = plist->head;
     for (int i = 0; i < plist->size; i++, p = p->next) {
-        if (compareMData(&(p->entry.key), &key) == SAME) {
+        if (compareMData(p->entry.key, key) == SAME) {
             return p;
         }
     } 

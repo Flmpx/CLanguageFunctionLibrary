@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "_double_oper.h"
+#include "double_info.h"
 
 static const char* format_Double = "double%.12edouble"; 
 

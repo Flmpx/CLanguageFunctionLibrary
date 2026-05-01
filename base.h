@@ -19,91 +19,7 @@ enum EntryStateInMap {
 
 #endif
 
-#ifdef GET_LARGESTPRIME
 
-
-/// @brief 返回小于等于n的最大质数
-/// @param n n
-/// @return 最大质数
-extern int getLargestPrime(int n);
-
-
-#endif
-
-//直接提供Data的复制, 比较, 空数据的获得
-
-#ifdef DATA_S_OPER
-
-/////////////////////////////
-//空数据的获得
-
-/// @brief 得到空数据Data_S
-/// @return 空数据Data_S
-extern Data_S getEmptySData();
-
-//////////////////////////////
-//数据的比较
-
-/// @brief 比较两个Data_S是否相同
-/// @param Data_a Data_S类型数据1
-/// @param info_a InfoOfData类型数据指针1
-/// @param Data_b Data_S类型数据2
-/// @param info_b InfoofData类型数据指针2
-/// @return 比较结果, 使用SAME和DIFFERENT来进行判断
-extern CmpResult compareSData(Data_S Data_a, InfoOfData* info_a, Data_S Data_b, InfoOfData* info_b);
-
-///////////////////////////////////////
-//数据的复制
-
-/// @brief 复制Data_S的全部内容, 需要提供InfoOfData类型数据指针以便进行复制
-/// @param inputData 输入的Data_S类型数据
-/// @param info InfoOfData类型数据指针
-/// @return 复制好的Data_M类型数据
-extern Data_S copySData(Data_S inputData, InfoOfData* info);
-
-///////////////////////////////////
-//数据的释放
-
-/// @brief 释放掉Data_S数据
-/// @param inputData 输入的Data_S类型数据
-/// @param info InfoOfData类型数据指针
-extern void freeSData(Data_S* inputData, InfoOfData* info);
-
-#endif
-
-#ifdef DATA_M_OPER
-/////////////////////////////
-//空数据的获得
-
-/// @brief 得到空数据Data_M
-/// @return 空数据Data_M
-extern Data_M getEmptyMData();
-
-//////////////////////////////
-//数据的比较
-
-/// @brief 比较两个Data_M是否相同
-/// @param Data_a Data_M类型数据1
-/// @param Data_b Data_M类型数据2
-/// @return 比较结果, 使用SAME和DIFFERENT来进行判断
-extern CmpResult compareMData(Data_M Data_a, Data_M Data_b);
-
-///////////////////////////////////////
-//数据的复制
-
-/// @brief 复制Data_M的全部内容, 包括void* data和void* content
-/// @param inputData 输入的Data_M类型数据
-/// @return 复制好的Data_M类型数据
-extern Data_M copyMData(Data_M inputData);
-
-///////////////////////////////////
-//数据的释放
-
-/// @brief 释放掉Data_M数据
-/// @param inputData 输入的Data_M类型数据
-extern void freeMData(Data_M* inputData);
-
-#endif
 
 
 
@@ -219,5 +135,100 @@ typedef struct Data_M {
     int type;
     bool isEmpty;
 } Data_M;
+
+
+
+
+#ifdef GET_LARGESTPRIME
+
+
+/// @brief 返回小于等于n的最大质数
+/// @param n n
+/// @return 最大质数
+extern int getLargestPrime(int n);
+
+
+#endif
+
+//直接提供Data的复制, 比较, 空数据的获得
+
+#ifdef DATA_S_OPER
+
+/////////////////////////////
+//空数据的获得
+
+/// @brief 得到空数据Data_S
+/// @return 空数据Data_S
+extern Data_S getEmptySData();
+
+//////////////////////////////
+//数据的比较
+
+/// @brief 比较两个Data_S是否相同
+/// @param Data_a Data_S类型数据1
+/// @param info_a InfoOfData类型数据指针1
+/// @param Data_b Data_S类型数据2
+/// @param info_b InfoofData类型数据指针2
+/// @return 比较结果, 使用SAME和DIFFERENT来进行判断
+extern CmpResult compareSData(Data_S Data_a, InfoOfData* info_a, Data_S Data_b, InfoOfData* info_b);
+
+///////////////////////////////////////
+//数据的复制
+
+/// @brief 复制Data_S的全部内容, 需要提供InfoOfData类型数据指针以便进行复制
+/// @param inputData 输入的Data_S类型数据
+/// @param info InfoOfData类型数据指针
+/// @return 复制好的Data_M类型数据
+extern Data_S copySData(Data_S inputData, InfoOfData* info);
+
+///////////////////////////////////
+//数据的释放
+
+/// @brief 释放掉Data_S数据
+/// @param inputData 输入的Data_S类型数据
+/// @param info InfoOfData类型数据指针
+extern void freeSData(Data_S* inputData, InfoOfData* info);
+
+#endif
+
+#ifdef DATA_M_OPER
+/////////////////////////////
+//空数据的获得
+
+/// @brief 得到空数据Data_M
+/// @return 空数据Data_M
+extern Data_M getEmptyMData();
+
+//////////////////////////////
+//数据的比较
+
+/// @brief 比较两个Data_M是否相同
+/// @param Data_a Data_M类型数据1
+/// @param Data_b Data_M类型数据2
+/// @return 比较结果, 使用SAME和DIFFERENT来进行判断
+extern CmpResult compareMData(Data_M Data_a, Data_M Data_b);
+
+///////////////////////////////////////
+//数据的复制
+
+/// @brief 复制Data_M的全部内容, 包括void* data和void* content
+/// @param inputData 输入的Data_M类型数据
+/// @return 复制好的Data_M类型数据
+extern Data_M copyMData(Data_M inputData);
+
+///////////////////////////////////
+//数据的释放
+
+/// @brief 释放掉Data_M数据
+/// @param inputData 输入的Data_M类型数据
+extern void freeMData(Data_M* inputData);
+
+#endif
+
+
+
+
+
+
 
 #endif

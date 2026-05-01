@@ -1,4 +1,4 @@
-#define LIST_AND_NODE_M_IN_CHAINMAP
+#define LIST_AND_NODE_S_INCHAINMAP
 #define GET_LARGESTPRIME
 #define DATA_S_OPER
 #include "chainmap_sdata.h"
@@ -83,7 +83,7 @@ static void freeSList(List_S_inChainMap* plist, ChainMap_S* pMap) {
     while (p) {
         q = p;
         p = p->next;
-        freeSEntryInSChainMap(&(q->entry), pMap);
+        freeSEntryInSChainMap(pMap, &(p->entry));
         free(q);
     }
     initSList(plist);
@@ -126,7 +126,7 @@ static Node_S_inChainMap* getNodeBySKey(List_S_inChainMap* plist, Data_S key, In
     if (isEmptySList(plist)) return NULL;
     Node_S_inChainMap* p = plist->head;
     for (int i = 0; i < plist->size; i++, p = p->next) {
-        if (compareSData(&(p->entry.key),keyInfo, &key, keyInfo) == SAME) {
+        if (compareSData(p->entry.key, keyInfo, key, keyInfo) == SAME) {
             return p;
         }
     } 
@@ -171,7 +171,7 @@ static int delStartNode(List_S_inChainMap* plist, ChainMap_S* pMap) {
         plist->head = plist->tail = NULL;
     }
 
-    freeSEntryInSChainMap(&(p->entry), pMap);
+    freeSEntryInSChainMap(pMap, &(p->entry));
     free(p);
     plist->size--;
     return Success;
@@ -194,7 +194,7 @@ static int delEndNode(List_S_inChainMap* plist, ChainMap_S* pMap) {
         plist->head = plist->tail = NULL;
     }
 
-    freeSEntryInSChainMap(&(p->entry), pMap);
+    freeSEntryInSChainMap(pMap, &(p->entry));
     free(p);
     plist->size--;
     return Success;
@@ -219,7 +219,7 @@ static int delNodeBySKey(List_S_inChainMap* plist, Data_S key, ChainMap_S* pMap)
     p->prev->next = p->next;
     p->next->prev = p->prev;
 
-    freeSEntryInSChainMap(&(p->entry), pMap);
+    freeSEntryInSChainMap(pMap, &(p->entry));
     free(p);
     plist->size--;
     return Success;

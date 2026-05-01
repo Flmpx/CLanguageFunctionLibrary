@@ -1,5 +1,6 @@
 # FocX
 
+<strong style = "color: red">首先注意一下, 函数中的变量命名(如SSList)的第一个字母(S)一定代表数据类型是单一的函数任意的</strong>
 
 
 ## 设计理念
@@ -24,6 +25,8 @@ typedef struct Data_M {
 } Data_M;
 
 ```
+## 注意事项
+    1. 如果某种类型是S(单一类型), 那它函数传入的不再是Data_S类型, 而是void* data和void* content
 
 - 注: M(Multiple)为一种数据结构中可以插入任意类型, S(Single)为一种数据结构中只能插入一种类型, 但这种类型任意  
 - 在List中的数据叫做MData或者SData
@@ -96,7 +99,8 @@ typedef struct Data_M {
     1. DList_M-->存储任意类型数据的DList
     
     2. DList_S-->存储单一类型数据的DList
-
+### 2 SList
+- 当前还未开发
 
 ### Map
 #### 1 OAMap
@@ -156,6 +160,3 @@ typedef struct Data_M {
     
     10. reverse-->反转(一般是链表)
 - 由于Node不公开, 故函数的命名直接使用Node就行了, 不公开的函数重名也没事, 但要可读性强
-
-## 其他注意事项
-    1. 如果某种类型是S(单一类型), 那它函数传入的不再是Data类型, 而是void* data和void* content

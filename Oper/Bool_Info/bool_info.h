@@ -1,6 +1,6 @@
-#ifndef _BOOL_OPER_H
-#define _BOOL_OPER_H
-#include "../../_void_base.h"
+#ifndef BOOL_INFO_H
+#define BOOL_INFO_H
+#include "../../base.h"
 
 /*
     注意:布尔类型一般做val,而不是key

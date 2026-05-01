@@ -17,7 +17,7 @@ static bool isEmptySList(DList_S* plist) {
     return plist->size == 0;
 }
 
-void initSList(DList_S* plist, InfoOfData* valInfo) {
+void initSDList(DList_S* plist, InfoOfData* valInfo) {
     plist->head = plist->tail = NULL;
     plist->size = 0;
     plist->valInfo = valInfo;
@@ -59,14 +59,14 @@ static Node_S_inDList* getNodeByPos(DList_S* plist, int pos) {
 }
 
 
-void freeSDataInSList(DList_S* plist, Data_S* inputData) {
+void freeSDataInSDList(DList_S* plist, Data_S* inputData) {
 
     //统一接口
     freeSData(inputData, plist->valInfo);
 }
 
 
-Data_S getPtrSDataBySDataInSList(DList_S* plist, void* data, void* content) {
+Data_S getPtrSDataBySDataInSDList(DList_S* plist, void* data, void* content) {
     Data_S inputData = {data, content, false};
     Node_S_inDList* p = getNodeBySData(plist, inputData);
     if (p == NULL) {
@@ -77,7 +77,7 @@ Data_S getPtrSDataBySDataInSList(DList_S* plist, void* data, void* content) {
 }
 
 
-Data_S getCopySDataByPosInSList(DList_S* plist, int pos) {
+Data_S getCopySDataByPosInSDList(DList_S* plist, int pos) {
     if ((pos < 0) || (pos >= plist->size)) return getEmptySData();
     Node_S_inDList* p = NULL;
     if (pos > plist->size/2) {
@@ -100,7 +100,7 @@ Data_S getCopySDataByPosInSList(DList_S* plist, int pos) {
     return newData;
 }
 
-Data_S getPtrSDataByPosInSList(DList_S* plist, int pos) {
+Data_S getPtrSDataByPosInSDList(DList_S* plist, int pos) {
     if ((pos < 0) || (pos >= plist->size)) return getEmptySData();
     Node_S_inDList* p = NULL;
     if (pos > plist->size/2) {
@@ -118,7 +118,7 @@ Data_S getPtrSDataByPosInSList(DList_S* plist, int pos) {
     return p->val;
 }
 
-bool hasSDataInSList(DList_S* plist, void* data, void* content) {
+bool hasSDataInSDList(DList_S* plist, void* data, void* content) {
     Data_S inputData = {data, content, false};
     Node_S_inDList* p = getNodeBySData(plist, inputData);
     if (p == NULL) {
@@ -145,7 +145,7 @@ static Node_S_inDList* createNode(DList_S* plist, Data_S oldData) {
 }
 
 /*********** */
-InfoOfReturn insertSDataAtEndInSList(DList_S* plist, void* data, void* content) {
+InfoOfReturn insertSDataAtEndInSDList(DList_S* plist, void* data, void* content) {
     Data_S oldData = {data, content, false};
     
     //创建节点
@@ -171,7 +171,7 @@ InfoOfReturn insertSDataAtEndInSList(DList_S* plist, void* data, void* content) 
 }
 
 
-InfoOfReturn insertSDataAtStartInSList(DList_S* plist, void* data, void* content) {
+InfoOfReturn insertSDataAtStartInSDList(DList_S* plist, void* data, void* content) {
     Data_S oldData = {data, content, false};
     
     //创建节点
@@ -197,10 +197,10 @@ InfoOfReturn insertSDataAtStartInSList(DList_S* plist, void* data, void* content
 }
 
 /************ */
-InfoOfReturn insertSDataAtPosInSList(DList_S* plist, void* data, void* content, int pos) {
+InfoOfReturn insertSDataAtPosInSDList(DList_S* plist, void* data, void* content, int pos) {
     if ((pos < 0) || (pos > plist->size)) return Warning;
-    if (pos == 0) return insertSDataAtStartInSList(plist, data, content);
-    if (pos == plist->size) return insertSDataAtEndInSList(plist, data, content);
+    if (pos == 0) return insertSDataAtStartInSDList(plist, data, content);
+    if (pos == plist->size) return insertSDataAtEndInSDList(plist, data, content);
 
     Data_S oldData = {data, content, false};
     
@@ -224,7 +224,7 @@ InfoOfReturn insertSDataAtPosInSList(DList_S* plist, void* data, void* content, 
     return Success;
 }
 
-InfoOfReturn delEndNodeInSList(DList_S* plist) {
+InfoOfReturn delEndNodeInSDList(DList_S* plist) {
     if (isEmptySList(plist)) return Warning;
 
     Node_S_inDList* p = plist->tail;
@@ -235,12 +235,12 @@ InfoOfReturn delEndNodeInSList(DList_S* plist) {
     } else {
         plist->head = plist->tail = NULL;
     }
-    freeSData(p->val, plist->valInfo);
+    freeSData(&(p->val), plist->valInfo);
     free(p);
     plist->size--;
     return Success;
 }
-InfoOfReturn delStartNodeInSList(DList_S* plist) {
+InfoOfReturn delStartNodeInSDList(DList_S* plist) {
     if (isEmptySList(plist)) return Warning;
 
     Node_S_inDList* p = plist->head;
@@ -252,24 +252,24 @@ InfoOfReturn delStartNodeInSList(DList_S* plist) {
         plist->head = plist->tail = NULL;
     }
 
-    freeSData(p->val, plist->valInfo);
+    freeSData(&(p->val), plist->valInfo);
     free(p);
     plist->size--;
     return Success;
 }
 
-InfoOfReturn delNodeBySDataInSList(DList_S* plist, void* data, void* content) {
+InfoOfReturn delNodeBySDataInSDList(DList_S* plist, void* data, void* content) {
     if (isEmptySList(plist)) return Warning;
     Data_S inputData = {data, content, false};
     Node_S_inDList* p = getNodeBySData(plist, inputData);
     if (p == NULL) return None;
-    if (p == plist->head) return delStartNodeInSList(plist);
-    if (p == plist->tail) return delEndNodeInSList(plist);
+    if (p == plist->head) return delStartNodeInSDList(plist);
+    if (p == plist->tail) return delEndNodeInSDList(plist);
     
     p->prev->next = p->next;
     p->next->prev = p->prev;
 
-    freeSData(p->val, plist->valInfo);
+    freeSData(&(p->val), plist->valInfo);
     free(p);
     plist->size--;
     return Success;
@@ -277,23 +277,23 @@ InfoOfReturn delNodeBySDataInSList(DList_S* plist, void* data, void* content) {
 
 
 
-InfoOfReturn delNodeByPosInSList(DList_S* plist, int pos) {
+InfoOfReturn delNodeByPosInSDList(DList_S* plist, int pos) {
     if (isEmptySList(plist)) return Warning;
     if ((pos < 0) || (pos >= plist->size)) return Warning;
     Node_S_inDList* p = getNodeByPos(plist, pos);
-    if (p == plist->head) return delStartNodeInSList(plist);
-    if (p == plist->tail) return delEndNodeInSList(plist);
+    if (p == plist->head) return delStartNodeInSDList(plist);
+    if (p == plist->tail) return delEndNodeInSDList(plist);
     
     p->prev->next = p->next;
     p->next->prev = p->prev;
 
-    freeSData(p->val, plist->valInfo);
+    freeSData(&(p->val), plist->valInfo);
     free(p);
     plist->size--;
     return Success;
 }
 
-void reverseSList(DList_S* plist) {
+void reverseSDList(DList_S* plist) {
     if (plist->size < 2) return;
     Node_S_inDList* temp = NULL;
     Node_S_inDList* p = plist->head;
@@ -310,7 +310,7 @@ void reverseSList(DList_S* plist) {
 }
 
 
-void printSDataInSList(DList_S* plist, Data_S inputData) {
+void printSDataInSDList(DList_S* plist, Data_S inputData) {
     if (inputData.isEmpty) {
         printf("\ndata is empty, cannot print\n");
         return;
@@ -322,7 +322,7 @@ void printSDataInSList(DList_S* plist, Data_S inputData) {
 
 
 
-void printSList(DList_S* plist) {
+void printSDList(DList_S* plist) {
     Node_S_inDList* p = plist->head;
     printf("[");
     int cnt = 0;
@@ -339,16 +339,16 @@ void printSList(DList_S* plist) {
 
 
 
-void freeSList(DList_S* plist) {
+void freeSDList(DList_S* plist) {
     Node_S_inDList* p = plist->head;
     Node_S_inDList* q = NULL;
     while (p) {
         q = p;
         p = p->next;
         
-        freeSData(p->val, plist->valInfo);
+        freeSData(&(q->val), plist->valInfo);
         free(q);
     }
-    initSList(plist, plist->valInfo);
+    initSDList(plist, plist->valInfo);
 }
 

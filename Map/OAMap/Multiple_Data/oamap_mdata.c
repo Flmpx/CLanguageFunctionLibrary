@@ -102,7 +102,7 @@ static InfoOfReturn addMEntryFunction(OAMap_M* pMap, Data_M key, Data_M value) {
             flagFindDel = 1;
         }
         //如果发现是同一个key,则更新数据
-        if (compareMData(&(pMap->arr[index].key), &key) == SAME) {
+        if (compareMData(pMap->arr[index].key, key) == SAME) {
             Data_M newVal = copyMData(value);
             if (newVal.isEmpty) {
                 printf("\nMemory allocation failed\n");
@@ -225,7 +225,7 @@ static Position getIndexByMKey(OAMap_M* pMap, Data_M key) {
         }
         
         //这个也可以比较为空的情况
-        if (compareMData(&(pMap->arr[index].key), &key) == SAME) {
+        if (compareMData(pMap->arr[index].key, key) == SAME) {
             return index;
         }
         index++;

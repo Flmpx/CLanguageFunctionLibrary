@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "_int_oper.h"
+#include "int_info.h"
 
 static void freedata_Int(void* data, void* content) {
     free(data);

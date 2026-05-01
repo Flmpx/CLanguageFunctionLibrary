@@ -14,7 +14,7 @@ typedef struct Entry_S_inChainMap {
     bool isEmpty;
 } Entry_S_inChainMap;
 
-#ifdef LIST_AND_NODE_M_IN_CHAINMAP
+#ifdef LIST_AND_NODE_S_INCHAINMAP
 
 /// @brief 在ChainMap_S中的链表节点(Node_S_inChainMap类型)
 struct Node_S_inChainMap {
