@@ -2479,6 +2479,121 @@
 
 
 
+// #include <stdio.h>
+// #include <stdlib.h>
+// #include <time.h>
+// #include <string.h>
+// #include <windows.h>
+
+// // 包含你项目的所有核心头文件
+// #include "Void\List\Multiple_Void_List\_multiple_void_list.h"
+// #include "Void\List\Single_Void_List\_single_void_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_List\_multiple_void_map_list.h"
+// #include "Void\Map\Multiple_Void_Map\Hash_Map_OA\_multiple_void_map_oa.h"
+// #include "Void\Map\Single_Void_Map\Hash_Map_List\_single_void_map_list.h"
+// #include "Void\Oper\bool_oper\_bool_oper.h"
+// #include "Void\Oper\double_oper\_double_oper.h"
+// #include "Void\Oper\int_oper\_int_oper.h"
+// #include "Void\Oper\string_oper\_string_oper.h"
+// #include "Void\_void_base.h"
+
+// #define MAX 1000000
+
+// // 保持你提供的随机字符串生成逻辑
+// const char all[] = "abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";
+// void generate(char* string, int len) {
+//     for (int i = 0; i < len; i++) {
+//         int temp = rand() % (sizeof(all) - 1);
+//         string[i] = all[temp];
+//     }
+//     string[len] = '\0';
+// }
+
+// /**
+//  * 针对 OAMap_M 的专项测试程序
+//  */
+// void testOAMap_M() {
+//     OAMap_M map;
+//     clock_t start, end;
+//     initMOAMap(&map);
+
+//     printf("--- OAMap_M 压力与有效性测试开始 ---\n");
+
+//     // 1. 批量插入测试并显示时间
+//     int success_count = 0;
+
+//     start = clock();
+//     for (int i = 0; i < MAX; i++) {
+//         char key_buf[21];
+//         generate(key_buf, 20);
+        
+//         // 使用 stackMData 封装数据，传入 &Info 指针
+//         Data_M k = stackMDataInMOAMap(key_buf, NULL, 0, &Info_String);
+//         Data_M v = stackMDataInMOAMap(&i, NULL, 1, &Info_Int);
+        
+//         // 验证插入是否成功 (返回值为 Success 即为 1)
+//         if (insertMKeyAndMValInMOAMap(&map, k, v) == Success) {
+//             success_count++;
+//         }
+//         if (insertMKeyAndMValInMOAMap(&map, v, k) == Success) {
+//             success_count++;
+//         }
+
+//     }
+
+//     // 插入一个固定键值对用于最后的精确有效性检验
+//     char test_key[] = "Verify_Key_999";
+//     int test_val = 88888;
+//     Data_M vk = stackMDataInMOAMap(test_key, NULL, 0, &Info_String);
+//     Data_M vv = stackMDataInMOAMap(&test_val, NULL, 1, &Info_Int);
+//     insertMKeyAndMValInMOAMap(&map, vk, vv);
+
+//     end = clock();
+//     printf("批量插入 %d 条数据完成。\n", MAX);
+//     printf("成功计数: %d | 耗时: %.3f 秒\n", success_count, (double)(end - start) / CLOCKS_PER_SEC);
+
+//     // 2. 检验插入是否有效 (数据一致性检查)
+//     printf("正在检验数据有效性...\n");
+//     // 通过 getPtr 获取数据指针
+//     Data_M result = getPtrMValByMKeyInMOAMap(&map, vk);
+    
+//     if (!result.isEmpty) {
+//         int val = *(int*)result.data;
+//         if (val == test_val) {
+//             printf("[成功] 数据验证通过: Key='%s' -> Val=%d\n", test_key, val);
+//         } else {
+//             printf("[失败] 数据损坏: 期望 %d, 实际得到 %d\n", test_val, val);
+//         }
+//     } else {
+//         printf("[失败] 找不到预设的验证 Key！\n");
+//     }
+
+//     // 3. 内存释放测试
+//     printf("等待 5 秒后释放内存...\n");
+//     Sleep(5000);
+    
+//     start = clock();
+//     freeMOAMap(&map);
+//     end = clock();
+    
+//     printf("OAMap_M 释放完成，耗时: %.3f 秒\n", (double)(end - start) / CLOCKS_PER_SEC);
+//     printf("--------------------------------------\n\n");
+//     Sleep(5000);
+// }
+
+// int main() {
+//     srand((unsigned int)time(NULL));
+
+//     // 执行 OAMap_M 测试
+//     testOAMap_M();
+    
+//     return 0;
+// }
+
+
+
+
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
@@ -2497,95 +2612,8 @@
 #include "Void\Oper\string_oper\_string_oper.h"
 #include "Void\_void_base.h"
 
-#define MAX 1000000
-
-// 保持你提供的随机字符串生成逻辑
-const char all[] = "abcdefghigklmnopqrstuvwxyzABCDEFGHIGKLMNOPQRSTUVWXYZ0123456789";
-void generate(char* string, int len) {
-    for (int i = 0; i < len; i++) {
-        int temp = rand() % (sizeof(all) - 1);
-        string[i] = all[temp];
-    }
-    string[len] = '\0';
-}
-
-/**
- * 针对 OAMap_M 的专项测试程序
- */
-void testOAMap_M() {
-    OAMap_M map;
-    clock_t start, end;
-    initMOAMap(&map);
-
-    printf("--- OAMap_M 压力与有效性测试开始 ---\n");
-
-    // 1. 批量插入测试并显示时间
-    int success_count = 0;
+int main()
+{
     
-    start = clock();
-    for (int i = 0; i < MAX; i++) {
-        char key_buf[21];
-        generate(key_buf, 20);
-        
-        // 使用 stackMData 封装数据，传入 &Info 指针
-        Data_M k = stackMDataInMOAMap(key_buf, NULL, 0, &Info_String);
-        Data_M v = stackMDataInMOAMap(&i, NULL, 1, &Info_Int);
-        
-        // 验证插入是否成功 (返回值为 Success 即为 1)
-        if (insertMKeyAndMValInMOAMap(&map, k, v) == Success) {
-            success_count++;
-        }
-        if (insertMKeyAndMValInMOAMap(&map, v, k) == Success) {
-            success_count++;
-        }
-
-    }
-
-    // 插入一个固定键值对用于最后的精确有效性检验
-    char test_key[] = "Verify_Key_999";
-    int test_val = 88888;
-    Data_M vk = stackMDataInMOAMap(test_key, NULL, 0, &Info_String);
-    Data_M vv = stackMDataInMOAMap(&test_val, NULL, 1, &Info_Int);
-    insertMKeyAndMValInMOAMap(&map, vk, vv);
-
-    end = clock();
-    printf("批量插入 %d 条数据完成。\n", MAX);
-    printf("成功计数: %d | 耗时: %.3f 秒\n", success_count, (double)(end - start) / CLOCKS_PER_SEC);
-
-    // 2. 检验插入是否有效 (数据一致性检查)
-    printf("正在检验数据有效性...\n");
-    // 通过 getPtr 获取数据指针
-    Data_M result = getPtrMValByMKeyInMOAMap(&map, vk);
-    
-    if (!result.isEmpty) {
-        int val = *(int*)result.data;
-        if (val == test_val) {
-            printf("[成功] 数据验证通过: Key='%s' -> Val=%d\n", test_key, val);
-        } else {
-            printf("[失败] 数据损坏: 期望 %d, 实际得到 %d\n", test_val, val);
-        }
-    } else {
-        printf("[失败] 找不到预设的验证 Key！\n");
-    }
-
-    // 3. 内存释放测试
-    printf("等待 5 秒后释放内存...\n");
-    Sleep(5000);
-    
-    start = clock();
-    freeMOAMap(&map);
-    end = clock();
-    
-    printf("OAMap_M 释放完成，耗时: %.3f 秒\n", (double)(end - start) / CLOCKS_PER_SEC);
-    printf("--------------------------------------\n\n");
-    Sleep(5000);
-}
-
-int main() {
-    srand((unsigned int)time(NULL));
-
-    // 执行 OAMap_M 测试
-    testOAMap_M();
-
     return 0;
 }
