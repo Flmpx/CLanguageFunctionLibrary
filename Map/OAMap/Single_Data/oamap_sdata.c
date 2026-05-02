@@ -166,10 +166,16 @@ static InfoOfReturn addSEntryForFreshSOAMap(OAMap_S* pMap, Data_S keyData, Data_
 static InfoOfReturn freshSOAMap(OAMap_S* pMap) {
     int newLen = 0;
 
+    //无论如何都要保证len至少为16
     if (pMap->len == 0) {
         newLen = 16;
+    } else if (4*(pMap->size) >= 3*(pMap->len)) {
+        newLen = pMap->len*2;
+    } else if (4*(pMap->size) <= pMap->len && pMap->len >= 32) {
+        //至少要保证缩容之后len至少为16
+        newLen = pMap->len/2;
     } else {
-        newLen = (pMap->len+1)*2;
+        return None;
     }
     
     OAMap_S newMap;
@@ -204,12 +210,14 @@ static InfoOfReturn freshSOAMap(OAMap_S* pMap) {
 }
 
 InfoOfReturn insertSkeyAndSValInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent, void* valdata, void* valcontent) {
-    if (4*(pMap->size) >= 3*(pMap->len)) {
-        if (freshSOAMap(pMap) == Warning) {
-            printf("\nMemory allocation failed\n");
-            return Warning;
-        }
-    }
+    // if (4*(pMap->size) >= 3*(pMap->len)) {
+    //     if (freshSOAMap(pMap) == Warning) {
+    //         printf("\nMemory allocation failed\n");
+    //         return Warning;
+    //     }
+    // }
+    //先进行重hash
+    freshSOAMap(pMap);
     Data_S key = {keydata, keycontent, false};
     Data_S val = {valdata, valcontent, false};
     return addSEntryFunction(pMap, key, val);
@@ -307,6 +315,8 @@ InfoOfReturn delSEntryBySKeyInSOAMap(OAMap_S* pMap, void* keydata, void* keycont
         freeSEntryInSOAMap(pMap, &(pMap->arr[index]));
         pMap->arr[index].state = DEL_IN_MAP;
         pMap->size--;
+        //删除后进行重hash
+        freshSOAMap(pMap);
         return Success;
     }
 }

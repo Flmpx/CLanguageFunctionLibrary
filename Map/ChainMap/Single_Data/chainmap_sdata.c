@@ -331,10 +331,16 @@ static void freeSListForFreshSChainMap(List_S_inChainMap* plist) {
 //重hash
 static int freshSChainMap(ChainMap_S* pMap) {
     int newLen = 0;
+    //无论如何都要保证len至少为16
     if (pMap->len == 0) {
-        newLen = 16;    //如果为空,直接给16的空间
+        newLen = 16;
+    } else if (4*(pMap->size) >= 3*(pMap->len)) {
+        newLen = pMap->len*2;
+    } else if (4*(pMap->size) <= pMap->len && pMap->len >= 32) {
+        //至少要保证缩容之后len至少为16
+        newLen = pMap->len/2;
     } else {
-        newLen = (pMap->len)*2;   //否则扩容两倍
+        return None;
     }
 
     int newSize = pMap->size;
@@ -378,18 +384,10 @@ static int freshSChainMap(ChainMap_S* pMap) {
     return Success;
 }
 
-static int shrinkSChainMap(ChainMap_S* pMap) {
-
-}
 
 int insertSKeyAndSValInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent, void* valdata, void* valcontent) {
     //当填充因子大于75%时或者Map为空时自动扩容
-    if (4*(pMap->size) >= 3*(pMap->len) || pMap->size == 0) {
-        if (freshSChainMap(pMap) == Warning) {
-            printf("\nMemory allocation failed\n");
-            return Warning;
-        }
-    }
+    freshSChainMap(pMap);
     //原来的stackData函数去除,直接创建
     Data_S key = {keydata, keycontent, false};
     Data_S val = {valdata, valcontent, false};
@@ -487,6 +485,9 @@ InfoOfReturn delSEntryBySKeyInSChainMap(ChainMap_S* pMap, void* keydata, void* k
         return None;
     }
     pMap->size--;
+
+    //删除后进行重hash
+    freshSChainMap(pMap);
     return Success;
 
 }

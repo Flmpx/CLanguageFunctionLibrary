@@ -328,10 +328,17 @@ static void freeMListForFreshMChainMap(List_M_inChainMap* plist) {
 //重hash
 static InfoOfReturn freshMChainMap(ChainMap_M* pMap) {
     int newLen = 0;
+
+    //无论如何都要保证len至少为16
     if (pMap->len == 0) {
-        newLen = 16;    //如果为空,直接给16的空间
+        newLen = 16;
+    } else if (4*(pMap->size) >= 3*(pMap->len)) {
+        newLen = pMap->len*2;
+    } else if (4*(pMap->size) <= pMap->len && pMap->len >= 32) {
+        //至少要保证缩容之后len至少为16
+        newLen = pMap->len/2;
     } else {
-        newLen = (pMap->len+1)*2;   //否则扩容两倍
+        return None;
     }
 
     int newSize = pMap->size;
@@ -375,14 +382,13 @@ static InfoOfReturn freshMChainMap(ChainMap_M* pMap) {
 
 
 
+
+
 InfoOfReturn insertMKeyAndMValInMChainMap(ChainMap_M* pMap, Data_M key, Data_M val) {
+    
+    //在插入之前进行freshMap
     //当填充因子大于75%时或者Map为空时自动扩容
-    if (4*(pMap->size) >= 3*(pMap->len) || pMap->size == 0) {
-        if (freshMChainMap(pMap) == Warning) {
-            printf("\nMemory allocation failed\n");
-            return Warning;
-        }
-    }
+    freshMChainMap(pMap);
     return addMEntryFunction(pMap, key, val);
 }
 
@@ -468,6 +474,8 @@ InfoOfReturn delMEntryByMKeyInMChainMap(ChainMap_M* pMap, Data_M key) {
         return None;
     }
     pMap->size--;
+    //删除后进行重hash
+    freshMChainMap(pMap);
     return Success;
 }
 

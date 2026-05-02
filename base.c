@@ -18,7 +18,7 @@ static bool isPrime(int n) {
 
 
 int getLargestPrime(int n) {
-    if (n <= 3) return n;
+    if (n <= 2) return 2;
     if (n%2 == 0) n--;
     for (int i = n; ; i-=2) {
         if (isPrime(i)) return i;

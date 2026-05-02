@@ -157,10 +157,16 @@ static InfoOfReturn addMEntryForFreshMOAMap(OAMap_M* pMap, Data_M key, Data_M va
 //重hash
 static InfoOfReturn freshMOAMap(OAMap_M* pMap) {
     int newLen = 0;
+    //无论如何都要保证len至少为16
     if (pMap->len == 0) {
-        newLen = 16;    //如果为空,直接给16的空间
+        newLen = 16;
+    } else if (4*(pMap->size) >= 3*(pMap->len)) {
+        newLen = pMap->len*2;
+    } else if (4*(pMap->size) <= pMap->len && pMap->len >= 32) {
+        //至少要保证缩容之后len至少为16
+        newLen = pMap->len/2;
     } else {
-        newLen = (pMap->len+1)*2;   //否则扩容两倍
+        return None;
     }
 
     int newSize = pMap->size;
@@ -201,12 +207,7 @@ static InfoOfReturn freshMOAMap(OAMap_M* pMap) {
 
 InfoOfReturn insertMKeyAndMValInMOAMap(OAMap_M* pMap, Data_M key, Data_M val) {
     //当填充因子大于75%时自动扩容
-    if (4*(pMap->size) >= 3*(pMap->len)) {
-        if (freshMOAMap(pMap) == Warning) {
-            printf("\nMemory allocation failed\n");
-            return Warning;
-        }
-    }
+    freshMOAMap(pMap);
     return addMEntryFunction(pMap, key, val);
 }
 
@@ -299,6 +300,8 @@ InfoOfReturn delMEntryByMKeyInMOAMap(OAMap_M* pMap, Data_M key) {
         freeMEntryInMOAMap(&(pMap->arr[index]));
         pMap->arr[index].state = DEL_IN_MAP;
         pMap->size--;
+        //删除之后进行重hash
+        freshMOAMap(pMap);
         return Success;
     }
 }
