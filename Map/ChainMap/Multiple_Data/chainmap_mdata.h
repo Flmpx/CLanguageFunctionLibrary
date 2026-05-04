@@ -104,14 +104,6 @@ extern bool hasMKeyInMChainMap(ChainMap_M* pMap, Data_M key);
 extern InfoOfReturn delMEntryByMKeyInMChainMap(ChainMap_M* pMap, Data_M key);
 
 
-/// @brief 将Data_M的数据整合在一起(注意:这个Data_M数据里面的不是动态分配的,不可以使用freeMData一类函数释放)
-/// @param data void* data指针
-/// @param content 描述性信息, void* content
-/// @param type 数据标签, 不要使用-1
-/// @param dataInfo InfoOfData类型指针
-/// @return 返回Data_M数据(注意:这个Data_M数据里面的不是动态分配的,不可以使用freeMData一类函数释放)
-extern Data_M stackMDataInMChainMap(void* data, void* content, int type, InfoOfData* dataInfo);
-
 
 
 /// @brief 打印在ChainMap_M中的MKey(Data_M类型)

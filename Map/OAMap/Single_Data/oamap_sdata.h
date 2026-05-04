@@ -5,12 +5,6 @@
 
 
 
-/*
-
-    其他采用这种注释
-
-*/
-
 
 /// @brief 在OAMap_S中的Entry类型(Entry_S_inOAMap)
 typedef struct Entry_S_inOAMap {
@@ -57,51 +51,44 @@ extern void freeSOAMap(OAMap_S* pMap);
 
 /// @brief 插入key和val到OAMap_S类型中去
 /// @param pMap OAMap_S的指针
-/// @param keydata void* keydata
-/// @param keycontent void* keycontent
-/// @param valdata void* valdata
-/// @param valcontent void* valcontent
+/// @param key 传入的key(Data_S类型数据)
+/// @param val 传入的val(Data_S类型数据)
 /// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
-extern InfoOfReturn insertSkeyAndSValInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent, void* valdata, void* valcontent);
+extern InfoOfReturn insertSkeyAndSValInSOAMap(OAMap_S* pMap, Data_S key, Data_S val);
 
 
 
 /// @brief 通过SKey得到复制来的SVal(Data_S类型)
 /// @param pMap OAMap_S的指针
-/// @param keydata void* keydata
-/// @param keycontent void* keycontent
+/// @param key 传入的key(Data_S类型数据)
 /// @return 返回Data_S类型数据, 这里是SVal, 如果没有, 返回空Data_S类型数据, 通过Data.isEmpty进行查看, 具体查看文档
-extern Data_S getCopySValBySkeyInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent);
+extern Data_S getCopySValBySkeyInSOAMap(OAMap_S* pMap, Data_S key);
 
 /// @brief 通过SKey得到SVal(Data_S类型), 可直接修改内部的void* data和void* content内容
 /// @param pMap OAMap_S的指针
-/// @param keydata void* keydata
-/// @param keycontent void* keycontent
+/// @param key 传入的key(Data_S类型数据)
 /// @return 返回Data_S类型数据, 这里是SVal, 如果没有, 返回空Data_S类型数据, 通过Data.isEmpty进行查看, 具体查看文档
-extern Data_S getPtrSValBySKeyInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent);
+extern Data_S getPtrSValBySKeyInSOAMap(OAMap_S* pMap, Data_S key);
 
 /// @brief 通过SKey得到复制来的SEntry(Entry_S_inOAMap类型)
 /// @param pMap OAMap_S的指针
-/// @param keydata void* keydata
-/// @param keycontent void* keycontent
+/// @param key 传入的key(Data_S类型数据)
 /// @return 返回Entry_S_inOAMap类型数据, 这里是SEntry, 如果没有, 返回空Entry_S_inOAMap类型数据, 通过entry.isEmpty进行查看, 具体查看文档
-extern Entry_S_inOAMap getCopySEntryByKeyInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent);
+extern Entry_S_inOAMap getCopySEntryByKeyInSOAMap(OAMap_S* pMap, Data_S key);
 
 
 /// @brief 判断Skey是否在OAMap_S中
 /// @param pMap OAMap_S的指针
-/// @param keydata void* keydata
-/// @param keycontent void* keycontent
+/// @param key 传入的key(Data_S类型数据)
 /// @return 如果存在返回true, 否则返回false
-extern bool hasSKeyInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent);
+extern bool hasSKeyInSOAMap(OAMap_S* pMap, Data_S key);
 
 
 /// @brief 通过SKey删除在OAMap_S中的元素
 /// @param pMap OAMap_S的指针
-/// @param keydata void* keydata
-/// @param keycontent void* keycontent
+/// @param key 传入的key(Data_S类型数据)
 /// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
-extern InfoOfReturn delSEntryBySKeyInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent);
+extern InfoOfReturn delSEntryBySKeyInSOAMap(OAMap_S* pMap, Data_S key);
 
 
 /// @brief 打印在OAMap_S中的SKey(Data_S类型)

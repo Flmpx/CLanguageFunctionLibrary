@@ -85,7 +85,8 @@ Data_M getCopyMDataByPosInMDList(DList_M* plist, int pos) {
             p = p->next;
         }
     }
-    Data_M newData = copyMData(p->val);
+    //返回的一定是深拷贝的Data
+    Data_M newData = deepCopyMData(p->val);
     if (newData.isEmpty) {
         printf("\nMemory allocation failed\n");
         return getEmptyMData();
@@ -134,7 +135,7 @@ void freeMDataInMDList(Data_M* inputData) {
 static Node_M_inDList* createNode(Data_M oldData) {
     Node_M_inDList* newNode = (Node_M_inDList*)malloc(sizeof(Node_M_inDList));
     if (newNode == NULL) return NULL; 
-    Data_M newData = copyMData(oldData);
+    Data_M newData = smartCopyMData(oldData);
     if (newData.isEmpty) {
         printf("\nMemory allocation failed\n");
         return NULL;
@@ -310,18 +311,6 @@ void reverseMDList(DList_M* plist) {
     plist->head = plist->tail;
     plist->tail = temp;
 }
-
-
-Data_M stackMDataInMDList(void* data, void* content, int type, InfoOfData* dataInfo) {
-    Data_M newData;
-    newData.data = data;
-    newData.type = type;
-    newData.isEmpty = false;
-    newData.dataInfo = dataInfo;
-    newData.content = content;
-    return newData;
-}
-
 
 
 

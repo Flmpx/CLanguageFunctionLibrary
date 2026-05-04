@@ -30,7 +30,9 @@ int getLargestPrime(int n) {
 Data_S getEmptySData() {
     Data_S empty;
     empty.content = empty.data = NULL;
+    //空Data表示一种错误状态, 除了isEmpty的值要设置为true, 其他的值即便随便
     empty.isEmpty = true;
+    empty.isOwner = false;
     return empty;
 }
 
@@ -38,8 +40,10 @@ Data_M getEmptyMData() {
     Data_M empty;
     empty.content = empty.data = NULL;
     empty.dataInfo = NULL;
+    //空Data表示一种错误状态, 除了isEmpty的值要设置为true, 其他的值即便随便
     empty.isEmpty = true;
     empty.type = NOT_FOUND;
+    empty.isOwner = false;
     return empty;
 }
 
@@ -90,7 +94,7 @@ CmpResult compareMData(Data_M Data_a, Data_M Data_b) {
 
 }
 
-Data_M copyMData(Data_M inputData) {
+Data_M deepCopyMData(Data_M inputData) {
     if (inputData.isEmpty) {
         return getEmptyMData();
     }
@@ -115,6 +119,7 @@ Data_M copyMData(Data_M inputData) {
         newData.content = NULL;
     }
     //提供的相应操作函数因该是全局的
+    newData.isOwner = true; //复制即代表了所有权是自己的
     newData.dataInfo = inputData.dataInfo;
     newData.type = inputData.type;
     newData.isEmpty = false;
@@ -122,7 +127,7 @@ Data_M copyMData(Data_M inputData) {
 }
 
 
-Data_S copySData(Data_S inputData, InfoOfData* info) {
+Data_S deepCopySData(Data_S inputData, InfoOfData* info) {
     if (inputData.isEmpty) {
         return getEmptySData();
     }
@@ -145,16 +150,48 @@ Data_S copySData(Data_S inputData, InfoOfData* info) {
     } else {
         newData.content = NULL;
     }
+    newData.isOwner = true; //复制即代表了所有权是自己的
     newData.isEmpty = false;
     return newData;
 }
 
 
+Data_M smartCopyMData(Data_M inputData) {
+    if (inputData.isEmpty) {
+        return getEmptyMData();
+    }
+    //如果对内部数据没有控制权, 直接返回就行, 没必要进行下面的内容
+    if (inputData.isOwner == false) {
+        return inputData;
+    }
+    //如果有控制权, 直接进行深拷贝
+    return deepCopyMData(inputData);
+}
+
+
+Data_S smartCopySData(Data_S inputData, InfoOfData* info) {
+    if (inputData.isEmpty) {
+        return getEmptySData();
+    }
+    
+    //如果对内部数据没有控制权, 直接返回就行, 没必要进行下面的内容
+    if (inputData.isOwner == false) {
+        return inputData;
+    }
+    //如果有控制权, 直接进行深拷贝
+    return deepCopySData(inputData, info);
+}
+
+
 void freeSData(Data_S* inputData, InfoOfData* info) {
     if (inputData->isEmpty) return;
-    info->oper->freedata(inputData->data, inputData->content);
-    if (info->hasContent) {
-        info->oper->freecontent(inputData->content);
+
+    if (inputData->isOwner) {
+        //只有数据的所有权是自己的, 才进行释放
+        info->oper->freedata(inputData->data, inputData->content);
+        if (info->hasContent) {
+            info->oper->freecontent(inputData->content);
+        }
     }
     //数据释放为空
     *inputData = getEmptySData();
@@ -165,13 +202,16 @@ void freeMData(Data_M* inputData) {
     //为空不释放
     if (inputData->isEmpty) return;
 
-    //data的释放
-    inputData->dataInfo->oper->freedata(inputData->data, inputData->content);
-
-    //有content时才释放
-    if (inputData->dataInfo->hasContent) {
-        inputData->dataInfo->oper->freecontent(inputData->content);
+    if (inputData->isOwner) {
+        //data的释放
+        inputData->dataInfo->oper->freedata(inputData->data, inputData->content);
+    
+        //有content时才释放
+        if (inputData->dataInfo->hasContent) {
+            inputData->dataInfo->oper->freecontent(inputData->content);
+        }
     }
+
 
     //数据释放为空
     *inputData = getEmptyMData();

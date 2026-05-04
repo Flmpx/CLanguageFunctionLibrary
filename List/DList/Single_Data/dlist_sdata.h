@@ -38,12 +38,11 @@ extern void initSDList(DList_S* plist, InfoOfData* valInfo);
 /// @param inputData Data_S类型指针
 extern void freeSDataInSDList(DList_S* plist, Data_S* inputData);
 
-/// @brief 通过Data_S类型数据中的void* data和void* content返回SData的指针(Data_S类型)(可直接修改内部的void* data和void* content内容)
+/// @brief 通过Data_S类型数据返回SData的指针(Data_S类型)(可直接修改内部的void* data和void* content内容)
 /// @param plist DList_S类型指针
-/// @param data void* data
-/// @param content void* content
+/// @param inputData 传入的Data_S类型数据
 /// @return 返回Data_S类型数据, 这里是SData, 如果没有, 返回空Data_S类型数据, 通过Data.isEmpty进行查看, 具体查看文档
-extern Data_S getPtrSDataBySDataInSDList(DList_S* plist, void* data, void* content);
+extern Data_S getPtrSDataBySDataInSDList(DList_S* plist, Data_S inputData);
 
 /// @brief 通过Pos位置返回Data_S的,注意这里Data_S中的void* data和void* content都是复制的,使用完后记得释放
 /// @param plist DList_S类型指针
@@ -58,38 +57,33 @@ extern Data_S getCopySDataByPosInSDList(DList_S* plist, int pos);
 /// @return 返回Data_S类型数据, 这里是SData, 如果没有, 返回空Data_S类型数据, 通过Data.isEmpty进行查看, 具体查看文档
 extern Data_S getPtrSDataByPosInSDList(DList_S* plist, int pos);
 
-/// @brief 判断Data_S数据(这里输入的是void* data和void* content)是否在DList_S里面
+/// @brief 判断Data_S数据是否在DList_S里面
 /// @param plist List_M类型指针
-/// @param data void* data
-/// @param content void* content
+/// @param inputData 传入的Data_S类型数据
 /// @return 有就返回true,没有就false
-extern bool hasSDataInSDList(DList_S* plist, void* data, void* content);
+extern bool hasSDataInSDList(DList_S* plist, Data_S inputData);
 
 
 
-
-/// @brief 在DList_S链表的尾部插入节点(这里输入的是void* data和void* content)
+/// @brief 在DList_S链表的尾部插入数据Data_S
 /// @param plist DList_S链表指针
-/// @param data void* data
-/// @param content void* content
+/// @param inputData 传入的Data_S类型数据
 /// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
-extern InfoOfReturn insertSDataAtEndInSDList(DList_S* plist, void* data, void* content);
+extern InfoOfReturn insertSDataAtEndInSDList(DList_S* plist, Data_S inputData);
 
 
-/// @brief 在DList_S链表头部插入节点(这里输入的是void* data和void* content)
+/// @brief 在DList_S链表头部插入数据Data_S
 /// @param plist DList_S链表指针
-/// @param data void* data
-/// @param content void* content
+/// @param inputData 传入的Data_S类型数据
 /// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
-extern InfoOfReturn insertSDataAtStartInSDList(DList_S* plist, void* data, void* content);
+extern InfoOfReturn insertSDataAtStartInSDList(DList_S* plist, Data_S inputData);
 
-/// @brief 在DList_S链表Pos位置插入节点(这里输入的是void* data和void* content)
+/// @brief 在DList_S链表Pos位置插入数据Data_S
 /// @param plist DList_S链表指针
-/// @param data void* data
-/// @param content void* content
+/// @param inputData 传入的Data_S类型数据
 /// @param pos 位置的范围在[0, list.size],范围的两端分别代表头插和尾插
 /// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
-extern InfoOfReturn insertSDataAtPosInSDList(DList_S* plist, void* data, void* content, int pos);
+extern InfoOfReturn insertSDataAtPosInSDList(DList_S* plist, Data_S inputData, int pos);
 
 /// @brief 删除DList_S链表尾节点
 /// @param plist DList_S链表指针
@@ -102,12 +96,11 @@ extern InfoOfReturn delEndNodeInSDList(DList_S* plist);
 /// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
 extern InfoOfReturn delStartNodeInSDList(DList_S* plist);
 
-/// @brief 通过SData(Data_S类型, 这里输入的是void* data和void* content)数据来删除DList_S中的节点
+/// @brief 通过SData(Data_S类型)数据来删除DList_S中的节点
 /// @param plist DList_S链表指针
-/// @param data void* data
-/// @param content void* content
+/// @param inputData 传入的Data_S类型数据
 /// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
-extern InfoOfReturn delNodeBySDataInSDList(DList_S* plist, void* data, void* content);
+extern InfoOfReturn delNodeBySDataInSDList(DList_S* plist, Data_S inputData);
 
 /// @brief 通过位置删除DList_S的节点
 /// @param plist DList_S链表指针

@@ -66,8 +66,7 @@ void freeSDataInSDList(DList_S* plist, Data_S* inputData) {
 }
 
 
-Data_S getPtrSDataBySDataInSDList(DList_S* plist, void* data, void* content) {
-    Data_S inputData = {data, content, false};
+Data_S getPtrSDataBySDataInSDList(DList_S* plist, Data_S inputData) {
     Node_S_inDList* p = getNodeBySData(plist, inputData);
     if (p == NULL) {
         return getEmptySData();
@@ -92,7 +91,7 @@ Data_S getCopySDataByPosInSDList(DList_S* plist, int pos) {
             p = p->next;
         }
     }
-    Data_S newData = copySData(p->val, plist->valInfo);
+    Data_S newData = deepCopySData(p->val, plist->valInfo);
     if (newData.isEmpty) {
         printf("\nMemory allocation failed\n");
         return getEmptySData();
@@ -118,8 +117,7 @@ Data_S getPtrSDataByPosInSDList(DList_S* plist, int pos) {
     return p->val;
 }
 
-bool hasSDataInSDList(DList_S* plist, void* data, void* content) {
-    Data_S inputData = {data, content, false};
+bool hasSDataInSDList(DList_S* plist, Data_S inputData) {
     Node_S_inDList* p = getNodeBySData(plist, inputData);
     if (p == NULL) {
         return false;
@@ -135,7 +133,7 @@ bool hasSDataInSDList(DList_S* plist, void* data, void* content) {
 static Node_S_inDList* createNode(DList_S* plist, Data_S oldData) {
     Node_S_inDList* newNode = (Node_S_inDList*)malloc(sizeof(Node_S_inDList));
     if (newNode == NULL) return NULL; 
-    Data_S newData = copySData(oldData, plist->valInfo);
+    Data_S newData = smartCopySData(oldData, plist->valInfo);
     if (newData.isEmpty) {
         printf("\nMemory allocation failed\n");
         return NULL;
@@ -145,16 +143,15 @@ static Node_S_inDList* createNode(DList_S* plist, Data_S oldData) {
 }
 
 /*********** */
-InfoOfReturn insertSDataAtEndInSDList(DList_S* plist, void* data, void* content) {
-    Data_S oldData = {data, content, false};
+InfoOfReturn insertSDataAtEndInSDList(DList_S* plist, Data_S inputData) {
     
     //创建节点
-    Node_S_inDList* newNode = createNode(plist, oldData);
+    Node_S_inDList* newNode = createNode(plist, inputData);
     if (newNode == NULL) {
         printf("\nMemory allocation failed\n");
         return Warning; 
     }
-    //creatNode函函数已经处理了data, content的复制了
+    //creatNode函函数已经处理了data, content的智能复制了
     newNode->next = NULL;
     newNode->prev = plist->tail;
    
@@ -171,11 +168,10 @@ InfoOfReturn insertSDataAtEndInSDList(DList_S* plist, void* data, void* content)
 }
 
 
-InfoOfReturn insertSDataAtStartInSDList(DList_S* plist, void* data, void* content) {
-    Data_S oldData = {data, content, false};
+InfoOfReturn insertSDataAtStartInSDList(DList_S* plist, Data_S inputData) {
     
     //创建节点
-    Node_S_inDList* newNode = createNode(plist, oldData);
+    Node_S_inDList* newNode = createNode(plist, inputData);
     if (newNode == NULL) {
         printf("\nMemory allocation failed\n");
         return Warning; 
@@ -197,15 +193,14 @@ InfoOfReturn insertSDataAtStartInSDList(DList_S* plist, void* data, void* conten
 }
 
 /************ */
-InfoOfReturn insertSDataAtPosInSDList(DList_S* plist, void* data, void* content, int pos) {
+InfoOfReturn insertSDataAtPosInSDList(DList_S* plist, Data_S inputData, int pos) {
     if ((pos < 0) || (pos > plist->size)) return Warning;
-    if (pos == 0) return insertSDataAtStartInSDList(plist, data, content);
-    if (pos == plist->size) return insertSDataAtEndInSDList(plist, data, content);
+    if (pos == 0) return insertSDataAtStartInSDList(plist, inputData);
+    if (pos == plist->size) return insertSDataAtEndInSDList(plist, inputData);
 
-    Data_S oldData = {data, content, false};
     
     //创建节点
-    Node_S_inDList* newNode = createNode(plist, oldData);
+    Node_S_inDList* newNode = createNode(plist, inputData);
     if (newNode == NULL) {
         printf("\nMemory allocation failed\n");
         return Warning; 
@@ -258,9 +253,8 @@ InfoOfReturn delStartNodeInSDList(DList_S* plist) {
     return Success;
 }
 
-InfoOfReturn delNodeBySDataInSDList(DList_S* plist, void* data, void* content) {
+InfoOfReturn delNodeBySDataInSDList(DList_S* plist, Data_S inputData) {
     if (isEmptySList(plist)) return Warning;
-    Data_S inputData = {data, content, false};
     Node_S_inDList* p = getNodeBySData(plist, inputData);
     if (p == NULL) return None;
     if (p == plist->head) return delStartNodeInSDList(plist);

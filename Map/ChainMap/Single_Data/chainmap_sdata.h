@@ -57,7 +57,7 @@ extern void initSChainMap(ChainMap_S* pMap, InfoOfData* keyInfo, InfoOfData* val
 
 /// @brief 释放掉复制来的在ChainMap_S中的SVal
 /// @param pMap ChainMap_S的指针
-/// @param valData MVal类型指针(Data_M类型)
+/// @param valData MVal类型指针(Data_S类型)
 extern void freeSValInSChainMap(ChainMap_S* pMap, Data_S* valData);
 
 /// @brief 释放掉复制来的在ChainMap_S中的SEntry(Entry_S_inChainMap类型)
@@ -72,48 +72,41 @@ extern void freeSChainMap(ChainMap_S* pMap);
 
 /// @brief 插入key和val到ChainMap_S类型中去
 /// @param pMap ChainMap_S的指针
-/// @param keydata void* keydata
-/// @param keycontent void* keycontent
-/// @param valdata void* valdata
-/// @param valcontent void* valcontent
+/// @param key 传入的key(Data_S类型数据)
+/// @param val 传入的val(Data_S类型数据)
 /// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
-extern InfoOfReturn insertSKeyAndSValInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent, void* valdata, void* valcontent);
+extern InfoOfReturn insertSKeyAndSValInSChainMap(ChainMap_S* pMap, Data_S key, Data_S val);
 
 /// @brief 通过SKey得到复制来的SVal(Data_S类型)
 /// @param pMap ChainMap_S的指针
-/// @param keydata void* keydata
-/// @param keycontentvoid* keycontent
+/// @param key 传入的key(Data_S类型数据)
 /// @return 返回Data_S类型数据, 这里是SVal, 如果没有, 返回空Data_S类型数据, 通过Data.isEmpty进行查看, 具体查看文档
-extern Data_S getCopySValBySKeyInSChianMap(ChainMap_S* pMap, void* keydata, void* keycontent);
+extern Data_S getCopySValBySKeyInSChianMap(ChainMap_S* pMap, Data_S key);
 
 
 /// @brief 通过SKey得到SVal(Data_S类型), 可直接修改内部的void* data和void* content内容
 /// @param pMap ChainMap_S的指针
-/// @param keydata void* keydata
-/// @param keycontent void* keycontent
+/// @param key 传入的key(Data_S类型数据)
 /// @return返回Data_S类型数据, 这里是SVal, 如果没有, 返回空Data_S类型数据, 通过Data.isEmpty进行查看, 具体查看文档
-extern Data_S getPtrSValBySKeyInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent);
+extern Data_S getPtrSValBySKeyInSChainMap(ChainMap_S* pMap, Data_S key);
 
 /// @brief 通过SKey得到复制来的SEntry(Entry_S_inChainMap类型)
 /// @param pMap ChainMap_S的指针
-/// @param keydata void* keydata
-/// @param keycontent void* keycontent
+/// @param key 传入的key(Data_S类型数据)
 /// @return 返回Entry_S_inChainMap类型数据, 这里是SEntry, 如果没有, 返回空Entry_S_inChainMap类型数据, 通过entry.isEmpty进行查看, 具体查看文档
-extern Entry_S_inChainMap getCopySEntryBySKeyInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent);
+extern Entry_S_inChainMap getCopySEntryBySKeyInSChainMap(ChainMap_S* pMap, Data_S key);
 
 /// @brief 判断Skey是否在ChainMap_S中
 /// @param pMap ChainMap_S的指针
-/// @param keydata void* keydata
-/// @param keycontent void* keycontent
+/// @param key 传入的key(Data_S类型数据)
 /// @return 如果存在返回true, 否则false
-extern bool hasSKeyInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent);
+extern bool hasSKeyInSChainMap(ChainMap_S* pMap, Data_S key);
 
 /// @brief 通过SKey删除在ChainMap_S中的元素
 /// @param pMap ChainMap_S的指针
-/// @param keydata void* keydata
-/// @param keycontent void* keycontent
+/// @param key 传入的key(Data_S类型数据)
 /// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
-extern InfoOfReturn delSEntryBySKeyInSChainMap(ChainMap_S* pMap, void* keydata, void* keycontent);
+extern InfoOfReturn delSEntryBySKeyInSChainMap(ChainMap_S* pMap, Data_S key);
 
 
 

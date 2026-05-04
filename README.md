@@ -1,9 +1,57 @@
 # FocX
 
-<strong style = "color: red">首先注意一下, 函数中的变量命名(如SSList)的第一个字母(S)一定代表数据类型是单一的函数任意的</strong>
+- 注: M(Multiple)为一种数据结构中可以插入任意类型, S(Single)为一种数据结构中只能插入一种类型, 但这种类型任意  
+## 🚀快速开始
+
+- 代码
+```c
+//下载库, 引入(按需引入, 这里方便直接复制)
+#include "List\DList\Multiple_Data\dlist_mdata.h"
+#include "List\DList\Single_Data\dlist_sdata.h"
+#include "Map\ChainMap\Multiple_Data\chainmap_mdata.h"
+#include "Map\ChainMap\Single_Data\chainmap_sdata.h"
+#include "Map\OAMap\Multiple_Data\oamap_mdata.h"
+#include "Map\OAMap\Single_Data\oamap_sdata.h"  //此代码使用
+#include "Oper\Bool_Info\bool_info.h"
+#include "Oper\Double_Info\double_info.h"
+#include "Oper\Int_Info\int_info.h" //此代码使用
+#include "Oper\String_Info\string_info.h"   //此代码使用
+#include "base.h"
+int main()
+{
+    OAMap_S map;    //创建一个使用开放定址法(OA)的存储单一类型数据(S)的Map
+    initSOAMap(&map, &Info_Int, &Info_String);  //初始化Map, 使用库提供的Int和String信息
+    char string[101] = "abcd";
+    for (int i = 0; i < 10; i++) {
+        //插入Key和Val, 使用宏进行将数据的指针转为不同的Data_S类型, REF为数据借用, OWN为数据独有
+        insertSkeyAndSValInSOAMap(&map, Data_S_OWN(&i, NULL), Data_S_REF(string, NULL));
+    }
+
+    //打印Map
+    printSOAMap(&map);
+    
+    //所有的val都是借用的, 如果改了借用的, 会发生什么呢?
+    string[2] = 'z';
+    printf("\n");
+    
+    //再次打印
+    printSOAMap(&map);
+
+    //用完后记得释放
+    freeSOAMap(&map);
+}
 
 
-## 设计理念
+```
+
+- 运行结果
+```txt
+[[key:0, value:"abcd"], [key:1, value:"abcd"], [key:2, value:"abcd"], [key:3, value:"abcd"], [key:4, value:"abcd"], [key:5, value:"abcd"], [key:6, value:"abcd"], [key:7, value:"abcd"], [key:8, value:"abcd"], [key:9, value:"abcd"]]                                 
+[[key:0, value:"abzd"], [key:1, value:"abzd"], [key:2, value:"abzd"], [key:3, value:"abzd"], [key:4, value:"abzd"], [key:5, value:"abzd"], [key:6, value:"abzd"], [key:7, value:"abzd"], [key:8, value:"abzd"], [key:9, value:"abzd"]]
+```
+
+
+## 1 设计理念
 1.基于Data_S和Data_M进行泛型设计, 结构体内容如下  
 ```c
 
@@ -12,6 +60,7 @@ typedef struct Data_S {
     void* data; //存储数据的void* 指针
     void* content;  //存储描述性信息的void* 指针(比如描述二维数组的col和row)
     bool isEmpty;   //Data_S是否为空
+    bool isOwner;   //数据是否为Data独有, 如果true, 代表数据的生死由Data管理(会复制一份, 以保证是Data中的内容是独有的), 如果false, 代表数据由外部管理, Data只管理指针
 } Data_S;
 
 
@@ -19,20 +68,43 @@ typedef struct Data_S {
 typedef struct Data_M {
     void* data; //存储数据的void* 指针
     void* content;  //存储描述性信息的void* 指针(比如描述二维数组的col和row)
-    InfoOfData* dataInfo;   //由于要存储多种类型数据, Data_M自带InfoOfData类型数据指针(Data_S由于存储的是单一类型(比如一个DList_S中只存int), 那完全可以让DList_S结构体来存储InfoOfData, 以达到解释内存的目的)
+    InfoOfData* dataInfo;   //由于要存储多种类型数据, Data_M自带InfoOfData类型数据指针(Data_S由于存储的是单一类型(比如一个DList_S中只存int), 那完全可以让DList_S结构体来存储InfoOfData, 以达到减少内存的目的)
     int type;   //数据标签(用于区分, 但不是主要区分标志)
     bool isEmpty;   //Data_M是否为空
+    bool hasControl;    //当前Data_M是否具备对自己数据的控制权, 如果具备, 那free的时候会也会释放data和content(对于Map来说, 这个属性只对val有用)
+    bool isOwner;   //数据是否为Data独有, 如果true, 代表数据的生死由Data管理(会复制一份, 以保证是Data中的内容是独有的), 如果false, 代表数据由外部管理, Data只管理指针
 } Data_M;
 
 ```
-## 注意事项
-    1. 如果某种类型是S(单一类型), 那它函数传入的不再是Data_S类型, 而是void* data和void* content
+- 如何使用数据的独有和借用(宏)(还有一点, 在Map中Key一定是独有的, 即便传入借用的, 也会自动转为独有)
 
-- 注: M(Multiple)为一种数据结构中可以插入任意类型, S(Single)为一种数据结构中只能插入一种类型, 但这种类型任意  
+```c
+
+
+//OWN, 为了保证数据是自己的, 会自动复制一份, data: 数据指针, content: 描述性信息指针, dataInfo: InfoOfData类型指针, type: 数据标签
+#define Data_M_OWN(data, content, dataInfo, type) ((Data_M){(data), (content), (dataInfo), (type), false, true})
+
+
+//REF, 数据不是自己的, 只是传个指针, 不会自动复制, data: 数据指针, content: 描述性信息指针, dataInfo: InfoOfData类型指针, type: 数据标签
+#define Data_M_REF(data, content, dataInfo, type) ((Data_M){(data), (content), (dataInfo), (type), false, false})
+
+//OWN, 为了保证数据是自己的, 会自动复制一份, data: 数据指针, content: 描述性信息指针
+#define Data_S_OWN(data, content) ((Data_S){(data), (content), false, true})
+//REF, 数据不是自己的, 只是传个指针, 不会自动复制, data: 数据指针, content: 描述性信息指针
+#define Data_S_REF(data, content) ((Data_S){(data), (content), false, false})
+
+```
+
+
+
+
+<!-- ## 注意事项
+
+
 - 在List中的数据叫做MData或者SData
 - 在Map中的数据叫做MVal, MKey, SVal, SKey, MEntry, SEntry
-- 具体什么类型, 在括号中解释
-## 文件夹结构
+- 具体什么类型, 在括号中解释 -->
+## 2 文件夹结构
     ├─base.c 
     ├─base.h 
     ├─List 
@@ -75,7 +147,9 @@ typedef struct Data_M {
     └─README.md 
 
             
-## 变量命名规则
+## 3 变量命名规则
+<strong style = "color: red">首先注意一下, 函数中的变量命名(如SSList)的第一个字母(S)一定代表数据类型是单一的函数任意的</strong>
+
     1. 变量名开头一定是本质(如:ChainMap代表使用链表来处理冲突的Map, List代表链表)
     
     2. 变量名后下划线后代表当前数据结构内部使用的是S(任意类型)还是M(单一类型)
@@ -144,7 +218,7 @@ typedef struct Data_M {
     
     2. get-->得到
     
-    3. Copy/Ptr-->这个数据是复制一份还是穿一个指针
+    3. Copy/Ptr-->这个数据是复制一份还是传一个指针
     
     4. in-->在哪种数据结构中
     
@@ -159,4 +233,5 @@ typedef struct Data_M {
     9. del-->删除
     
     10. reverse-->反转(一般是链表)
-- 由于Node不公开, 故函数的命名直接使用Node就行了, 不公开的函数重名也没事, 但要可读性强
+
+## 🤔如何创建自己的Info_Self呢?

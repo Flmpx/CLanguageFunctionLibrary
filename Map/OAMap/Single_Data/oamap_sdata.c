@@ -69,17 +69,36 @@ void freeSOAMap(OAMap_S* pMap) {
 //复制类
 
 //复制一个Entry,注意:entry.state不是自动赋值,必须要自己赋值
-static Entry_S_inOAMap copySEntry(OAMap_S* pMap, Entry_S_inOAMap inputEntry) {
+static Entry_S_inOAMap deepCopySEntry(OAMap_S* pMap, Entry_S_inOAMap inputEntry) {
     Entry_S_inOAMap newEntry;
 
-    newEntry.key = copySData(inputEntry.key, pMap->keyInfo);
+    newEntry.key = deepCopySData(inputEntry.key, pMap->keyInfo);
 
     if (newEntry.key.isEmpty) {
         printf("\nMemory allocation failed\n");
         return getEmptySEntry();
     }
 
-    newEntry.val = copySData(inputEntry.val, pMap->valInfo);
+    newEntry.val = deepCopySData(inputEntry.val, pMap->valInfo);
+    if (newEntry.val.isEmpty) {
+        freeSData(&(newEntry.key), pMap->keyInfo);
+        printf("\nMemory allocation failed\n");
+        return getEmptySEntry();
+    }
+    newEntry.isEmpty = false;
+    return newEntry;
+}
+static Entry_S_inOAMap smartCopySEntry(OAMap_S* pMap, Entry_S_inOAMap inputEntry) {
+    Entry_S_inOAMap newEntry;
+
+    newEntry.key = deepCopySData(inputEntry.key, pMap->keyInfo);
+
+    if (newEntry.key.isEmpty) {
+        printf("\nMemory allocation failed\n");
+        return getEmptySEntry();
+    }
+
+    newEntry.val = smartCopySData(inputEntry.val, pMap->valInfo);
     if (newEntry.val.isEmpty) {
         freeSData(&(newEntry.key), pMap->keyInfo);
         printf("\nMemory allocation failed\n");
@@ -108,7 +127,7 @@ static InfoOfReturn addSEntryFunction(OAMap_S* pMap, Data_S key, Data_S val) {
             flagFindDel = 1;
         }
         if (compareSData(pMap->arr[index].key, pMap->keyInfo, key, pMap->keyInfo) == SAME)  {
-            Data_S newVal = copySData(val, pMap->valInfo);
+            Data_S newVal = smartCopySData(val, pMap->valInfo);
             if (newVal.isEmpty) {
                 printf("\nMemory allocation failed\n");
                 return Warning;
@@ -132,7 +151,7 @@ static InfoOfReturn addSEntryFunction(OAMap_S* pMap, Data_S key, Data_S val) {
     oldEntry.state = EXIST_IN_MAP;
 
     
-    pMap->arr[index] = copySEntry(pMap, oldEntry);
+    pMap->arr[index] = smartCopySEntry(pMap, oldEntry);
     if (pMap->arr[index].isEmpty) {
         printf("\nMemory allocation failed\n");
         return Warning;
@@ -209,7 +228,7 @@ static InfoOfReturn freshSOAMap(OAMap_S* pMap) {
 
 }
 
-InfoOfReturn insertSkeyAndSValInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent, void* valdata, void* valcontent) {
+InfoOfReturn insertSkeyAndSValInSOAMap(OAMap_S* pMap, Data_S key, Data_S val) {
     // if (4*(pMap->size) >= 3*(pMap->len)) {
     //     if (freshSOAMap(pMap) == Warning) {
     //         printf("\nMemory allocation failed\n");
@@ -218,8 +237,6 @@ InfoOfReturn insertSkeyAndSValInSOAMap(OAMap_S* pMap, void* keydata, void* keyco
     // }
     //先进行重hash
     freshSOAMap(pMap);
-    Data_S key = {keydata, keycontent, false};
-    Data_S val = {valdata, valcontent, false};
     return addSEntryFunction(pMap, key, val);
 }
 
@@ -247,15 +264,14 @@ static Position getIndexBySKey(OAMap_S* pMap, Data_S key) {
 }
 
 
-Data_S getCopySValBySkeyInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent) {
-    Data_S key = {keydata, keycontent, false};
+Data_S getCopySValBySkeyInSOAMap(OAMap_S* pMap, Data_S key) {
     int index = getIndexBySKey(pMap, key);
     if (index == NOT_FOUND) {
         printf("\nNot Found\n");
         return getEmptySData();
     } else {
         Data_S newData;
-        newData = copySData(pMap->arr[index].val, pMap->valInfo);
+        newData = deepCopySData(pMap->arr[index].val, pMap->valInfo);
         if (newData.isEmpty) {
             printf("\nMemory allocation failed\n");
         } 
@@ -265,8 +281,7 @@ Data_S getCopySValBySkeyInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent)
 
 
 
-Data_S getPtrSValBySKeyInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent) {
-    Data_S key = {keydata, keycontent, false};
+Data_S getPtrSValBySKeyInSOAMap(OAMap_S* pMap, Data_S key) {
     int index = getIndexBySKey(pMap, key);
     if (index == NOT_FOUND) {
         return getEmptySData();
@@ -276,14 +291,13 @@ Data_S getPtrSValBySKeyInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent) 
 }
 
 
-Entry_S_inOAMap getCopySEntryByKeyInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent) {
-    Data_S key = {keydata, keycontent, false};
+Entry_S_inOAMap getCopySEntryByKeyInSOAMap(OAMap_S* pMap, Data_S key) {
     int index = getIndexBySKey(pMap, key);
     if (index == NOT_FOUND) {
         return getEmptySEntry();
     } else {
         Entry_S_inOAMap newEntry;
-        newEntry = copySEntry(pMap, pMap->arr[index]);
+        newEntry = deepCopySEntry(pMap, pMap->arr[index]);
         if (newEntry.isEmpty) {
             printf("\nMemory allocation failed\n");
         }
@@ -291,8 +305,7 @@ Entry_S_inOAMap getCopySEntryByKeyInSOAMap(OAMap_S* pMap, void* keydata, void* k
     }
 }
 
-bool hasSKeyInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent) {
-    Data_S key = {keydata, keycontent, false};
+bool hasSKeyInSOAMap(OAMap_S* pMap, Data_S key) {
     if (getIndexBySKey(pMap, key) == NOT_FOUND) {
         return false;
     } else {
@@ -306,8 +319,7 @@ bool hasSKeyInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent) {
 ///////////////////////////////////////////////////
 //删除类
 
-InfoOfReturn delSEntryBySKeyInSOAMap(OAMap_S* pMap, void* keydata, void* keycontent) {
-    Data_S key = {keydata, keycontent, false};
+InfoOfReturn delSEntryBySKeyInSOAMap(OAMap_S* pMap, Data_S key) {
     int index = getIndexBySKey(pMap, key);
     if (index == NOT_FOUND) {
         return None;

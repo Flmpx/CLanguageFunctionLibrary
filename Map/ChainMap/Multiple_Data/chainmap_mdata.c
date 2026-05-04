@@ -231,17 +231,17 @@ static InfoOfReturn delNodeByMKey(List_M_inChainMap* plist, Data_M key) {
 //复制类
 
 
-//复制一个Entry,注意:entry.state自动赋值,必须要自己赋值
-static Entry_M_inChainMap copyMEntry(Entry_M_inChainMap oldEntry) {
+//复制一个Entry,注意:entry.state不会自动赋值,必须要自己赋值
+static Entry_M_inChainMap deepCopyMEntry(Entry_M_inChainMap oldEntry) {
     if (oldEntry.isEmpty) {
         return getEmptyMEntry();
     }
     Entry_M_inChainMap newEntry;
-    newEntry.key = copyMData(oldEntry.key);
+    newEntry.key = deepCopyMData(oldEntry.key);
     if (newEntry.key.isEmpty) {
         return getEmptyMEntry();
     }
-    newEntry.value = copyMData(oldEntry.value);
+    newEntry.value = deepCopyMData(oldEntry.value);
     if (newEntry.value.isEmpty) {
         freeMData(&(newEntry.key));
         return getEmptyMEntry();
@@ -250,6 +250,26 @@ static Entry_M_inChainMap copyMEntry(Entry_M_inChainMap oldEntry) {
     return newEntry;
 }
 
+static Entry_M_inChainMap smartCopyMEntry(Entry_M_inChainMap oldEntry) {
+    if (oldEntry.isEmpty) {
+        return getEmptyMEntry();
+    }
+    Entry_M_inChainMap newEntry;
+    //无论如何key必须深拷贝
+    newEntry.key = deepCopyMData(oldEntry.key);
+    if (newEntry.key.isEmpty) {
+        return getEmptyMEntry();
+    }
+
+    //val根据情况进行复制
+    newEntry.value = smartCopyMData(oldEntry.value);
+    if (newEntry.value.isEmpty) {
+        freeMData(&(newEntry.key));
+        return getEmptyMEntry();
+    }
+    newEntry.isEmpty = false;
+    return newEntry;
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 //添加keyandval类
 
@@ -264,7 +284,9 @@ static InfoOfReturn addMEntryFunction(ChainMap_M* pMap, Data_M key, Data_M value
     //在插入之前先进行一次查找
     Node_M_inChainMap* p = getNodeByMKey(&(pMap->arr[index]), key);
     if (p) {
-        Data_M newVal = copyMData(value);
+        Data_M newVal;
+        //智能复制
+        newVal = smartCopyMData(value);
         if (newVal.isEmpty) {
             printf("\nMemory allocation failed\n");
             return Warning;
@@ -278,7 +300,8 @@ static InfoOfReturn addMEntryFunction(ChainMap_M* pMap, Data_M key, Data_M value
     oldEntry.key = key;
     oldEntry.value = value;
     
-    Entry_M_inChainMap newEntry = copyMEntry(oldEntry);
+    //要进行智能拷贝
+    Entry_M_inChainMap newEntry = smartCopyMEntry(oldEntry);
     if (newEntry.isEmpty) {
         printf("\nMemory allocation failed\n");
         return Warning;
@@ -364,6 +387,10 @@ static InfoOfReturn freshMChainMap(ChainMap_M* pMap) {
 
     for (int i = 0; i < pMap->len; i++) {
         Node_M_inChainMap* p = pMap->arr[i].head;
+        
+        /*
+            将这个循环改为用p来进行判断
+        */
         for (int j = 0; j < pMap->arr[i].size; j++, p = p->next) {
             if (addMEntryForFreshMChainMap(&newMap, p->entry.key, p->entry.value) == Warning) {
                 printf("\nMemory allocation failed\n");
@@ -408,7 +435,7 @@ Data_M getCopyMValByMKeyInMChainMap(ChainMap_M* pMap, Data_M key) {
         return getEmptyMData();
     } else {
         Data_M newData;
-        newData = copyMData(p->entry.value);
+        newData = deepCopyMData(p->entry.value);
         if (newData.isEmpty) {
             printf("\nMemory allocation failed\n");
         }
@@ -438,7 +465,7 @@ Entry_M_inChainMap getCopyMEntryByMKeyInMChainMap(ChainMap_M* pMap, Data_M key) 
         return getEmptyMEntry();
     } else {
         Entry_M_inChainMap newEntry;
-        newEntry = copyMEntry(p->entry);
+        newEntry = deepCopyMEntry(p->entry);
         if (newEntry.isEmpty) {
             printf("\nMemory allocation failed\n");
         }
@@ -479,21 +506,6 @@ InfoOfReturn delMEntryByMKeyInMChainMap(ChainMap_M* pMap, Data_M key) {
     return Success;
 }
 
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////////////////
-//整合类
-
-Data_M stackMDataInMChainMap(void* data, void* content, int type, InfoOfData* dataInfo) {
-    Data_M newData;
-    newData.data = data;
-    newData.isEmpty = false;
-    newData.dataInfo = dataInfo;
-    newData.content = content;
-    newData.type = type;
-    return newData;
-}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //打印类

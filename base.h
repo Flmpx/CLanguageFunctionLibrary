@@ -124,6 +124,7 @@ typedef struct Data_S {
     void* data;
     void* content;
     bool isEmpty;
+    bool isOwner;
 } Data_S;
 
 
@@ -134,10 +135,23 @@ typedef struct Data_M {
     InfoOfData* dataInfo;
     int type;
     bool isEmpty;
+    bool isOwner;
 } Data_M;
 
+//OWN, 为了保证数据是自己的, 会自动复制一份, data: 数据指针, content: 描述性信息指针, dataInfo: InfoOfData类型指针, type: 数据标签
+#define Data_M_OWN(data, content, dataInfo, type) ((Data_M){(data), (content), (dataInfo), (type), false, true})
 
 
+//REF, 数据不是自己的, 只是传个指针, 不会自动复制, data: 数据指针, content: 描述性信息指针, dataInfo: InfoOfData类型指针, type: 数据标签
+#define Data_M_REF(data, content, dataInfo, type) ((Data_M){(data), (content), (dataInfo), (type), false, false})
+
+//OWN, 为了保证数据是自己的, 会自动复制一份, data: 数据指针, content: 描述性信息指针
+#define Data_S_OWN(data, content) ((Data_S){(data), (content), false, true})
+//REF, 数据不是自己的, 只是传个指针, 不会自动复制, data: 数据指针, content: 描述性信息指针
+#define Data_S_REF(data, content) ((Data_S){(data), (content), false, false})
+
+
+//Map中的key是否为OWN/REF都无效,最终都为OWN
 
 #ifdef GET_LARGESTPRIME
 
@@ -175,11 +189,18 @@ extern CmpResult compareSData(Data_S Data_a, InfoOfData* info_a, Data_S Data_b, 
 ///////////////////////////////////////
 //数据的复制
 
-/// @brief 复制Data_S的全部内容, 需要提供InfoOfData类型数据指针以便进行复制
+/// @brief 复制Data_S的全部内容(深拷贝, 赋值后的Data.isOwner = true), 需要提供InfoOfData类型数据指针以便进行复制
 /// @param inputData 输入的Data_S类型数据
 /// @param info InfoOfData类型数据指针
-/// @return 复制好的Data_M类型数据
-extern Data_S copySData(Data_S inputData, InfoOfData* info);
+/// @return 复制好的Data_S类型数据
+extern Data_S deepCopySData(Data_S inputData, InfoOfData* info);
+
+
+/// @brief 复制Data_S的内容(视情况复制, 如果有控制权, 直接复制全部内容, 如果没有, 等同于输入的Data_S), 需要提供InfoOfData类型数据指针以便进行复制
+/// @param inputData 输入的Data_S类型数据
+/// @param info InfoOfData类型数据指针
+/// @return 智能复制好的Data_S数据
+extern Data_S smartCopySData(Data_S inputData, InfoOfData* info);
 
 ///////////////////////////////////
 //数据的释放
@@ -211,10 +232,19 @@ extern CmpResult compareMData(Data_M Data_a, Data_M Data_b);
 ///////////////////////////////////////
 //数据的复制
 
+
+
 /// @brief 复制Data_M的全部内容, 包括void* data和void* content
 /// @param inputData 输入的Data_M类型数据
 /// @return 复制好的Data_M类型数据
-extern Data_M copyMData(Data_M inputData);
+extern Data_M deepCopyMData(Data_M inputData);
+
+
+/// @brief 复制Data_M的内容, 如果具备控制权, 那就会复制全部内容, 如果不具备控制权, 等同于输入的Data_M
+/// @param inputData 输入的Data_M类型数据
+/// @return 智能复制好的Data_M类型数据
+extern Data_M smartCopyMData(Data_M inputData);
+
 
 ///////////////////////////////////
 //数据的释放
