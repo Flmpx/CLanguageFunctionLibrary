@@ -86,23 +86,35 @@ int main() {
                 
                 <div class="funcItem">
                     <div class="funcSignature">void initMDList(DList_M* plist)</div>
-                    <p class="funcDesc">初始化 DList_M 链表</p>
+                    <p class="funcDesc">初始化 DList_M</p>
                     <div class="params">
                         <strong>参数:</strong>
                         <ul>
-                            <li><code>plist</code> - DList_M 链表指针</li>
+                            <li><code>plist</code> - DList_M 类型的指针</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">void freeMDataInMDList(Data_M* inputData)</div>
+                    <p class="funcDesc">释放 MData (Data_M 类型) 的内容</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>inputData</code> - MData 类型指针 (Data_M 类型)</li>
                         </ul>
                     </div>
                 </div>
 
                 <div class="funcItem">
                     <div class="funcSignature">void freeMDList(DList_M* plist)</div>
-                    <p class="funcDesc">释放整个 DList_M 链表（包括所有节点和数据）</p>
-                </div>
-
-                <div class="funcItem">
-                    <div class="funcSignature">void freeMDataInMDList(Data_M* inputData)</div>
-                    <p class="funcDesc">释放 DList_M 中复制的 MData 内容</p>
+                    <p class="funcDesc">清除 DList_M 链表</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>plist</code> - DList_M 链表指针</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
 
@@ -112,17 +124,48 @@ int main() {
                 
                 <div class="funcItem">
                     <div class="funcSignature">InfoOfReturn insertMDataAtEndInMDList(DList_M* plist, Data_M inputData)</div>
-                    <p class="funcDesc">在链表尾部插入数据</p>
+                    <p class="funcDesc">在 DList_M 链表的尾部插入节点</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>plist</code> - DList_M 链表指针</li>
+                            <li><code>inputData</code> - Data_M 类型数据</li>
+                        </ul>
+                    </div>
+                    <div class="params">
+                        <strong>返回:</strong> 返回 InfoOfReturn 中的枚举类型
+                    </div>
                 </div>
 
                 <div class="funcItem">
                     <div class="funcSignature">InfoOfReturn insertMDataAtStartInMDList(DList_M* plist, Data_M inputData)</div>
-                    <p class="funcDesc">在链表头部插入数据</p>
+                    <p class="funcDesc">在 DList_M 链表的头部插入节点</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>plist</code> - DList_M 链表指针</li>
+                            <li><code>inputData</code> - Data_M 类型数据</li>
+                        </ul>
+                    </div>
+                    <div class="params">
+                        <strong>返回:</strong> 返回 InfoOfReturn 中的枚举类型
+                    </div>
                 </div>
 
                 <div class="funcItem">
                     <div class="funcSignature">InfoOfReturn insertMDataAtPosInMDList(DList_M* plist, Data_M inputData, int pos)</div>
-                    <p class="funcDesc">在指定位置插入数据</p>
+                    <p class="funcDesc">在 DList_M 链表指定位置插入数据</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>plist</code> - DList_M 链表指针</li>
+                            <li><code>inputData</code> - Data_M 类型数据</li>
+                            <li><code>pos</code> - 位置的范围在 [0, DList_M.size]，范围的两端分别代表头插和尾插</li>
+                        </ul>
+                    </div>
+                    <div class="params">
+                        <strong>返回:</strong> 返回 InfoOfReturn 中的枚举类型
+                    </div>
                 </div>
             </div>
 
@@ -132,22 +175,60 @@ int main() {
                 
                 <div class="funcItem">
                     <div class="funcSignature">InfoOfReturn delStartNodeInMDList(DList_M* plist)</div>
-                    <p class="funcDesc">删除链表头节点</p>
+                    <p class="funcDesc">删除 DList_M 链表头节点</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>plist</code> - DList_M 链表指针</li>
+                        </ul>
+                    </div>
+                    <div class="params">
+                        <strong>返回:</strong> 返回 InfoOfReturn 中的枚举类型
+                    </div>
                 </div>
 
                 <div class="funcItem">
                     <div class="funcSignature">InfoOfReturn delEndNodeInMDList(DList_M* plist)</div>
-                    <p class="funcDesc">删除链表尾节点</p>
-                </div>
-
-                <div class="funcItem">
-                    <div class="funcSignature">InfoOfReturn delNodeByPosInMDList(DList_M* plist, int pos)</div>
-                    <p class="funcDesc">通过位置删除节点</p>
+                    <p class="funcDesc">删除 DList_M 链表尾节点</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>plist</code> - DList_M 链表指针</li>
+                        </ul>
+                    </div>
+                    <div class="params">
+                        <strong>返回:</strong> 返回 InfoOfReturn 中的枚举类型
+                    </div>
                 </div>
 
                 <div class="funcItem">
                     <div class="funcSignature">InfoOfReturn delNodeByMDataInMDList(DList_M* plist, Data_M inputData)</div>
-                    <p class="funcDesc">通过数据值删除节点</p>
+                    <p class="funcDesc">通过 MData (Data_M 类型) 数据来删除 DList_M 中的节点</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>plist</code> - DList_M 链表指针</li>
+                            <li><code>inputData</code> - Data_M 类型数据</li>
+                        </ul>
+                    </div>
+                    <div class="params">
+                        <strong>返回:</strong> 返回 InfoOfReturn 中的枚举类型
+                    </div>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">InfoOfReturn delNodeByPosInMDList(DList_M* plist, int pos)</div>
+                    <p class="funcDesc">通过位置删除 DList_M 的节点</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>plist</code> - DList_M 链表指针</li>
+                            <li><code>pos</code> - 要删除的位置（从 0 开始）</li>
+                        </ul>
+                    </div>
+                    <div class="params">
+                        <strong>返回:</strong> 返回 InfoOfReturn 中的枚举类型
+                    </div>
                 </div>
             </div>
 
@@ -157,7 +238,17 @@ int main() {
                 
                 <div class="funcItem">
                     <div class="funcSignature">Data_M getPtrMDataByPosInMDList(DList_M* plist, int pos)</div>
-                    <p class="funcDesc">通过位置获取数据的指针</p>
+                    <p class="funcDesc">通过位置 Pos 返回 MData 的指针 (Data_M 类型)，可直接修改内部的 void* data 和 void* content 内容</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>plist</code> - DList_M 类型指针</li>
+                            <li><code>pos</code> - 位置（从 0 开始）</li>
+                        </ul>
+                    </div>
+                    <div class="params">
+                        <strong>返回:</strong> 返回 Data_M 类型数据，若没有返回空 Data_M 类型数据，通过 Data.isEmpty 进行查看
+                    </div>
                     <div class="warning">
                         <strong>警告:</strong> 返回的指针直接指向链表内部数据，请勿 free
                     </div>
@@ -165,15 +256,50 @@ int main() {
 
                 <div class="funcItem">
                     <div class="funcSignature">Data_M getCopyMDataByPosInMDList(DList_M* plist, int pos)</div>
-                    <p class="funcDesc">通过位置获取数据的副本</p>
+                    <p class="funcDesc">通过 Pos 位置返回 MData (Data_M 类型)，注意这里 MData 中的 void* data 和 void* content 都是复制的，使用完后记得释放</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>plist</code> - DList_M 类型指针</li>
+                            <li><code>pos</code> - 位置（从 0 开始）</li>
+                        </ul>
+                    </div>
+                    <div class="params">
+                        <strong>返回:</strong> 返回 Data_M 类型数据，若没有返回空 Data_M 类型数据，通过 Data.isEmpty 进行查看
+                    </div>
                     <div class="warning">
                         <strong>警告:</strong> 返回的是复制的数据，使用后需调用 freeMDataInMDList 释放
                     </div>
                 </div>
 
                 <div class="funcItem">
+                    <div class="funcSignature">Data_M getPtrMDataByMDataInMDList(DList_M* plist, Data_M inputData)</div>
+                    <p class="funcDesc">通过 MData (Data_M 类型) 返回 MData 的指针 (Data_M 类型)，可直接修改内部的 void* data 和 void* content 内容</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>plist</code> - DList_M 类型指针</li>
+                            <li><code>inputData</code> - 输入的 MData 类型 (Data_M 类型)</li>
+                        </ul>
+                    </div>
+                    <div class="params">
+                        <strong>返回:</strong> 返回 Data_M 类型数据，若没有返回空 Data_M 类型数据，通过 Data.isEmpty 进行查看
+                    </div>
+                </div>
+
+                <div class="funcItem">
                     <div class="funcSignature">bool hasMDataInMDList(DList_M* plist, Data_M inputData)</div>
-                    <p class="funcDesc">判断数据是否存在于链表中</p>
+                    <p class="funcDesc">判断 Data_M 数据是否在 DList_M 里面</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>plist</code> - DList_M 类型指针</li>
+                            <li><code>inputData</code> - Data_M 类型数据</li>
+                        </ul>
+                    </div>
+                    <div class="params">
+                        <strong>返回:</strong> 有就返回 true，没有就 false
+                    </div>
                 </div>
             </div>
 
@@ -183,12 +309,35 @@ int main() {
                 
                 <div class="funcItem">
                     <div class="funcSignature">void reverseMDList(DList_M* plist)</div>
-                    <p class="funcDesc">反转链表</p>
+                    <p class="funcDesc">反转 DList_M 链表</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>plist</code> - DList_M 链表指针</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">void printSDataInMDList(Data_M inputData)</div>
+                    <p class="funcDesc">打印 DList_M 链表中的 Data_M 数据</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>inputData</code> - Data_M 类型数据</li>
+                        </ul>
+                    </div>
                 </div>
 
                 <div class="funcItem">
                     <div class="funcSignature">void printMDList(DList_M* plist)</div>
-                    <p class="funcDesc">打印整个链表</p>
+                    <p class="funcDesc">打印 DList_M 链表数据</p>
+                    <div class="params">
+                        <strong>参数:</strong>
+                        <ul>
+                            <li><code>plist</code> - DList_M 链表指针</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

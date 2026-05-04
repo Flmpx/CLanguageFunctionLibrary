@@ -98,6 +98,7 @@ body {
     align-items: center;
     transition: all 0.3s ease;
     border: 1px solid transparent;
+    text-decoration: none;
 }
 
 .typeCard:hover {
@@ -115,6 +116,18 @@ body {
     color: #fff;
     font-size: 1.1em;
     margin-bottom: 5px;
+    text-decoration: none !important;
+}
+
+.typeInfo p {
+    color: #aaa;
+    font-size: 0.9em;
+    margin: 0;
+    text-decoration: none !important;
+}
+
+.typeInfo {
+    text-decoration: none !important;
 }
 
 .typeInfo p {

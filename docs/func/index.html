@@ -5,127 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>函数大全 - FOCX</title>
     <link rel="stylesheet" href="index.css">
-    <!-- Prism.js 代码高亮 -->
-    <link href="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
 </head>
 <body>
     <div class="container">
-        <h1 class="mainTitle">🔧 函数大全</h1>
-        <p class="subtitle">在这里将介绍全部的函数以及功能，以及使用这些函数的示例代码</p>
-        
         <div class="backLink">
-            <a href="../index.html">← 返回主页</a>
+            <a href="../index.html">← 返回文档首页</a>
         </div>
 
+        <h1 class="mainTitle">🔧 FOCX 函数大全</h1>
+        <p class="subtitle">FOCX 数据结构库的完整 API 参考</p>
+
+        <!-- List 模块 -->
         <div class="module">
-            <h2 class="moduleTitle">📋 List 链表</h2>
-            <p class="moduleDesc">双向链表 (DList) - 支持头插、尾插、指定位置插入、删除、反转等操作</p>
+            <h2 class="moduleTitle">📋 List 模块 - 双向链表</h2>
+            <p class="moduleDesc">双向链表，支持在任意位置插入、删除和查找数据</p>
             
             <div class="subModule">
-                <h3>1.1 DList (双向链表)</h3>
-                
+                <h3>DList - 双向链表</h3>
+                <p class="hint">支持单数据和多数据类型</p>
                 <div class="dataType">
-                    <a href="List/DList/Single_Data/index.html" class="linkStyle">
-                        <div class="typeCard">
-                            <span class="typeIcon">🔢</span>
-                            <div class="typeInfo">
-                                <h4>1.1.1 DList_S - 单一数据类型</h4>
-                                <p>存储单一类型数据（如 int、string），需要提供数据操作集</p>
-                            </div>
+                    <a href="List/DList/Single_Data/index.html" class="typeCard">
+                        <span class="typeIcon">🔗</span>
+                        <div class="typeInfo">
+                            <h4>DList_S - 单数据类型</h4>
+                            <p>使用单个 InfoOfData 管理数据</p>
                         </div>
                     </a>
                 </div>
-
                 <div class="dataType">
-                    <a href="List/DList/Multiple_Data/index.html" class="linkStyle">
-                        <div class="typeCard">
-                            <span class="typeIcon">🔣</span>
-                            <div class="typeInfo">
-                                <h4>1.1.2 DList_M - 多种数据类型</h4>
-                                <p>可存储任意类型数据，每个数据自带操作函数</p>
-                            </div>
+                    <a href="List/DList/Multiple_Data/index.html" class="typeCard">
+                        <span class="typeIcon">🧬</span>
+                        <div class="typeInfo">
+                            <h4>DList_M - 多数据类型</h4>
+                            <p>每个节点可存储多个不同类型的数据</p>
                         </div>
                     </a>
                 </div>
             </div>
         </div>
 
+        <!-- Map 模块 -->
         <div class="module">
-            <h2 class="moduleTitle">🗺️ Map 映射表</h2>
-            <p class="moduleDesc">键值对数据结构，支持 key-value 存储与查找</p>
+            <h2 class="moduleTitle">🗺️ Map 模块 - 哈希映射表</h2>
+            <p class="moduleDesc">键值对存储，提供高效的查找、插入和删除操作</p>
             
             <div class="subModule">
-                <h3>1.2 ChainMap (链表法哈希映射)</h3>
-                <p class="hint">采用链表法解决哈希冲突，适合数据量较大且分布不均匀的场景</p>
-                
+                <h3>ChainMap - 链式哈希表</h3>
+                <p class="hint">使用链表解决哈希冲突</p>
                 <div class="dataType">
-                    <a href="Map/ChainMap/Single_Data/index.html" class="linkStyle">
-                        <div class="typeCard">
-                            <span class="typeIcon">🔢</span>
-                            <div class="typeInfo">
-                                <h4>1.2.1 ChainMap_S - 单一数据类型</h4>
-                                <p>Key 和 Value 都为单一类型</p>
-                            </div>
+                    <a href="Map/ChainMap/Single_Data/index.html" class="typeCard">
+                        <span class="typeIcon">🔑</span>
+                        <div class="typeInfo">
+                            <h4>ChainMap_S - 单数据类型</h4>
+                            <p>键和值都使用单个 InfoOfData</p>
                         </div>
                     </a>
                 </div>
-
                 <div class="dataType">
-                    <a href="Map/ChainMap/Multiple_Data/index.html" class="linkStyle">
-                        <div class="typeCard">
-                            <span class="typeIcon">🔣</span>
-                            <div class="typeInfo">
-                                <h4>1.2.2 ChainMap_M - 多种数据类型</h4>
-                                <p>Key 和 Value 可为任意类型</p>
-                            </div>
+                    <a href="Map/ChainMap/Multiple_Data/index.html" class="typeCard">
+                        <span class="typeIcon">🗝️</span>
+                        <div class="typeInfo">
+                            <h4>ChainMap_M - 多数据类型</h4>
+                            <p>键和值都使用多个 Data_M</p>
                         </div>
                     </a>
                 </div>
             </div>
 
             <div class="subModule">
-                <h3>1.3 OAMap (开放定址法哈希映射)</h3>
-                <p class="hint">采用开放定址法解决哈希冲突，适合数据量较小且分布均匀的场景</p>
-                
+                <h3>OAMap - 开放地址哈希表</h3>
+                <p class="hint">使用线性探测解决哈希冲突，占用更少内存</p>
                 <div class="dataType">
-                    <a href="Map/OAMap/Single_Data/index.html" class="linkStyle">
-                        <div class="typeCard">
-                            <span class="typeIcon">🔢</span>
-                            <div class="typeInfo">
-                                <h4>1.3.1 OAMap_S - 单一数据类型</h4>
-                                <p>Key 和 Value 都为单一类型</p>
-                            </div>
+                    <a href="Map/OAMap/Single_Data/index.html" class="typeCard">
+                        <span class="typeIcon">💠</span>
+                        <div class="typeInfo">
+                            <h4>OAMap_S - 单数据类型</h4>
+                            <p>键和值都使用单个 InfoOfData</p>
                         </div>
                     </a>
                 </div>
-
                 <div class="dataType">
-                    <a href="Map/OAMap/Multiple_Data/index.html" class="linkStyle">
-                        <div class="typeCard">
-                            <span class="typeIcon">🔣</span>
-                            <div class="typeInfo">
-                                <h4>1.3.2 OAMap_M - 多种数据类型</h4>
-                                <p>Key 和 Value 可为任意类型</p>
-                            </div>
+                    <a href="Map/OAMap/Multiple_Data/index.html" class="typeCard">
+                        <span class="typeIcon">💎</span>
+                        <div class="typeInfo">
+                            <h4>OAMap_M - 多数据类型</h4>
+                            <p>键和值都使用多个 Data_M</p>
                         </div>
                     </a>
                 </div>
             </div>
         </div>
 
+        <!-- Oper 模块 -->
         <div class="module">
-            <h2 class="moduleTitle">📦 预定义操作集 (Oper)</h2>
-            <p class="moduleDesc">可直接使用的内置数据类型操作集</p>
+            <h2 class="moduleTitle">📦 Oper 模块 - 数据操作集</h2>
+            <p class="moduleDesc">内置的数据类型操作集，简化数据结构的使用</p>
             
             <div class="operLinks">
-                <a href="Oper/index.html" class="operLink">查看所有预定义操作集 →</a>
+                <a href="Oper/index.html" class="operLink">📖 查看预定义操作集</a>
             </div>
         </div>
-    </div>
 
-    <!-- Prism.js -->
-    <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/prism.min.js"></script>
-    <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
-    <script src="index.js"></script>
+    </div>
 </body>
 </html>
