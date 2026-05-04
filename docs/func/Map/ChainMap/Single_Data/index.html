@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChainMap_S 文档 - FOCX</title>
+    <link rel="stylesheet" href="index.css">
+    <!-- Prism.js 代码高亮 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <div class="backLink">
+            <a href="../../../../index.html">← 函数大全</a>
+            <span class="separator">|</span>
+            <a href="../../index.html">← Map</a>
+        </div>
+
+        <h1 class="mainTitle">🔢 ChainMap_S - 链表法哈希映射（单一数据类型）</h1>
+        <p class="subtitle">采用链表法解决哈希冲突的键值对映射表，存储单一类型数据</p>
+
+        <div class="section">
+            <h2>📖 概述</h2>
+            <p>ChainMap_S (Chain Map Single Data) 是一种采用链表法（Separate Chaining）解决哈希冲突的 Map 数据结构。它将哈希值相同的元素存储在同一个链表中，适合数据量较大且分布不均匀的场景。</p>
+            
+            <div class="featureBox">
+                <h4>📌 特点</h4>
+                <ul>
+                    <li>采用链表法处理哈希冲突</li>
+                    <li>只能存储单一类型数据（key 和 value 类型可不同）</li>
+                    <li>需要提供 key 和 value 的操作集</li>
+                    <li>支持动态扩容</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚙️ 数据类型定义</h2>
+            <div class="codeBlock">
+<pre class="language-c"><code>// ChainMap_S 中的 Entry 类型
+typedef struct Entry_S_inChainMap {
+    Data_S key;      // 键
+    Data_S value;   // 值
+    bool isEmpty;    // 是否为空
+} Entry_S_inChainMap;
+
+// ChainMap_S 链表节点
+typedef struct Node_S_inChainMap {
+    struct Node_S_inChainMap* next;
+    struct Node_S_inChainMap* prev;
+    Entry_S_inChainMap entry;
+} Node_S_inChainMap;
+
+// ChainMap_S 链表
+typedef struct List_S_inChainMap {
+    Node_S_inChainMap* head;
+    Node_S_inChainMap* tail;
+    int size;
+} List_S_inChainMap;
+
+// ChainMap_S
+typedef struct ChainMap_S {
+    List_S_inChainMap* arr;      // 哈希桶数组
+    InfoOfData* keyInfo;          // key 操作集
+    InfoOfData* valInfo;          // value 操作集
+    int mod;                      // 取模基数
+    int len;                      // 哈希桶数量
+    int size;                     // 元素数量
+} ChainMap_S;</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🚀 快速开始</h2>
+            <div class="codeBlock">
+<pre class="language-c"><code>#include "base.h"
+#include "Map/ChainMap/Single_Data/chainmap_sdata.h"
+#include "Oper/String_Info/string_info.h"
+#include "Oper/Int_Info/int_info.h"
+
+int main() {
+    // 1. 初始化 Map
+    ChainMap_S map;
+    initSChainMap(&map, &Info_String, &Info_Int);
+
+    // 2. 插入键值对
+    insertSKeyAndSValInSChainMap(&map, 
+        Data_S_OWN("age", NULL), 
+        Data_S_OWN(25, NULL));
+
+    insertSKeyAndSValInSChainMap(&map,
+        Data_S_OWN("score", NULL),
+        Data_S_OWN(100, NULL));
+
+    // 3. 查找
+    Data_S val = getCopySValBySKeyInSChianMap(&map, Data_S_OWN("age", NULL));
+    if (!val.isEmpty) {
+        printf("age: %d\n", *(int*)val.data);
+    }
+
+    // 4. 打印
+    printSChainMap(&map);
+
+    // 5. 释放
+    freeSChainMap(&map);
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📋 函数列表</h2>
+
+            <!-- 初始化与销毁 -->
+            <div class="funcGroup">
+                <h3>🔧 初始化与销毁</h3>
+                
+                <div class="funcItem">
+                    <div class="funcSignature">void initSChainMap(ChainMap_S* pMap, InfoOfData* keyInfo, InfoOfData* valInfo)</div>
+                    <p class="funcDesc">初始化 ChainMap_S</p>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">void freeSChainMap(ChainMap_S* pMap)</div>
+                    <p class="funcDesc">释放整个 ChainMap_S</p>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">void freeSValInSChainMap(ChainMap_S* pMap, Data_S* valData)</div>
+                    <p class="funcDesc">释放 ChainMap_S 中复制的 Value</p>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">void freeSEntryInSChainMap(ChainMap_S* pMap, Entry_S_inChainMap* entry)</div>
+                    <p class="funcDesc">释放 ChainMap_S 中复制的 Entry</p>
+                </div>
+            </div>
+
+            <!-- 插入与查询 -->
+            <div class="funcGroup">
+                <h3>➕ 插入与查询</h3>
+                
+                <div class="funcItem">
+                    <div class="funcSignature">InfoOfReturn insertSKeyAndSValInSChainMap(ChainMap_S* pMap, Data_S key, Data_S val)</div>
+                    <p class="funcDesc">插入键值对</p>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">Data_S getCopySValBySKeyInSChianMap(ChainMap_S* pMap, Data_S key)</div>
+                    <p class="funcDesc">通过 Key 获取 Value 的副本</p>
+                    <div class="warning">
+                        <strong>注意:</strong> 返回的数据使用后需要调用 freeSValInSChainMap 释放
+                    </div>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">Data_S getPtrSValBySKeyInSChainMap(ChainMap_S* pMap, Data_S key)</div>
+                    <p class="funcDesc">通过 Key 获取 Value 的指针（可直接修改）</p>
+                    <div class="warning">
+                        <strong>警告:</strong> 返回的指针直接指向 Map 内部数据，请勿 free
+                    </div>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">Entry_S_inChainMap getCopySEntryBySKeyInSChainMap(ChainMap_S* pMap, Data_S key)</div>
+                    <p class="funcDesc">通过 Key 获取 Entry 的副本</p>
+                </div>
+            </div>
+
+            <!-- 判存与删除 -->
+            <div class="funcGroup">
+                <h3>🔍 判存与删除</h3>
+                
+                <div class="funcItem">
+                    <div class="funcSignature">bool hasSKeyInSChainMap(ChainMap_S* pMap, Data_S key)</div>
+                    <p class="funcDesc">判断 Key 是否存在于 Map 中</p>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">InfoOfReturn delSEntryBySKeyInSChainMap(ChainMap_S* pMap, Data_S key)</div>
+                    <p class="funcDesc">通过 Key 删除元素</p>
+                </div>
+            </div>
+
+            <!-- 打印 -->
+            <div class="funcGroup">
+                <h3>🖨️ 打印</h3>
+                
+                <div class="funcItem">
+                    <div class="funcSignature">void printSChainMap(ChainMap_S* pMap)</div>
+                    <p class="funcDesc">打印整个 Map</p>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">void printSKeyInSChainMap(ChainMap_S* pMap, Data_S keyData)</div>
+                    <p class="funcDesc">打印 Key</p>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">void printSValInSChainMap(ChainMap_S* pMap, Data_S valData)</div>
+                    <p class="funcDesc">打印 Value</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💡 完整示例</h2>
+            <div class="codeBlock">
+<pre class="language-c"><code>#include &lt;stdio.h&gt;
+#include "base.h"
+#include "Map/ChainMap/Single_Data/chainmap_sdata.h"
+#include "Oper/String_Info/string_info.h"
+#include "Oper/Int_Info/int_info.h"
+
+int main() {
+    // 初始化 Map
+    ChainMap_S map;
+    initSChainMap(&map, &Info_String, &Info_Int);
+
+    // 插入数据
+    printf("=== 插入数据 ===\n");
+    insertSKeyAndSValInSChainMap(&map, 
+        Data_S_OWN("apple", NULL), 
+        Data_S_OWN(10, NULL));
+    insertSKeyAndSValInSChainMap(&map, 
+        Data_S_OWN("banana", NULL), 
+        Data_S_OWN(5, NULL));
+    insertSKeyAndSValInSChainMap(&map, 
+        Data_S_OWN("orange", NULL), 
+        Data_S_OWN(8, NULL));
+
+    printSChainMap(&map);
+
+    // 查询
+    printf("\n=== 查询数据 ===\n");
+    Data_S val = getCopySValBySKeyInSChianMap(&map, Data_S_OWN("apple", NULL));
+    if (!val.isEmpty) {
+        printf("apple 的数量: %d\n", *(int*)val.data);
+        freeSValInSChainMap(&map, &val);
+    }
+
+    // 判断存在
+    printf("\n是否存在 grape: %s\n", 
+        hasSKeyInSChainMap(&map, Data_S_OWN("grape", NULL)) ? "是" : "否");
+
+    // 删除
+    printf("\n=== 删除数据 ===\n");
+    delSEntryBySKeyInSChainMap(&map, Data_S_OWN("banana", NULL));
+    printSChainMap(&map);
+
+    // 释放
+    freeSChainMap(&map);
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚠️ 注意事项</h2>
+            <ul class="warningList">
+                <li>Key 的 hash 函数和 cmp 函数必须正确实现</li>
+                <li>通过 getCopy 系列函数获取的数据使用后必须释放</li>
+                <li>通过 getPtr 系列函数获取的指针不要释放</li>
+                <li>每次使用完 Map 后必须调用 freeSChainMap 释放</li>
+                <li>如果 Key 已存在，insert 操作会更新 Value</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

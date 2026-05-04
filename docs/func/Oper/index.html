@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>预定义数据类型 - FOCX</title>
+    <link rel="stylesheet" href="index.css">
+    <!-- Prism.js 代码高亮 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <div class="backLink">
+            <a href="../../index.html">← 函数大全</a>
+        </div>
+
+        <h1 class="mainTitle">📦 预定义数据类型操作集</h1>
+        <p class="subtitle">可直接使用的内置数据类型 InfoOfData</p>
+
+        <div class="section">
+            <h2>📖 概述</h2>
+            <p>Oper 模块提供了常用的内置数据类型的 InfoOfData 操作集实现，可以直接与 DList_S、ChainMap_S、OAMap_S 等单一数据类型容器配合使用，无需自行实现操作函数。</p>
+        </div>
+
+        <div class="section">
+            <h2>📋 可用操作集</h2>
+            
+            <div class="operGrid">
+                <div class="operCard">
+                    <div class="operIcon">🔢</div>
+                    <div class="operInfo">
+                        <h3>Info_Int</h3>
+                        <p class="operDesc">整数类型操作集</p>
+                        <code class="filePath">Oper/Int_Info/int_info.h</code>
+                    </div>
+                </div>
+
+                <div class="operCard">
+                    <div class="operIcon">🔤</div>
+                    <div class="operInfo">
+                        <h3>Info_String</h3>
+                        <p class="operDesc">字符串类型操作集</p>
+                        <code class="filePath">Oper/String_Info/string_info.h</code>
+                    </div>
+                </div>
+
+                <div class="operCard">
+                    <div class="operIcon">🔢</div>
+                    <div class="operInfo">
+                        <h3>Info_Double</h3>
+                        <p class="operDesc">浮点数类型操作集</p>
+                        <code class="filePath">Oper/Double_Info/double_info.h</code>
+                    </div>
+                </div>
+
+                <div class="operCard">
+                    <div class="operIcon">✔️</div>
+                    <div class="operInfo">
+                        <h3>Info_Bool</h3>
+                        <p class="operDesc">布尔类型操作集</p>
+                        <code class="filePath">Oper/Bool_Info/bool_info.h</code>
+                        <span class="note">注：一般做 value，不做 key</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💡 使用示例</h2>
+            <div class="codeBlock">
+<pre class="language-c"><code>#include "base.h"
+#include "Oper/Int_Info/int_info.h"
+#include "Oper/String_Info/string_info.h"
+#include "List/DList/Single_Data/dlist_sdata.h"
+
+// 使用预定义操作集
+int main() {
+    DList_S intList;
+    initSDList(&intList, &Info_Int);  // 使用 Info_Int
+
+    // 插入整数
+    int num1 = 100, num2 = 200;
+    insertSDataAtEndInSDList(&intList, Data_S_OWN(&num1, NULL));
+    insertSDataAtEndInSDList(&intList, Data_S_OWN(&num2, NULL));
+
+    printSDList(&intList);
+    freeSDList(&intList);
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📚 数据类型对比</h2>
+            <table class="compareTable">
+                <tr>
+                    <th>操作集</th>
+                    <th>数据类型</th>
+                    <th>推荐场景</th>
+                </tr>
+                <tr>
+                    <td><code>Info_Int</code></td>
+                    <td>int</td>
+                    <td>整数数据存储、计数、索引</td>
+                </tr>
+                <tr>
+                    <td><code>Info_String</code></td>
+                    <td>char*</td>
+                    <td>字符串键、文本数据</td>
+                </tr>
+                <tr>
+                    <td><code>Info_Double</code></td>
+                    <td>double</td>
+                    <td>浮点数据、精确计算</td>
+                </tr>
+                <tr>
+                    <td><code>Info_Bool</code></td>
+                    <td>bool</td>
+                    <td>布尔标记（建议仅做 value）</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

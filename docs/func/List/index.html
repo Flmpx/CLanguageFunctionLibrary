@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>List 链表 - FOCX</title>
+    <link rel="stylesheet" href="index.css">
+    <!-- Prism.js 代码高亮 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <div class="backLink">
+            <a href="../../index.html">← 函数大全</a>
+        </div>
+
+        <h1 class="mainTitle">📋 List 链表</h1>
+        <p class="subtitle">双向链表数据结构</p>
+
+        <div class="section">
+            <h2>📖 概述</h2>
+            <p>List 模块提供双向链表 (DList) 实现，支持在链表头部、尾部或指定位置插入/删除元素，支持反转等操作。</p>
+            
+            <div class="featureBox">
+                <h4>📌 可用类型</h4>
+                <ul>
+                    <li><strong>DList_S</strong> - 双向链表（单一数据类型）</li>
+                    <li><strong>DList_M</strong> - 双向链表（多种数据类型）</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🗂️ 目录结构</h2>
+            
+            <div class="moduleCard">
+                <h3>DList</h3>
+                <p>双向链表</p>
+                
+                <div class="subLinks">
+                    <a href="DList/Single_Data/index.html">
+                        <span class="typeTag single">DList_S</span>
+                        单一数据类型链表
+                    </a>
+                    <a href="DList/Multiple_Data/index.html">
+                        <span class="typeTag multiple">DList_M</span>
+                        多种数据类型链表
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💡 选择指南</h2>
+            <table class="compareTable">
+                <tr>
+                    <th>类型</th>
+                    <th>适用场景</th>
+                    <th>特点</th>
+                </tr>
+                <tr>
+                    <td><span class="typeTag single">DList_S</span></td>
+                    <td>存储同类型数据</td>
+                    <td>需要提供统一操作集，内存效率高</td>
+                </tr>
+                <tr>
+                    <td><span class="typeTag multiple">DList_M</span></td>
+                    <td>存储异构数据</td>
+                    <td>每个数据自带操作集，灵活度高</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

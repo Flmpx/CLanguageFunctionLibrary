@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OAMap_S 文档 - FOCX</title>
+    <link rel="stylesheet" href="index.css">
+    <!-- Prism.js 代码高亮 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="container">
+        <div class="backLink">
+            <a href="../../../../index.html">← 函数大全</a>
+            <span class="separator">|</span>
+            <a href="../../index.html">← Map</a>
+        </div>
+
+        <h1 class="mainTitle">🔢 OAMap_S - 开放定址法哈希映射（单一数据类型）</h1>
+        <p class="subtitle">采用开放定址法解决哈希冲突的键值对映射表，存储单一类型数据</p>
+
+        <div class="section">
+            <h2>📖 概述</h2>
+            <p>OAMap_S (Open Addressing Map Single Data) 是一种采用开放定址法（Open Addressing）解决哈希冲突的 Map 数据结构。当发生冲突时，它会探测其他可用的槽位来存储数据。</p>
+            
+            <div class="featureBox">
+                <h4>📌 特点</h4>
+                <ul>
+                    <li>采用开放定址法处理哈希冲突</li>
+                    <li>内存利用率高，不需要额外的链表指针</li>
+                    <li>只能存储单一类型数据</li>
+                    <li>适合数据量较小、分布均匀的场景</li>
+                </ul>
+            </div>
+
+            <div class="infoBox">
+                <h4>💡 何时使用 OAMap vs ChainMap</h4>
+                <ul>
+                    <li><strong>使用 OAMap:</strong> 数据量较小（&lt;10000），数据分布均匀，可接受较高的负载因子</li>
+                    <li><strong>使用 ChainMap:</strong> 数据量较大，分布不均匀，需要更稳定的查找性能</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚙️ 数据类型定义</h2>
+            <div class="codeBlock">
+<pre class="language-c"><code>// OAMap_S 中的 Entry 类型
+typedef struct Entry_S_inOAMap {
+    Data_S key;      // 键
+    Data_S val;      // 值
+    int state;       // 状态：存在/已删除/空
+    bool isEmpty;    // 是否为空
+} Entry_S_inOAMap;
+
+// OAMap_S
+typedef struct OAMap_S {
+    Entry_S_inOAMap* arr;      // 哈希槽数组
+    int mod;                    // 取模基数
+    int len;                    // 槽位数量
+    int size;                   // 元素数量
+    InfoOfData* keyInfo;        // key 操作集
+    InfoOfData* valInfo;        // value 操作集
+} OAMap_S;</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🚀 快速开始</h2>
+            <div class="codeBlock">
+<pre class="language-c"><code>#include "base.h"
+#include "Map/OAMap/Single_Data/oamap_sdata.h"
+#include "Oper/String_Info/string_info.h"
+#include "Oper/Int_Info/int_info.h"
+
+int main() {
+    // 1. 初始化 Map
+    OAMap_S map;
+    initSOAMap(&map, &Info_String, &Info_Int);
+
+    // 2. 插入键值对
+    insertSkeyAndSValInSOAMap(&map, 
+        Data_S_OWN("id", NULL), 
+        Data_S_OWN(1001, NULL));
+
+    insertSkeyAndSValInSOAMap(&map,
+        Data_S_OWN("level", NULL),
+        Data_S_OWN(99, NULL));
+
+    // 3. 查找
+    Data_S val = getCopySValBySkeyInSOAMap(&map, Data_S_OWN("id", NULL));
+    if (!val.isEmpty) {
+        printf("id: %d\n", *(int*)val.data);
+    }
+
+    // 4. 打印
+    printSOAMap(&map);
+
+    // 5. 释放
+    freeSOAMap(&map);
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📋 函数列表</h2>
+
+            <!-- 初始化与销毁 -->
+            <div class="funcGroup">
+                <h3>🔧 初始化与销毁</h3>
+                
+                <div class="funcItem">
+                    <div class="funcSignature">void initSOAMap(OAMap_S* pMap, InfoOfData* keyInfo, InfoOfData* valInfo)</div>
+                    <p class="funcDesc">初始化 OAMap_S</p>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">void freeSOAMap(OAMap_S* pMap)</div>
+                    <p class="funcDesc">释放整个 OAMap_S</p>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">void freeSValInSOAMap(OAMap_S* pMap, Data_S* inputData)</div>
+                    <p class="funcDesc">释放 OAMap_S 中复制的 Value</p>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">void freeSEntryInSOAMap(OAMap_S* pMap, Entry_S_inOAMap* entry)</div>
+                    <p class="funcDesc">释放 OAMap_S 中复制的 Entry</p>
+                </div>
+            </div>
+
+            <!-- 插入与查询 -->
+            <div class="funcGroup">
+                <h3>➕ 插入与查询</h3>
+                
+                <div class="funcItem">
+                    <div class="funcSignature">InfoOfReturn insertSkeyAndSValInSOAMap(OAMap_S* pMap, Data_S key, Data_S val)</div>
+                    <p class="funcDesc">插入键值对</p>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">Data_S getCopySValBySkeyInSOAMap(OAMap_S* pMap, Data_S key)</div>
+                    <p class="funcDesc">通过 Key 获取 Value 的副本</p>
+                    <div class="warning">
+                        <strong>注意:</strong> 返回的数据使用后需要调用 freeSValInSOAMap 释放
+                    </div>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">Data_S getPtrSValBySKeyInSOAMap(OAMap_S* pMap, Data_S key)</div>
+                    <p class="funcDesc">通过 Key 获取 Value 的指针（可直接修改）</p>
+                    <div class="warning">
+                        <strong>警告:</strong> 返回的指针直接指向 Map 内部数据，请勿 free
+                    </div>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">Entry_S_inOAMap getCopySEntryByKeyInSOAMap(OAMap_S* pMap, Data_S key)</div>
+                    <p class="funcDesc">通过 Key 获取 Entry 的副本</p>
+                </div>
+            </div>
+
+            <!-- 判存与删除 -->
+            <div class="funcGroup">
+                <h3>🔍 判存与删除</h3>
+                
+                <div class="funcItem">
+                    <div class="funcSignature">bool hasSKeyInSOAMap(OAMap_S* pMap, Data_S key)</div>
+                    <p class="funcDesc">判断 Key 是否存在于 Map 中</p>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">InfoOfReturn delSEntryBySKeyInSOAMap(OAMap_S* pMap, Data_S key)</div>
+                    <p class="funcDesc">通过 Key 删除元素</p>
+                </div>
+            </div>
+
+            <!-- 打印 -->
+            <div class="funcGroup">
+                <h3>🖨️ 打印</h3>
+                
+                <div class="funcItem">
+                    <div class="funcSignature">void printSOAMap(OAMap_S* pMap)</div>
+                    <p class="funcDesc">打印整个 Map</p>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">void printSKeyInSOAMap(OAMap_S* pMap, Data_S keyData)</div>
+                    <p class="funcDesc">打印 Key</p>
+                </div>
+
+                <div class="funcItem">
+                    <div class="funcSignature">void printSValInSOAMap(OAMap_S* pMap, Data_S valData)</div>
+                    <p class="funcDesc">打印 Value</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💡 完整示例</h2>
+            <div class="codeBlock">
+<pre class="language-c"><code>#include &lt;stdio.h&gt;
+#include "base.h"
+#include "Map/OAMap/Single_Data/oamap_sdata.h"
+#include "Oper/String_Info/string_info.h"
+#include "Oper/Int_Info/int_info.h"
+
+int main() {
+    // 初始化 Map
+    OAMap_S map;
+    initSOAMap(&map, &Info_String, &Info_Int);
+
+    // 插入数据
+    printf("=== 插入数据 ===\n");
+    insertSkeyAndSValInSOAMap(&map, 
+        Data_S_OWN("name", NULL), 
+        Data_S_OWN(1, NULL));
+    insertSkeyAndSValInSOAMap(&map, 
+        Data_S_OWN("age", NULL), 
+        Data_S_OWN(25, NULL));
+    insertSkeyAndSValInSOAMap(&map, 
+        Data_S_OWN("city", NULL), 
+        Data_S_OWN(3, NULL));
+
+    printSOAMap(&map);
+
+    // 查询
+    printf("\n=== 查询数据 ===\n");
+    Data_S val = getCopySValBySkeyInSOAMap(&map, Data_S_OWN("age", NULL));
+    if (!val.isEmpty) {
+        printf("age: %d\n", *(int*)val.data);
+        freeSValInSOAMap(&map, &val);
+    }
+
+    // 判断存在
+    printf("\n是否存在 country: %s\n", 
+        hasSKeyInSOAMap(&map, Data_S_OWN("country", NULL)) ? "是" : "否");
+
+    // 删除
+    printf("\n=== 删除数据 ===\n");
+    delSEntryBySKeyInSOAMap(&map, Data_S_OWN("city", NULL));
+    printSOAMap(&map);
+
+    // 释放
+    freeSOAMap(&map);
+    return 0;
+}</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚠️ 注意事项</h2>
+            <ul class="warningList">
+                <li>开放定址法需要保持较低的负载因子（建议 &lt; 0.7）以保证查找效率</li>
+                <li>删除元素时会使用墓碑标记（Tombstone），大量删除后可能需要重建哈希表</li>
+                <li>通过 getCopy 系列函数获取的数据使用后必须释放</li>
+                <li>通过 getPtr 系列函数获取的指针不要释放</li>
+                <li>每次使用完 Map 后必须调用 freeSOAMap 释放</li>
+                <li>如果 Key 已存在，insert 操作会更新 Value</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Prism.js -->
+    <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="index.js"></script>
+</body>
+</html>

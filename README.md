@@ -55,6 +55,48 @@ int main()
 1.基于Data_S和Data_M进行泛型设计, 结构体内容如下  
 ```c
 
+/// @brief 释放void* data
+typedef void (*_freedata)(void* data, void* content);
+
+/// @brief 对void* data的内容进行hash的函数(hash函数必须返回ull类型的数据)
+typedef ull (*_hashdata)(void* data, void* content);
+
+/// @brief 对void* data进行比较的函数
+typedef CmpResult (*_cmpdata)(void* data_a, void* content_a, void* data_b, void* content_b);
+
+/// @brief 对void* data进行复制的函数
+typedef void* (*_copydata)(void* data, void* content);
+
+/// @brief 对void* data进行输出的函数
+typedef void (*_printdata)(void* data, void* content);
+
+
+/// @brief 按自己的方式释放content
+typedef void (*_freecontent)(void* content);
+
+
+/// @brief 通过按自己的方式解析content内容,然后创建一个完全一样的
+typedef void* (*_copycontent)(void* content);
+
+
+/// @brief 创建的这种类型的变量是不允许删除的(把他设置为全局变量),它代表的是某一种类型的相关操作函数
+typedef struct Operation {
+    //分别为上面的函数类型, 自定义数据的时候需要用到
+    _freedata freedata;
+    _hashdata hashdata;
+    _cmpdata cmpdata;
+    _copydata copydata;
+    _printdata printdata;
+    _copycontent copycontent;
+    _freecontent freecontent;
+} Operation;
+
+
+typedef struct InfoOfData {
+    Operation* oper;    //操作函数集合指针
+    bool hasContent;    //当前数据是否有content内容
+} InfoOfData;
+
 
 typedef struct Data_S {
     void* data; //存储数据的void* 指针
@@ -96,6 +138,8 @@ typedef struct Data_M {
 
 ```
 
+
+- [详细内容以及函数的使用](https://flmpx.github.io/focx/)
 
 
 

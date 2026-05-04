@@ -1,4 +1,4 @@
-// FOCX 函数大全页面脚本
+// Map 模块索引页面脚本
 document.addEventListener('DOMContentLoaded', function() {
     if (typeof Prism !== 'undefined') {
         Prism.highlightAll();
@@ -10,15 +10,14 @@ document.addEventListener('DOMContentLoaded', function() {
         }, 500);
     }
 
-    // 为所有卡片添加动画效果
-    const cards = document.querySelectorAll('.typeCard');
+    const cards = document.querySelectorAll('.moduleCard');
     cards.forEach((card, index) => {
         card.style.opacity = '0';
-        card.style.transform = 'translateX(-20px)';
+        card.style.transform = 'translateY(20px)';
         setTimeout(() => {
             card.style.transition = 'all 0.4s ease';
             card.style.opacity = '1';
-            card.style.transform = 'translateX(0)';
+            card.style.transform = 'translateY(0)';
         }, 100 * index);
     });
 });

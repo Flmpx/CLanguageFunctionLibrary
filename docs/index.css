@@ -1,34 +1,180 @@
 .bodyStyle {
-    background-color: rgba(0, 255, 255, 0.128);
-}
-.mainBlock {
-    width: 400px;
-    margin-left: 60px;
-    text-align: left;
-    border-radius: 8px;
-    transition: all 0.5s;
-    
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
-.mainBlock:hover {
-    color: orange;
-    transform: scale(1.05);
+.header {
+    text-align: center;
+    color: white;
+    margin-bottom: 40px;
 }
+
+.title {
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+}
+
+.subtitle {
+    font-size: 1.2em;
+    opacity: 0.9;
+}
+
+.mainBlock {
+    max-width: 800px;
+    margin: 0 auto 30px;
+    text-align: left;
+}
+
 .mainStyle {
-    font-size: 24px;
+    font-size: 1.8em;
     font-weight: bold;
-    border-top: 50px;
-}   
+    color: white;
+    margin: 0;
+}
 
 .linkStyle {
-    font-size: 16px;
-    color: black;
+    display: block;
     text-decoration: none;
-    transition: all 0.1s;
+    max-width: 800px;
+    margin: 0 auto 20px;
 }
 
-.linkStyle:hover {
-    transform: scale(1.02);
-    color: orange;
-    
+.menuItem {
+    background: white;
+    border-radius: 12px;
+    padding: 20px;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.menuItem:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+}
+
+.menuIcon {
+    font-size: 2.5em;
+    margin-right: 20px;
+}
+
+.menuContent h3 {
+    margin: 0 0 5px 0;
+    color: #333;
+    font-size: 1.3em;
+}
+
+.menuContent p {
+    margin: 0;
+    color: #666;
+    font-size: 0.95em;
+}
+
+.section {
+    max-width: 800px;
+    margin: 40px auto;
+    background: rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 25px;
+    color: white;
+}
+
+.section h2 {
+    margin-top: 0;
+    border-bottom: 2px solid rgba(255,255,255,0.3);
+    padding-bottom: 10px;
+}
+
+.codeBlock {
+    background: #1e1e1e;
+    border-radius: 8px;
+    padding: 0;
+    overflow-x: auto;
+    margin: 15px 0;
+    border: 1px solid #333;
+}
+
+.codeBlock pre {
+    margin: 0;
+    padding: 15px !important;
+    font-family: 'Consolas', 'Monaco', 'Fira Code', monospace;
+    font-size: 0.9em;
+    color: #c9d1d9;
+    line-height: 1.5;
+    background: transparent !important;
+}
+
+.codeBlock code {
+    background: transparent !important;
+    padding: 0 !important;
+    font-size: inherit;
+    color: inherit;
+}
+
+/* Prism.js 覆盖样式 */
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+    color: #6a737d !important;
+}
+
+.token.punctuation {
+    color: #c9d1d9 !important;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+    color: #f97583 !important;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+    color: #9ecbff !important;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+    color: #79b8ff !important;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+    color: #f9826c !important;
+}
+
+.token.function,
+.token.class-name {
+    color: #b392f0 !important;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+    color: #ffab70 !important;
+}
+
+.footer {
+    text-align: center;
+    color: rgba(255,255,255,0.7);
+    margin-top: 40px;
+    font-size: 0.9em;
 }

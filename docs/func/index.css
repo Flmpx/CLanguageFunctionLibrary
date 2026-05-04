@@ -1,14 +1,144 @@
-
-.linkStyle {
-    font-size: 16px;
-    color: black;
-    text-decoration: none;
-    transition: all 0.1s;
-    margin-left: 50px;
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-.linkStyle:hover {
-    transform: scale(1.02);
-    color: orange;
-    
+body {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+    min-height: 100vh;
+    padding: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: #eee;
+}
+
+.container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.mainTitle {
+    font-size: 2.2em;
+    text-align: center;
+    margin-bottom: 10px;
+    color: #fff;
+}
+
+.subtitle {
+    text-align: center;
+    color: #aaa;
+    margin-bottom: 30px;
+}
+
+.backLink {
+    margin-bottom: 20px;
+}
+
+.backLink a {
+    color: #64b5f6;
+    text-decoration: none;
+    font-size: 0.95em;
+}
+
+.backLink a:hover {
+    text-decoration: underline;
+}
+
+.module {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 25px;
+    margin-bottom: 25px;
+}
+
+.moduleTitle {
+    font-size: 1.6em;
+    color: #64b5f6;
+    margin-bottom: 10px;
+    border-bottom: 2px solid rgba(100, 181, 246, 0.3);
+    padding-bottom: 10px;
+}
+
+.moduleDesc {
+    color: #aaa;
+    margin-bottom: 20px;
+}
+
+.subModule {
+    margin-top: 20px;
+}
+
+.subModule h3 {
+    color: #90caf9;
+    font-size: 1.2em;
+    margin-bottom: 15px;
+}
+
+.hint {
+    color: #888;
+    font-size: 0.9em;
+    font-style: italic;
+    margin-bottom: 15px;
+}
+
+.dataType {
+    margin-bottom: 15px;
+}
+
+.linkStyle {
+    text-decoration: none;
+    display: block;
+}
+
+.typeCard {
+    background: rgba(255,255,255,0.08);
+    border-radius: 10px;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    border: 1px solid transparent;
+}
+
+.typeCard:hover {
+    background: rgba(255,255,255,0.12);
+    border-color: rgba(100, 181, 246, 0.5);
+    transform: translateX(5px);
+}
+
+.typeIcon {
+    font-size: 2em;
+    margin-right: 20px;
+}
+
+.typeInfo h4 {
+    color: #fff;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.typeInfo p {
+    color: #aaa;
+    font-size: 0.9em;
+    margin: 0;
+}
+
+.operLinks {
+    margin-top: 15px;
+}
+
+.operLink {
+    display: inline-block;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 12px 25px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.operLink:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
 }

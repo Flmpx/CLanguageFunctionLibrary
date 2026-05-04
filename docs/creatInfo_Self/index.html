@@ -1,16 +1,352 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>如何创建自己的 Info_Self - FOCX</title>
+    <link rel="stylesheet" href="index.css">
+    <!-- Prism.js 代码高亮 -->
+    <link href="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
 </head>
 <body>
-    <h1>🤔如何创建自己的Info_Self呢?</h1>
+    <div class="container">
+        <div class="backLink">
+            <a href="../index.html">← 返回主页</a>
+        </div>
+
+        <h1 class="mainTitle">🛠️ 如何创建自己的 Info_Self</h1>
+        <p class="subtitle">自定义数据类型操作集的实现指南</p>
+
+        <div class="section">
+            <h2>📖 概述</h2>
+            <p>InfoOfData 是 FOCX 库中用于描述数据操作方式的核心结构体。要使用 DList_S、ChainMap_S、OAMap_S 等单一数据类型容器，你需要先为你的数据类型创建一个 InfoOfData 实例。</p>
+            <p>你可以参考 <code>Oper/</code> 目录下提供的 Info_Int、Info_String、Info_Double、Info_Bool 等实现，它们是创建自定义 InfoOfData 的最佳参考范例。</p>
+        </div>
+
+        <div class="section">
+            <h2>⚙️ InfoOfData 结构体</h2>
+            <div class="codeBlock">
+<pre class="language-c"><code>typedef struct InfoOfData {
+    Operation* oper;      // 操作函数集
+    bool hasContent;      // 是否有 content 字段
+} InfoOfData;
+
+typedef struct Operation {
+    _freedata freedata;       // 释放数据
+    _hashdata hashdata;       // 计算哈希值
+    _cmpdata cmpdata;         // 比较数据
+    _copydata copydata;       // 复制数据
+    _printdata printdata;     // 打印数据
+    _copycontent copycontent; // 复制 content
+    _freecontent freecontent; // 释放 content
+} Operation;</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>📝 函数指针类型</h2>
+            <div class="codeBlock">
+<pre class="language-c"><code>// 释放 void* data
+typedef void (*_freedata)(void* data, void* content);
+
+// 对 void* data 的内容进行 hash
+typedef unsigned long long (*_hashdata)(void* data, void* content);
+
+// 比较两个 void* data
+typedef CmpResult (*_cmpdata)(void* data_a, void* content_a, 
+                               void* data_b, void* content_b);
+
+// 复制 void* data
+typedef void* (*_copydata)(void* data, void* content);
+
+// 打印 Data
+typedef void (*_printdata)(void* data, void* content);
+
+// 复制 content
+typedef void* (*_copycontent)(void* content);
+
+// 释放 content
+typedef void (*_freecontent)(void* content);</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>💡 创建自定义 InfoOfData 示例</h2>
+            <p>下面以创建一个学生信息 (Student) 的 InfoOfData 为例，代码风格与库提供的 Info_Int 等保持一致：</p>
+            
+            <div class="stepBox">
+                <h3>步骤 1: 定义数据类型</h3>
+                <div class="codeBlock">
+<pre class="language-c"><code>typedef struct {
+    char name[50];
+    int age;
+    int id;
+} Student;</code></pre>
+                </div>
+            </div>
+
+            <div class="stepBox">
+                <h3>步骤 2: 实现 7 个操作函数（全部使用 static）</h3>
+                <div class="codeBlock">
+<pre class="language-c"><code>#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "student_info.h"
+
+// 释放学生数据（data 由 malloc 分配，需要释放）
+static void freedata_Student(void* data, void* content) {
+    free(data);
+}
+
+// 计算学生哈希值（使用 id）
+static unsigned long long hashdata_Student(void* data, void* content) {
+    Student* s = (Student*)data;
+    return (unsigned long long)s->id;
+}
+
+// 比较两个学生（比较 id）
+static CmpResult cmpdata_Student(void* data_a, void* content_a,
+                                 void* data_b, void* content_b) {
+    Student* a = (Student*)data_a;
+    Student* b = (Student*)data_b;
+    return (a->id == b->id) ? SAME : DIFFERENT;
+}
+
+// 复制学生数据（深拷贝，分配新内存）
+static void* copydata_Student(void* data, void* content) {
+    Student* orig = (Student*)data;
+    Student* copy = (Student*)malloc(sizeof(Student));
+    if (copy) {
+        strcpy(copy->name, orig->name);
+        copy->age = orig->age;
+        copy->id = orig->id;
+    }
+    return copy;
+}
+
+// 打印学生信息
+static void printdata_Student(void* data, void* content) {
+    Student* s = (Student*)data;
+    printf("Student{name: %s, age: %d, id: %d}", s->name, s->age, s->id);
+}
+
+// 复制 content（如果没有 content，返回 NULL）
+static void* copycontent_Student(void* content) {
+    return NULL;
+}
+
+// 释放 content（如果没有 content，不需要操作）
+static void freecontent_Student(void* content) {
+    // 无需操作
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="stepBox">
+                <h3>步骤 3: 创建 Operation 和 InfoOfData</h3>
+                <div class="codeBlock">
+<pre class="language-c"><code>// 创建操作集（函数指针按顺序排列，与库提供的格式一致）
+static Operation oper_Student = {
+    freedata_Student,
+    hashdata_Student,
+    cmpdata_Student,
+    copydata_Student,
+    printdata_Student,
+    copycontent_Student,
+    freecontent_Student
+};
+
+// 创建 InfoOfData（必须为全局变量或 static）
+InfoOfData Info_Student = {
+    &oper_Student,
+    false  // hasContent = false，没有额外的 content
+};</code></pre>
+                </div>
+            </div>
+
+            <div class="stepBox">
+                <h3>步骤 4: 使用自定义 InfoOfData</h3>
+                <div class="codeBlock">
+<pre class="language-c"><code>#include "student_info.h"
+#include "List/DList/Single_Data/dlist_sdata.h"
+#include <stdio.h>
+
+int main() {
+    // ========== 使用 Data_S_REF 避免重复释放 ==========
+    // 如果数据是栈上的局部变量，或由调用者管理生命周期，
+    // 使用 Data_S_REF 传入，freedata 函数不会被调用
     
-    <div>
-        <p>1 先写7个函数</p>
+    Student s1 = {"Tom", 20, 1001};
+    Student s2 = {"Alice", 21, 1002};
+    
+    DList_S list;
+    initSDList(&list, &Info_Student);
+    
+    // Data_S_REF: 数据不是自己的，不会调用 freedata
+    // 适合传入栈上的数据或已由调用者管理的数据
+    insertSDataAtEndInSDList(&list, Data_S_REF(&s1, NULL));
+    insertSDataAtEndInSDList(&list, Data_S_REF(&s2, NULL));
+    
+    printSDList(&list);
+    // 输出: [Student{name: Tom, age: 20, id: 1001}, Student{name: Alice, age: 21, id: 1002}]
+    
+    freeSDList(&list);  // 不会调用 freedata，因为使用的是 Data_S_REF
+    
+    // ========== 使用 Data_S_OWN 完全接管数据 ==========
+    // 如果数据需要由 List/Map 管理生命周期，
+    // 使用 Data_S_OWN 传入，内部会调用 copydata 复制一份，
+    // 释放时会调用 freedata 释放复制的内存
+    
+    DList_S list2;
+    initSDList(&list2, &Info_Student);
+    
+    Student s3 = {"Bob", 22, 1003};
+    // Data_S_OWN: 数据是自己的，会调用 copydata 复制一份
+    // 释放时会调用 freedata 释放复制的内存
+    insertSDataAtEndInSDList(&list2, Data_S_OWN(&s3, NULL));
+    
+    printSDList(&list2);
+    // 输出: [Student{name: Bob, age: 22, id: 1003}]
+    
+    freeSDList(&list2);  // 会调用 freedata 释放 copydata 复制的内存
+    
+    return 0;
+}</code></pre>
+                </div>
+            </div>
+
+            <div class="tipBox">
+                <h3>💡 OWN 与 REF 的选择</h3>
+                <ul>
+                    <li><code>Data_S_OWN</code>: 数据的所有权归 List/Map 所有，会自动复制一份，释放时也会释放复制的内存。适合独立管理生命周期的场景。</li>
+                    <li><code>Data_S_REF</code>: 数据的所有权仍归调用者，List/Map 不会复制，释放时也不会调用 freedata。适合栈变量或调用者自行管理的数据。</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>⚠️ 注意事项</h2>
+            <ul class="warningList">
+                <li><strong>hash 函数</strong>: 必须返回稳定的哈希值，相同的数据应返回相同的哈希值</li>
+                <li><strong>cmp 函数</strong>: 必须与 hash 函数保持一致，即 hash 相同的数据，cmp 应返回 SAME</li>
+                <li><strong>copy 函数</strong>: 如果数据需要深拷贝，在此函数中分配内存</li>
+                <li><strong>free 函数</strong>: 与 copy 函数配对，copy 中分配的内存在此函数中释放</li>
+                <li><strong>static 修饰</strong>: 所有操作函数建议使用 static，仅在当前文件中使用</li>
+                <li><strong>全局变量</strong>: InfoOfData 和 Operation 实例应该是全局变量或 static</li>
+                <li><strong>content 字段</strong>: 如果不需要额外信息，copycontent 和 freecontent 设为 NULL，hasContent 设为 false</li>
+                <li><strong>不要重复释放</strong>: 如果使用 Data_S_REF 传入数据，freedata 不会被调用，避免了数据被意外释放的问题</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>📋 完整模板（头文件 + 源文件）</h2>
+            
+            <h3>student_info.h</h3>
+            <div class="codeBlock">
+<pre class="language-c"><code>#ifndef STUDENT_INFO_H
+#define STUDENT_INFO_H
+
+#include "focx/base.h"
+
+typedef struct {
+    char name[50];
+    int age;
+    int id;
+} Student;
+
+// 必须声明为 extern，全局变量
+extern InfoOfData Info_Student;
+
+#endif</code></pre>
+            </div>
+
+            <h3>student_info.c</h3>
+            <div class="codeBlock">
+<pre class="language-c"><code>#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "student_info.h"
+
+// ========== 1. 释放数据 ==========
+static void freedata_Student(void* data, void* content) {
+    free(data);
+}
+
+// ========== 2. 计算哈希值 ==========
+static unsigned long long hashdata_Student(void* data, void* content) {
+    Student* s = (Student*)data;
+    return (unsigned long long)s->id;
+}
+
+// ========== 3. 比较数据 ==========
+static CmpResult cmpdata_Student(void* data_a, void* content_a,
+                                 void* data_b, void* content_b) {
+    Student* a = (Student*)data_a;
+    Student* b = (Student*)data_b;
+    return (a->id == b->id) ? SAME : DIFFERENT;
+}
+
+// ========== 4. 复制数据 ==========
+static void* copydata_Student(void* data, void* content) {
+    Student* orig = (Student*)data;
+    Student* copy = (Student*)malloc(sizeof(Student));
+    if (copy) {
+        strcpy(copy->name, orig->name);
+        copy->age = orig->age;
+        copy->id = orig->id;
+    }
+    return copy;
+}
+
+// ========== 5. 打印数据 ==========
+static void printdata_Student(void* data, void* content) {
+    Student* s = (Student*)data;
+    printf("Student{name: %s, age: %d, id: %d}", s->name, s->age, s->id);
+}
+
+// ========== 6. 复制 content ==========
+static void* copycontent_Student(void* content) {
+    return NULL;
+}
+
+// ========== 7. 释放 content ==========
+static void freecontent_Student(void* content) {
+    // 无需操作
+}
+
+// ========== 创建 Operation ==========
+static Operation oper_Student = {
+    freedata_Student,
+    hashdata_Student,
+    cmpdata_Student,
+    copydata_Student,
+    printdata_Student,
+    copycontent_Student,
+    freecontent_Student
+};
+
+// ========== 创建 InfoOfData（全局变量）==========
+InfoOfData Info_Student = {
+    &oper_Student,
+    false
+};</code></pre>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>🔗 参考现有实现</h2>
+            <p>你可以在 <code>Oper/</code> 目录下找到库提供的 InfoOfData 实现，作为最佳参考：</p>
+            <ul class="refList">
+                <li><code>Oper/Int_Info/</code> - 整数类型操作集</li>
+                <li><code>Oper/String_Info/</code> - 字符串类型操作集（使用 BKDR Hash）</li>
+                <li><code>Oper/Double_Info/</code> - 双精度浮点数操作集</li>
+                <li><code>Oper/Bool_Info/</code> - 布尔类型操作集</li>
+            </ul>
+        </div>
     </div>
-    
+
+    <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdn.bootcdn.net/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+    <script src="index.js"></script>
 </body>
 </html>
