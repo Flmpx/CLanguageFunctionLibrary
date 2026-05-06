@@ -29,13 +29,13 @@ extern void initMOAMap(OAMap_M* pMap);
 
 
 /// @brief 释放掉复制来的在OAMap_M中的MVal
-/// @param val MVal类型指针(Data_M类型)
+/// @param val MVal类型指针(Data_M*类型)
 extern void freeMValInMOAMap(Data_M* val);
 
 
 
 /// @brief 释放掉复制来的在OAMap_M中的MEntry(Entry_M_inOAMap类型)
-/// @param entry MEntry类型(Entry_M_inOAMap类型)
+/// @param entry MEntry类型(Entry_M_inOAMap*类型)
 extern void freeMEntryInMOAMap(Entry_M_inOAMap* entry);
 
 /// @brief 释放掉OAMap_M

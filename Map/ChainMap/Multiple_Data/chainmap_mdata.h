@@ -57,11 +57,11 @@ extern void initMChainMap(ChainMap_M* pMap);
 
 
 /// @brief 释放掉复制来的在ChainMap_M中的MVal
-/// @param val MVal类型指针(Data_M类型)
+/// @param val MVal类型指针(Data_M*类型)
 extern void freeMValInMChainMap(Data_M* val);
 
 /// @brief 释放掉复制来的在ChainMap_M中的MEntry(Entry_M_inChainMap类型)
-/// @param entry MEntry类型(Entry_M_inChainMap类型)
+/// @param entry MEntry类型(Entry_M_inChainMap*类型)
 extern void freeMEntryInMChainMap(Entry_M_inChainMap* entry);
 
 /// @brief 释放掉ChainMap_M

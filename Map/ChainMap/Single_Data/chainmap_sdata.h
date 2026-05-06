@@ -58,12 +58,12 @@ extern void initSChainMap(ChainMap_S* pMap, InfoOfData* keyInfo, InfoOfData* val
 
 /// @brief 释放掉复制来的在ChainMap_S中的SVal
 /// @param pMap ChainMap_S的指针
-/// @param val MVal类型指针(Data_S类型)
+/// @param val MVal类型指针(Data_S*类型)
 extern void freeSValInSChainMap(ChainMap_S* pMap, Data_S* val);
 
 /// @brief 释放掉复制来的在ChainMap_S中的SEntry(Entry_S_inChainMap类型)
 /// @param pMap ChainMap_S的指针
-/// @param entry SEntry类型(Entry_S_inChainMap类型)
+/// @param entry SEntry类型(Entry_S_inChainMap*类型)
 extern void freeSEntryInSChainMap(ChainMap_S* pMap, Entry_S_inChainMap* entry);
 
 /// @brief 释放掉ChainMap_S

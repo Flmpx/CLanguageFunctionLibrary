@@ -54,7 +54,7 @@ extern void initMChainSet(ChainSet_M* pSet);
 
 
 /// @brief 释放掉复制来的在ChainSet_M中的MKey
-/// @param key MKey类型指针(Data_M类型)
+/// @param key MKey类型指针(Data_M*类型)
 extern void freeMKeyInMChainSet(Data_M* key);
 
 /// @brief 释放掉ChainSet_M

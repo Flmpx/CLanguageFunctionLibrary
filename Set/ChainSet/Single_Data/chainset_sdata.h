@@ -63,7 +63,7 @@ extern void initSChainSet(ChainSet_S* pSet, InfoOfData* keyInfo);
 
 /// @brief 释放掉复制来的在ChainSet_S中的SKey
 /// @param pSet ChainKey_S的指针
-/// @param key MKey类型指针(Data_S类型)
+/// @param key MKey类型指针(Data_S*类型)
 extern void freeSKeyInSChainSet(ChainSet_S* pSet, Data_S* key);
 
 

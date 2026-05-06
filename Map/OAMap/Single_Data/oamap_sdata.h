@@ -36,12 +36,12 @@ extern void initSOAMap(OAMap_S* pMap, InfoOfData* keyInfo, InfoOfData* valInfo);
 
 /// @brief 释放掉复制来的在OAMap_S中的SVal
 /// @param pMap OAMap_S的指针
-/// @param val SVal类型指针(Data_S类型)
+/// @param val SVal类型指针(Data_S*类型)
 extern void freeSValInSOAMap(OAMap_S* pMap, Data_S* val);
 
 /// @brief 释放掉复制来的在OAMap_S中的SEntry(Entry_S_inOAMap类型)
 /// @param pMap OAMap_S的指针
-/// @param entry SEntry类型(Entry_S_inOAMap类型)
+/// @param entry SEntry类型(Entry_S_inOAMap*类型)
 extern void freeSEntryInSOAMap(OAMap_S* pMap, Entry_S_inOAMap* entry);
 
 

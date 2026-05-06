@@ -37,7 +37,7 @@ extern void initSOASet(OASet_S* pSet, InfoOfData* keyInfo);
 
 /// @brief 释放掉复制来的在OASet_S中的SKey
 /// @param pSet OASet_S的指针
-/// @param key SKey类型指针(Data_S类型)
+/// @param key SKey类型指针(Data_S*类型)
 extern void freeSKeyInSOASet(OASet_S* pSet, Data_S* key);
 
 
