@@ -36,8 +36,8 @@ extern void initSOAMap(OAMap_S* pMap, InfoOfData* keyInfo, InfoOfData* valInfo);
 
 /// @brief 释放掉复制来的在OAMap_S中的SVal
 /// @param pMap OAMap_S的指针
-/// @param inputData SVal类型指针(Data_S类型)
-extern void freeSValInSOAMap(OAMap_S* pMap, Data_S* inputData);
+/// @param val SVal类型指针(Data_S类型)
+extern void freeSValInSOAMap(OAMap_S* pMap, Data_S* val);
 
 /// @brief 释放掉复制来的在OAMap_S中的SEntry(Entry_S_inOAMap类型)
 /// @param pMap OAMap_S的指针
@@ -93,14 +93,14 @@ extern InfoOfReturn delSEntryBySKeyInSOAMap(OAMap_S* pMap, Data_S key);
 
 /// @brief 打印在OAMap_S中的SKey(Data_S类型)
 /// @param pMap OAMap_S的指针
-/// @param keyData SKey(Data_S类型)
-extern void printSKeyInSOAMap(OAMap_S* pMap, Data_S keyData);
+/// @param key SKey(Data_S类型)
+extern void printSKeyInSOAMap(OAMap_S* pMap, Data_S key);
 
 
 /// @brief 打印在OAMap_S中的SVal(Data_S类型)
 /// @param pMap OAMap_S的指针
-/// @param valData SVal(Data_S类型)
-extern void printSValInSOAMap(OAMap_S* pMap, Data_S valData);
+/// @param val SVal(Data_S类型)
+extern void printSValInSOAMap(OAMap_S* pMap, Data_S val);
 
 /// @brief 打印在OAMap_S中的SEntry(Entry_S_inOAMap类型)
 /// @param pMap OAMap_S的指针

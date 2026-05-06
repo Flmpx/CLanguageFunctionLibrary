@@ -1,5 +1,9 @@
-#define LIST_AND_NODE_M_INCHAINMAP
+#define NODE_M_INCHAINMAP
+#define LIST_M_INCHAINMAP
+
+
 #define GET_LARGESTPRIME
+
 #define DATA_M_OPER
 #include "chainmap_mdata.h"
 #include <stdio.h>
@@ -60,8 +64,8 @@ void initMChainMap(ChainMap_M* pMap) {
 //对外接口
 
 
-void freeMValInMChainMap(Data_M* inputData) {
-    freeMData(inputData);
+void freeMValInMChainMap(Data_M* val) {
+    freeMData(val);
 }
 
 
@@ -511,23 +515,23 @@ InfoOfReturn delMEntryByMKeyInMChainMap(ChainMap_M* pMap, Data_M key) {
 //打印类
 
 
-void printMKeyInMChainMap(Data_M keyData) {
-    if (keyData.isEmpty) {
+void printMKeyInMChainMap(Data_M key) {
+    if (key.isEmpty) {
         printf("\nkey is empty, cannot print\n");
         return;
     }
     printf("[key:");
-    keyData.dataInfo->oper->printdata(keyData.data, keyData.content);
+    key.dataInfo->oper->printdata(key.data, key.content);
     printf("]");
 }
 
-void printMValInMChainMap(Data_M valData) {
-    if (valData.isEmpty) {
+void printMValInMChainMap(Data_M val) {
+    if (val.isEmpty) {
         printf("\nkey is empty, cannot print\n");
         return;
     }
     printf("[key:");
-    valData.dataInfo->oper->printdata(valData.data, valData.content);
+    val.dataInfo->oper->printdata(val.data, val.content);
     printf("]");
 }
 

@@ -29,8 +29,8 @@ extern void initMOAMap(OAMap_M* pMap);
 
 
 /// @brief 释放掉复制来的在OAMap_M中的MVal
-/// @param inputData MVal类型指针(Data_M类型)
-extern void freeMValInMOAMap(Data_M* inputData);
+/// @param val MVal类型指针(Data_M类型)
+extern void freeMValInMOAMap(Data_M* val);
 
 
 
@@ -73,7 +73,7 @@ extern Entry_M_inOAMap getCopyMEntryByKeyInMOAMap(OAMap_M* pMap, Data_M key);
 /// @param pMap OAMap_M的指针
 /// @param key MKey(Data_M类型)
 /// @return 如果存在返回true, 否则返回false
-extern bool hasKeyInMOAMap(OAMap_M* pMap, Data_M key);
+extern bool hasMKeyInMOAMap(OAMap_M* pMap, Data_M key);
 
 
 /// @brief 通过MKey删除在OAMap_M中的元素
@@ -83,13 +83,13 @@ extern bool hasKeyInMOAMap(OAMap_M* pMap, Data_M key);
 extern InfoOfReturn delMEntryByMKeyInMOAMap(OAMap_M* pMap, Data_M key);
 
 /// @brief 打印在OAMap_M中的MKey(Data_M类型)
-/// @param keyData MKey(Data_M类型)
-extern void printMKeyInMOAMap(Data_M keyData);
+/// @param key MKey(Data_M类型)
+extern void printMKeyInMOAMap(Data_M key);
 
 
 /// @brief 打印在OAMap_M中的MVal(Data_M类型)
-/// @param valData MVal(Data_M类型)
-extern void printMValInMOAMap(Data_M valData);
+/// @param val MVal(Data_M类型)
+extern void printMValInMOAMap(Data_M val);
 
 /// @brief 打印在OAMap_M中的MEntry(Entry_M_inOAMap类型)
 /// @param entry MEntry(Entry_M_inOAMap类型)

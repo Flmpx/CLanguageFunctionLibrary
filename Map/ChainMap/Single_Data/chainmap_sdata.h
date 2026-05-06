@@ -3,7 +3,6 @@
 #include <stdbool.h>
 #include "../../../base.h"
 
-
 typedef struct Node_S_inChainMap Node_S_inChainMap;
 typedef struct List_S_inChainMap List_S_inChainMap;
 
@@ -14,7 +13,7 @@ typedef struct Entry_S_inChainMap {
     bool isEmpty;
 } Entry_S_inChainMap;
 
-#ifdef LIST_AND_NODE_S_INCHAINMAP
+#ifdef NODE_S_INCHAINMAP
 
 /// @brief 在ChainMap_S中的链表节点(Node_S_inChainMap类型)
 struct Node_S_inChainMap {
@@ -22,7 +21,9 @@ struct Node_S_inChainMap {
     struct Node_S_inChainMap* prev;
     Entry_S_inChainMap entry;
 };
+#endif
 
+#ifdef LIST_S_INCHAINMAP
 
 /// @brief 在ChainMap_S中的链表(Node_S_inChainMap类型)
 struct List_S_inChainMap {
@@ -34,7 +35,7 @@ struct List_S_inChainMap {
 
 
 
-/// @brief OAMap_S->采用链表法的Map, 可存储单一类型数据
+/// @brief ChainMap_S->采用链表法的Map, 可存储单一类型数据
 typedef struct ChainMap_S {
     List_S_inChainMap* arr;
     InfoOfData* keyInfo;
@@ -57,8 +58,8 @@ extern void initSChainMap(ChainMap_S* pMap, InfoOfData* keyInfo, InfoOfData* val
 
 /// @brief 释放掉复制来的在ChainMap_S中的SVal
 /// @param pMap ChainMap_S的指针
-/// @param valData MVal类型指针(Data_S类型)
-extern void freeSValInSChainMap(ChainMap_S* pMap, Data_S* valData);
+/// @param val MVal类型指针(Data_S类型)
+extern void freeSValInSChainMap(ChainMap_S* pMap, Data_S* val);
 
 /// @brief 释放掉复制来的在ChainMap_S中的SEntry(Entry_S_inChainMap类型)
 /// @param pMap ChainMap_S的指针
@@ -112,13 +113,13 @@ extern InfoOfReturn delSEntryBySKeyInSChainMap(ChainMap_S* pMap, Data_S key);
 
 /// @brief 打印在ChainMap_S中的SKey(Data_S类型)
 /// @param pMap ChainMap_S的指针
-/// @param keyData SKey(Data_S类型)
-extern void printSKeyInSChainMap(ChainMap_S* pMap, Data_S keyData);
+/// @param key SKey(Data_S类型)
+extern void printSKeyInSChainMap(ChainMap_S* pMap, Data_S key);
 
 /// @brief 打印在ChainMap_S中的SVal(Data_S类型)
 /// @param pMap ChainMap_S的指针
-/// @param valData SVal(Data_S类型)
-extern void printSValInSChainMap(ChainMap_S* pMap, Data_S valData);
+/// @param val SVal(Data_S类型)
+extern void printSValInSChainMap(ChainMap_S* pMap, Data_S val);
 
 /// @brief 打印在ChainMap_S中的SEntry(Entry_S_inChainMap类型)
 /// @param pMap ChainMap_S的指针

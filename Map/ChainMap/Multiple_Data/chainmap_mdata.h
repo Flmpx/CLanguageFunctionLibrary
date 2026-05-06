@@ -17,7 +17,7 @@ typedef struct Entry_M_inChainMap {
 
 
 
-#ifdef LIST_AND_NODE_M_INCHAINMAP
+#ifdef NODE_M_INCHAINMAP
 
 /// @brief 在ChainMap中的链表节点, Node_M_inChainMap类型
 struct Node_M_inChainMap {
@@ -26,6 +26,10 @@ struct Node_M_inChainMap {
     Entry_M_inChainMap entry;
 };
 
+#endif
+
+
+#ifdef LIST_M_INCHAINMAP
 
 /// @brief 在ChainMap中的链表, List_M_inChainMap
 struct List_M_inChainMap {
@@ -36,7 +40,7 @@ struct List_M_inChainMap {
 
 #endif
 
-/// @brief OAMap_M->采用链表法的Map, 可存储任意类型数据
+/// @brief ChainMap_M->采用链表法的Map, 可存储任意类型数据
 typedef struct ChainMap_M {
     List_M_inChainMap* arr;
     int mod;
@@ -53,8 +57,8 @@ extern void initMChainMap(ChainMap_M* pMap);
 
 
 /// @brief 释放掉复制来的在ChainMap_M中的MVal
-/// @param inputData MVal类型指针(Data_M类型)
-extern void freeMValInMChainMap(Data_M* inputData);
+/// @param val MVal类型指针(Data_M类型)
+extern void freeMValInMChainMap(Data_M* val);
 
 /// @brief 释放掉复制来的在ChainMap_M中的MEntry(Entry_M_inChainMap类型)
 /// @param entry MEntry类型(Entry_M_inChainMap类型)
@@ -107,14 +111,14 @@ extern InfoOfReturn delMEntryByMKeyInMChainMap(ChainMap_M* pMap, Data_M key);
 
 
 /// @brief 打印在ChainMap_M中的MKey(Data_M类型)
-/// @param keyData MKey(Data_M类型)
-extern void printMKeyInMChainMap(Data_M keyData);
+/// @param key MKey(Data_M类型)
+extern void printMKeyInMChainMap(Data_M key);
 
 
 
 /// @brief 打印在ChainMap_M中的MVal(Data_M类型)
-/// @param valData MVal(Data_M类型)
-extern void printMValInMChainMap(Data_M valData);
+/// @param val MVal(Data_M类型)
+extern void printMValInMChainMap(Data_M val);
 
 /// @brief 打印在ChainMap_M中的MEntry(Entry_M_inChainMap类型)
 /// @param entry MEntry(Entry_M_inChainMap类型)

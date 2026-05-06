@@ -35,8 +35,8 @@ static Entry_S_inOAMap getEmptySEntry() {
 
 
 
-void freeSValInSOAMap(OAMap_S* pMap, Data_S* inputData) {
-    freeSData(inputData, pMap->valInfo);
+void freeSValInSOAMap(OAMap_S* pMap, Data_S* val) {
+    freeSData(val, pMap->valInfo);
 }
 
 //不会自动给entry的state进行赋值, 自己根据情况进行赋值
@@ -166,15 +166,15 @@ static InfoOfReturn addSEntryFunction(OAMap_S* pMap, Data_S key, Data_S val) {
 
 
 //专门为重哈希做的软拷贝方式添加的Entry
-static InfoOfReturn addSEntryForFreshSOAMap(OAMap_S* pMap, Data_S keyData, Data_S valData) {
-    ull index = (pMap->keyInfo->oper->hashdata(keyData.data, keyData.content))%pMap->mod;
+static InfoOfReturn addSEntryForFreshSOAMap(OAMap_S* pMap, Data_S key, Data_S val) {
+    ull index = (pMap->keyInfo->oper->hashdata(key.data, key.content))%pMap->mod;
     while (pMap->arr[index].state != NONE_IN_MAP) {
         index++;
         index %= pMap->len;
     }
 
-    pMap->arr[index].key = keyData;
-    pMap->arr[index].val = valData;
+    pMap->arr[index].key = key;
+    pMap->arr[index].val = val;
     pMap->arr[index].state = EXIST_IN_MAP;
     pMap->arr[index].isEmpty = false;
     pMap->size++;
@@ -338,23 +338,23 @@ InfoOfReturn delSEntryBySKeyInSOAMap(OAMap_S* pMap, Data_S key) {
 
 
 
-void printSKeyInSOAMap(OAMap_S* pMap, Data_S keyData) {
-    if (keyData.isEmpty) {
+void printSKeyInSOAMap(OAMap_S* pMap, Data_S key) {
+    if (key.isEmpty) {
         printf("\nkey is empty, cannot print\n");
         return;
     }
     printf("[key:");
-    pMap->keyInfo->oper->printdata(keyData.data, keyData.content);
+    pMap->keyInfo->oper->printdata(key.data, key.content);
     printf("]");
 }
 
-void printSValInSOAMap(OAMap_S* pMap, Data_S valData) {
-    if (valData.isEmpty) {
+void printSValInSOAMap(OAMap_S* pMap, Data_S val) {
+    if (val.isEmpty) {
         printf("\nval is empty, cannot print\n");
         return;
     }
     printf("[key:");
-    pMap->keyInfo->oper->printdata(valData.data, valData.content);
+    pMap->keyInfo->oper->printdata(val.data, val.content);
     printf("]");
 }
 

@@ -1,5 +1,9 @@
-#define LIST_AND_NODE_S_INCHAINMAP
+#define NODE_S_INCHAINMAP
+#define LIST_S_INCHAINMAP
+
+
 #define GET_LARGESTPRIME
+
 #define DATA_S_OPER
 #include "chainmap_sdata.h"
 #include <stdio.h>
@@ -56,8 +60,8 @@ void initSChainMap(ChainMap_S* pMap, InfoOfData* keyInfo, InfoOfData* valInfo) {
 /**************** */
 //释放Data数据
 
-void freeSValInSChainMap(ChainMap_S* pMap, Data_S* valData) {
-    freeSData(valData, pMap->valInfo);
+void freeSValInSChainMap(ChainMap_S* pMap, Data_S* val) {
+    freeSData(val, pMap->valInfo);
 }
 
 
@@ -508,24 +512,24 @@ InfoOfReturn delSEntryBySKeyInSChainMap(ChainMap_S* pMap, Data_S key) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //打印类
 
-void printSKeyInSChainMap(ChainMap_S* pMap, Data_S keyData) {
-    if (keyData.isEmpty) {
+void printSKeyInSChainMap(ChainMap_S* pMap, Data_S key) {
+    if (key.isEmpty) {
         printf("\nkey is empty, cannot print\n");
         return;
     }
     printf("[key:");
-    pMap->keyInfo->oper->printdata(keyData.data, keyData.content);
+    pMap->keyInfo->oper->printdata(key.data, key.content);
     printf("]");
 
 }
 
-void printSValInSChainMap(ChainMap_S* pMap, Data_S valData) {
-    if (valData.isEmpty) {
+void printSValInSChainMap(ChainMap_S* pMap, Data_S val) {
+    if (val.isEmpty) {
         printf("\nval is empty, cannot print\n");
         return;
     }
     printf("[key:");
-    pMap->keyInfo->oper->printdata(valData.data, valData.content);
+    pMap->keyInfo->oper->printdata(val.data, val.content);
     printf("]");
 
 }

@@ -1,0 +1,2 @@
+- 在ChainSet中List, Node和Entry不公开
+- 在OASet中Entry不公开

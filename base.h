@@ -15,6 +15,15 @@ enum EntryStateInMap {
     EXIST_IN_MAP = 1
 };
 
+#endif
+
+#ifdef ENTRY_STATE_IN_OASET
+
+enum EntryStateInSet {
+    DEL_IN_SET = -1,
+    NONE_IN_SET = 0,
+    EXIST_IN_SET = 1
+};
 
 
 #endif

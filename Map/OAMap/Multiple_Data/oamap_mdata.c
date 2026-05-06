@@ -35,8 +35,8 @@ void initMOAMap(OAMap_M* pMap) {
 //释放类
 
 
-void freeMValInMOAMap(Data_M* inputData) {
-    freeMData(inputData);
+void freeMValInMOAMap(Data_M* val) {
+    freeMData(val);
 }
 
 
@@ -297,7 +297,7 @@ Entry_M_inOAMap getCopyMEntryByKeyInMOAMap(OAMap_M* pMap, Data_M key) {
 }
 
 
-bool hasKeyInMOAMap(OAMap_M* pMap, Data_M key) {
+bool hasMKeyInMOAMap(OAMap_M* pMap, Data_M key) {
     if (getIndexByMKey(pMap, key) == NOT_FOUND) {
         return false;
     } else {
@@ -329,24 +329,24 @@ InfoOfReturn delMEntryByMKeyInMOAMap(OAMap_M* pMap, Data_M key) {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //打印类
 
-void printMKeyInMOAMap(Data_M keyData) {
-    if (keyData.isEmpty) {
+void printMKeyInMOAMap(Data_M key) {
+    if (key.isEmpty) {
         printf("\nkey is empty, cannot print\n");
         return;
     }
     printf("[key:");
-    keyData.dataInfo->oper->printdata(keyData.data, keyData.content);
+    key.dataInfo->oper->printdata(key.data, key.content);
     printf("]");
     
 }
 
-void printMValInMOAMap(Data_M valData) {
-    if (valData.isEmpty) {
+void printMValInMOAMap(Data_M val) {
+    if (val.isEmpty) {
         printf("\nval is empty, cannot print\n");
         return;
     }
     printf("[val:");
-    valData.dataInfo->oper->printdata(valData.data, valData.content);
+    val.dataInfo->oper->printdata(val.data, val.content);
     printf("]");
 
 }
