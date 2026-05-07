@@ -162,7 +162,7 @@ static InfoOfReturn freshSOASet(OASet_S* pSet) {
 
 }
 
-InfoOfReturn insertSkeyInSOASet(OASet_S* pSet, Data_S key) {
+InfoOfReturn insertSKeyInSOASet(OASet_S* pSet, Data_S key) {
     // if (4*(pSet->size) >= 3*(pSet->len)) {
     //     if (freshSOASet(pSet) == Warning) {
     //         printf("\nMemory allocation failed\n");
@@ -198,7 +198,7 @@ static Position getIndexBySKey(OASet_S* pSet, Data_S key) {
 }
 
 
-Data_S getCopySKeyBySkeyInSOASet(OASet_S* pSet, Data_S key) {
+Data_S getCopySKeyBySKeyInSOASet(OASet_S* pSet, Data_S key) {
     int index = getIndexBySKey(pSet, key);
     if (index == NOT_FOUND) {
         printf("\nNot Found\n");

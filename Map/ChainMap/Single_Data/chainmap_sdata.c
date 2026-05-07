@@ -22,7 +22,7 @@ static void initSList(List_S_inChainMap* plist);
 static Entry_S_inChainMap getEmptySEntry() {
     Entry_S_inChainMap entry;
     entry.key = getEmptySData();
-    entry.value = getEmptySData();
+    entry.val = getEmptySData();
     entry.isEmpty = true;
     return entry;
 }
@@ -71,7 +71,7 @@ void freeSValInSChainMap(ChainMap_S* pMap, Data_S* val) {
 void freeSEntryInSChainMap(ChainMap_S* pMap, Entry_S_inChainMap* entry) {
     if (entry->isEmpty) return;
     freeSData(&(entry->key), pMap->keyInfo);
-    freeSData(&(entry->value), pMap->valInfo);
+    freeSData(&(entry->val), pMap->valInfo);
     entry->isEmpty = true;
 }
 
@@ -248,8 +248,8 @@ static Entry_S_inChainMap deepCopySEntry(Entry_S_inChainMap oldEntry, ChainMap_S
     if (newEntry.key.isEmpty) {
         return getEmptySEntry();
     }
-    newEntry.value = deepCopySData(oldEntry.value, pMap->valInfo);
-    if (newEntry.value.isEmpty) {
+    newEntry.val = deepCopySData(oldEntry.val, pMap->valInfo);
+    if (newEntry.val.isEmpty) {
         freeSData(&(newEntry.key), pMap->keyInfo);
         return getEmptySEntry();
     }
@@ -268,8 +268,8 @@ static Entry_S_inChainMap smartCopySEntry(Entry_S_inChainMap oldEntry, ChainMap_
         return getEmptySEntry();
     }
     //val按需拷贝
-    newEntry.value = smartCopySData(oldEntry.value, pMap->valInfo);
-    if (newEntry.value.isEmpty) {
+    newEntry.val = smartCopySData(oldEntry.val, pMap->valInfo);
+    if (newEntry.val.isEmpty) {
         freeSData(&(newEntry.key), pMap->keyInfo);
         return getEmptySEntry();
     }
@@ -283,25 +283,25 @@ static Entry_S_inChainMap smartCopySEntry(Entry_S_inChainMap oldEntry, ChainMap_
 
 
 //这个函数保证可以添加
-static int addSEntryFunction(ChainMap_S* pMap, Data_S key, Data_S value) {
+static int addSEntryFunction(ChainMap_S* pMap, Data_S key, Data_S val) {
     //hash
     ull index = (pMap->keyInfo->oper->hashdata(key.data, key.content))%pMap->mod;
 
     Node_S_inChainMap* p = getNodeBySKey(&(pMap->arr[index]), key, pMap->keyInfo);
     if (p) {
-        Data_S newVal = smartCopySData(value, pMap->valInfo);
+        Data_S newVal = smartCopySData(val, pMap->valInfo);
         if (newVal.isEmpty) {
             printf("\nMemory allocation failed\n");
             return Warning;
         }
-        freeSData(&(p->entry.value), pMap->valInfo);
-        p->entry.value = newVal;
+        freeSData(&(p->entry.val), pMap->valInfo);
+        p->entry.val = newVal;
         return Success;
     }
     Entry_S_inChainMap oldEntry;
     oldEntry.isEmpty = false;
     oldEntry.key = key;
-    oldEntry.value = value;
+    oldEntry.val = val;
     
     Entry_S_inChainMap newEntry = smartCopySEntry(oldEntry, pMap);
     if (newEntry.isEmpty) {
@@ -320,12 +320,12 @@ static int addSEntryFunction(ChainMap_S* pMap, Data_S key, Data_S value) {
 
 
 //专门为重哈希做的软拷贝方式添加的Entry
-static int addSEntryForFreshSChainMap(ChainMap_S* pMap, Data_S key, Data_S value) {
+static int addSEntryForFreshSChainMap(ChainMap_S* pMap, Data_S key, Data_S val) {
     ull index = (pMap->keyInfo->oper->hashdata(key.data, key.content))%pMap->mod;
     Entry_S_inChainMap entry;
     entry.isEmpty = false;
     entry.key = key;
-    entry.value = value;
+    entry.val = val;
     if (insertSEntryInSList(&(pMap->arr[index]), entry) == Warning) {
         printf("\nMemory allocation failed\n");
         return Warning;
@@ -391,7 +391,7 @@ static int freshSChainMap(ChainMap_S* pMap) {
     for (int i = 0; i < pMap->len; i++) {
         Node_S_inChainMap* p = pMap->arr[i].head;
         for (int j = 0; j < pMap->arr[i].size; j++, p = p->next) {
-            if (addSEntryForFreshSChainMap(&newMap, p->entry.key, p->entry.value) == Warning) {
+            if (addSEntryForFreshSChainMap(&newMap, p->entry.key, p->entry.val) == Warning) {
                 printf("\nMemory allocation failed\n");
                 return Warning;
             }
@@ -421,7 +421,7 @@ int insertSKeyAndSValInSChainMap(ChainMap_S* pMap, Data_S key, Data_S val) {
 
 
 //返回的Data数据为新建,用完后记得释放
-Data_S getCopySValBySKeyInSChianMap(ChainMap_S* pMap, Data_S key) {
+Data_S getCopySValBySKeyInSChainMap(ChainMap_S* pMap, Data_S key) {
     if (pMap->len == 0 || pMap->size == 0 || pMap->arr == NULL) return getEmptySData();
     ull index = (pMap->keyInfo->oper->hashdata(key.data, key.content))%pMap->mod;
     
@@ -430,7 +430,7 @@ Data_S getCopySValBySKeyInSChianMap(ChainMap_S* pMap, Data_S key) {
         return getEmptySData();
     } else {
         Data_S newData;
-        newData = deepCopySData(p->entry.value, pMap->valInfo);
+        newData = deepCopySData(p->entry.val, pMap->valInfo);
         if (newData.isEmpty) {
             printf("\nMemory allocation failed\n");
         }
@@ -447,7 +447,7 @@ Data_S getPtrSValBySKeyInSChainMap(ChainMap_S* pMap, Data_S key) {
     if (p == NULL) {
         return getEmptySData();
     } else {
-        return p->entry.value;
+        return p->entry.val;
     }
 }
 
@@ -543,9 +543,9 @@ void printSEntryInSChainMap(ChainMap_S* pMap, Entry_S_inChainMap entry) {
     printf("[key:");
     pMap->keyInfo->oper->printdata(entry.key.data, entry.key.content);
     
-    //value
-    printf(", value:");
-    pMap->valInfo->oper->printdata(entry.value.data, entry.value.content);
+    //val
+    printf(", val:");
+    pMap->valInfo->oper->printdata(entry.val.data, entry.val.content);
     printf("]");
 }
 

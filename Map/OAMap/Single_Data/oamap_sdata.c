@@ -228,7 +228,7 @@ static InfoOfReturn freshSOAMap(OAMap_S* pMap) {
 
 }
 
-InfoOfReturn insertSkeyAndSValInSOAMap(OAMap_S* pMap, Data_S key, Data_S val) {
+InfoOfReturn insertSKeyAndSValInSOAMap(OAMap_S* pMap, Data_S key, Data_S val) {
     // if (4*(pMap->size) >= 3*(pMap->len)) {
     //     if (freshSOAMap(pMap) == Warning) {
     //         printf("\nMemory allocation failed\n");
@@ -264,7 +264,7 @@ static Position getIndexBySKey(OAMap_S* pMap, Data_S key) {
 }
 
 
-Data_S getCopySValBySkeyInSOAMap(OAMap_S* pMap, Data_S key) {
+Data_S getCopySValBySKeyInSOAMap(OAMap_S* pMap, Data_S key) {
     int index = getIndexBySKey(pMap, key);
     if (index == NOT_FOUND) {
         printf("\nNot Found\n");
@@ -291,7 +291,7 @@ Data_S getPtrSValBySKeyInSOAMap(OAMap_S* pMap, Data_S key) {
 }
 
 
-Entry_S_inOAMap getCopySEntryByKeyInSOAMap(OAMap_S* pMap, Data_S key) {
+Entry_S_inOAMap getCopySEntryBySKeyInSOAMap(OAMap_S* pMap, Data_S key) {
     int index = getIndexBySKey(pMap, key);
     if (index == NOT_FOUND) {
         return getEmptySEntry();

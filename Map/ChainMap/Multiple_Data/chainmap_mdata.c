@@ -24,7 +24,7 @@ static void initMList(List_M_inChainMap* plist);
 static Entry_M_inChainMap getEmptyMEntry() {
     Entry_M_inChainMap entry;
     entry.key = getEmptyMData();
-    entry.value = getEmptyMData();
+    entry.val = getEmptyMData();
     entry.isEmpty = true;
     return entry;
 }
@@ -74,7 +74,7 @@ void freeMValInMChainMap(Data_M* val) {
 void freeMEntryInMChainMap(Entry_M_inChainMap* entry) {
     if (entry->isEmpty) return;
     freeMData(&(entry->key));
-    freeMData(&(entry->value));
+    freeMData(&(entry->val));
     entry->isEmpty = true;
 }
 
@@ -245,8 +245,8 @@ static Entry_M_inChainMap deepCopyMEntry(Entry_M_inChainMap oldEntry) {
     if (newEntry.key.isEmpty) {
         return getEmptyMEntry();
     }
-    newEntry.value = deepCopyMData(oldEntry.value);
-    if (newEntry.value.isEmpty) {
+    newEntry.val = deepCopyMData(oldEntry.val);
+    if (newEntry.val.isEmpty) {
         freeMData(&(newEntry.key));
         return getEmptyMEntry();
     }
@@ -266,8 +266,8 @@ static Entry_M_inChainMap smartCopyMEntry(Entry_M_inChainMap oldEntry) {
     }
 
     //val根据情况进行复制
-    newEntry.value = smartCopyMData(oldEntry.value);
-    if (newEntry.value.isEmpty) {
+    newEntry.val = smartCopyMData(oldEntry.val);
+    if (newEntry.val.isEmpty) {
         freeMData(&(newEntry.key));
         return getEmptyMEntry();
     }
@@ -281,7 +281,7 @@ static Entry_M_inChainMap smartCopyMEntry(Entry_M_inChainMap oldEntry) {
 
 
 //这个函数保证可以添加
-static InfoOfReturn addMEntryFunction(ChainMap_M* pMap, Data_M key, Data_M value) {
+static InfoOfReturn addMEntryFunction(ChainMap_M* pMap, Data_M key, Data_M val) {
     //hash
     ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
 
@@ -290,19 +290,19 @@ static InfoOfReturn addMEntryFunction(ChainMap_M* pMap, Data_M key, Data_M value
     if (p) {
         Data_M newVal;
         //智能复制
-        newVal = smartCopyMData(value);
+        newVal = smartCopyMData(val);
         if (newVal.isEmpty) {
             printf("\nMemory allocation failed\n");
             return Warning;
         }
-        freeMData(&(p->entry.value));
-        p->entry.value = newVal;
+        freeMData(&(p->entry.val));
+        p->entry.val = newVal;
         return Success;
     }
     Entry_M_inChainMap oldEntry;
     oldEntry.isEmpty = false;
     oldEntry.key = key;
-    oldEntry.value = value;
+    oldEntry.val = val;
     
     //要进行智能拷贝
     Entry_M_inChainMap newEntry = smartCopyMEntry(oldEntry);
@@ -322,12 +322,12 @@ static InfoOfReturn addMEntryFunction(ChainMap_M* pMap, Data_M key, Data_M value
 
 
 //专门为重哈希做的软拷贝方式添加的Entry
-static InfoOfReturn addMEntryForFreshMChainMap(ChainMap_M* pMap, Data_M key, Data_M value) {
+static InfoOfReturn addMEntryForFreshMChainMap(ChainMap_M* pMap, Data_M key, Data_M val) {
     ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
     Entry_M_inChainMap entry;
     entry.isEmpty = false;
     entry.key = key;
-    entry.value = value;
+    entry.val = val;
     if (insertMEntryInMList(&(pMap->arr[index]), entry) == Warning) {
         printf("\nMemory allocation failed\n");
         return Warning;
@@ -396,7 +396,7 @@ static InfoOfReturn freshMChainMap(ChainMap_M* pMap) {
             将这个循环改为用p来进行判断
         */
         for (int j = 0; j < pMap->arr[i].size; j++, p = p->next) {
-            if (addMEntryForFreshMChainMap(&newMap, p->entry.key, p->entry.value) == Warning) {
+            if (addMEntryForFreshMChainMap(&newMap, p->entry.key, p->entry.val) == Warning) {
                 printf("\nMemory allocation failed\n");
                 return Warning;
             }
@@ -439,7 +439,7 @@ Data_M getCopyMValByMKeyInMChainMap(ChainMap_M* pMap, Data_M key) {
         return getEmptyMData();
     } else {
         Data_M newData;
-        newData = deepCopyMData(p->entry.value);
+        newData = deepCopyMData(p->entry.val);
         if (newData.isEmpty) {
             printf("\nMemory allocation failed\n");
         }
@@ -455,7 +455,7 @@ Data_M getPtrMValByMKeyInMChainMap(ChainMap_M* pMap, Data_M key) {
     if (p == NULL) {
         return getEmptyMData();
     } else {
-        return p->entry.value;
+        return p->entry.val;
     }
 }
 
@@ -544,9 +544,9 @@ void printMEntryInMChainMap(Entry_M_inChainMap entry) {
     printf("[key:");
     entry.key.dataInfo->oper->printdata(entry.key.data, entry.key.content);
     
-    //value
-    printf(", value:");
-    entry.value.dataInfo->oper->printdata(entry.value.data, entry.value.content);
+    //val
+    printf(", val:");
+    entry.val.dataInfo->oper->printdata(entry.val.data, entry.val.content);
     printf("]");
 }
 

@@ -17,7 +17,7 @@ typedef struct Entry_S_inOASet {
 
 #endif
 
-/// @brief OASet_S->采用开放定址法的Set, 可存储单一类型数据
+/// @brief OASet_S->采用开放寻址法的Set, 可存储单一类型数据
 typedef struct OASet_S {
     Entry_S_inOASet* arr;
     int mod;
@@ -28,61 +28,61 @@ typedef struct OASet_S {
 
 
 
-/// @brief 初始化OASet_S
-/// @param pSet OASet_S的指针
-/// @param keyInfo key的InfoOfData类型指针
+/// @brief 初始化单类型开放寻址集合
+/// @param pSet 集合指针
+/// @param keyInfo 键的数据信息的指针
 extern void initSOASet(OASet_S* pSet, InfoOfData* keyInfo);
 
 
 
-/// @brief 释放掉复制来的在OASet_S中的SKey
-/// @param pSet OASet_S的指针
-/// @param key SKey类型指针(Data_S*类型)
+/// @brief 释放单类型开放寻址集合中的键
+/// @param pSet 集合指针
+/// @param key 待释放的键
 extern void freeSKeyInSOASet(OASet_S* pSet, Data_S* key);
 
 
-/// @brief 释放掉OASet_S
-/// @param pSet OASet_S的指针
+/// @brief 释放单类型开放寻址集合
+/// @param pSet 集合指针
 extern void freeSOASet(OASet_S* pSet);
 
-/// @brief 插入key到OASet_S类型中去
-/// @param pSet OASet_S的指针
-/// @param key 传入的key(Data_S类型数据)
-/// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
-extern InfoOfReturn insertSkeyInSOASet(OASet_S* pSet, Data_S key);
+/// @brief 在单类型开放寻址集合中插入键
+/// @param pSet 集合指针
+/// @param key 待插入的键
+/// @return 操作结果状态码
+extern InfoOfReturn insertSKeyInSOASet(OASet_S* pSet, Data_S key);
 
 
 
-/// @brief 通过SKey得到复制来的SKey(Data_S类型)(你可能会觉得奇怪)
-/// @param pSet OASet_S的指针
-/// @param key 传入的key(Data_S类型数据)
-/// @return 返回Data_S类型数据, 这里是SKey, 如果没有, 返回空Data_S类型数据, 通过Data.isEmpty进行查看, 具体查看文档
-extern Data_S getCopySKeyBySkeyInSOASet(OASet_S* pSet, Data_S key);
+/// @brief 通过键找到单类型开放寻址集合中的键, 使用完后用freeSKeyInSOASet函数进行释放(你可能会觉得奇怪)
+/// @param pSet 集合指针
+/// @param key 待查找的键
+/// @return 返回找到的键, 若没找到, 返回空键(用字段isEmpty检查)
+extern Data_S getCopySKeyBySKeyInSOASet(OASet_S* pSet, Data_S key);
 
 
 
-/// @brief 判断Skey是否在OASet_S中
-/// @param pSet OASet_S的指针
-/// @param key 传入的key(Data_S类型数据)
-/// @return 如果存在返回true, 否则返回false
+/// @brief 判断单类型开放寻址集合中是否存在当前键
+/// @param pSet 集合指针
+/// @param key 待查找的键
+/// @return 如果存在返回true, 否则false
 extern bool hasSKeyInSOASet(OASet_S* pSet, Data_S key);
 
 
-/// @brief 通过SKey删除在OASet_S中的元素
-/// @param pSet OASet_S的指针
-/// @param key 传入的key(Data_S类型数据)
-/// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
+/// @brief 删除单类型开放寻址集合中的键
+/// @param pSet 集合指针
+/// @param key 待删除的键
+/// @return 操作结果状态码
 extern InfoOfReturn delSKeyBySKeyInSOASet(OASet_S* pSet, Data_S key);
 
 
-/// @brief 打印在OASet_S中的SKey(Data_S类型)
-/// @param pSet OASet_S的指针
-/// @param key SKey(Data_S类型)
+/// @brief 打印单类型开放寻址集合的键
+/// @param pSet 集合指针
+/// @param key 待打印的键
 extern void printSKeyInSOASet(OASet_S* pSet, Data_S key);
 
 
-/// @brief 打印OASet_S中的所有数据
-/// @param pSet OASet_S的指针
+/// @brief 打印单类型开放寻址集合
+/// @param pSet 集合指针
 extern void printSOASet(OASet_S* pSet);
 
 

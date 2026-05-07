@@ -9,7 +9,7 @@ typedef struct List_S_inChainMap List_S_inChainMap;
 /// @brief 在ChainMap_S中的Entry类型(Entry_S_inChainMap)
 typedef struct Entry_S_inChainMap {
     Data_S key;
-    Data_S value;
+    Data_S val;
     bool isEmpty;
 } Entry_S_inChainMap;
 
@@ -45,10 +45,10 @@ typedef struct ChainMap_S {
     int size;
 } ChainMap_S;
 
-/// @brief 初始化ChainMap_S
-/// @param pMap ChainMap_S的指针
-/// @param keyInfo key的InfoOfData类型指针
-/// @param valInfo val的InfoOfData类型指针
+/// @brief 初始化单类型链式哈希表
+/// @param pMap 哈希表指针
+/// @param keyInfo 键的数据信息的指针
+/// @param valInfo 值的数据信息的指针
 extern void initSChainMap(ChainMap_S* pMap, InfoOfData* keyInfo, InfoOfData* valInfo);
 
 
@@ -56,80 +56,80 @@ extern void initSChainMap(ChainMap_S* pMap, InfoOfData* keyInfo, InfoOfData* val
 
 
 
-/// @brief 释放掉复制来的在ChainMap_S中的SVal
-/// @param pMap ChainMap_S的指针
-/// @param val MVal类型指针(Data_S*类型)
+/// @brief 释放单类型链式哈希表中的值
+/// @param pMap 哈希表指针
+/// @param val 待释放的值
 extern void freeSValInSChainMap(ChainMap_S* pMap, Data_S* val);
 
-/// @brief 释放掉复制来的在ChainMap_S中的SEntry(Entry_S_inChainMap类型)
-/// @param pMap ChainMap_S的指针
-/// @param entry SEntry类型(Entry_S_inChainMap*类型)
+/// @brief 释放单类型链式哈希表中的条目
+/// @param pMap 哈希表指针
+/// @param entry 待释放的条目
 extern void freeSEntryInSChainMap(ChainMap_S* pMap, Entry_S_inChainMap* entry);
 
-/// @brief 释放掉ChainMap_S
-/// @param pMap ChainMap_S的指针
+/// @brief 释放单类型链式哈希表
+/// @param pMap 哈希表指针
 extern void freeSChainMap(ChainMap_S* pMap);
 
 
-/// @brief 插入key和val到ChainMap_S类型中去
-/// @param pMap ChainMap_S的指针
-/// @param key 传入的key(Data_S类型数据)
-/// @param val 传入的val(Data_S类型数据)
-/// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
+/// @brief 在单类型链式哈希表中插入键值对
+/// @param pMap 哈希表指针
+/// @param key 待插入的键
+/// @param val 待插入的值
+/// @return 操作结果状态码
 extern InfoOfReturn insertSKeyAndSValInSChainMap(ChainMap_S* pMap, Data_S key, Data_S val);
 
-/// @brief 通过SKey得到复制来的SVal(Data_S类型)
-/// @param pMap ChainMap_S的指针
-/// @param key 传入的key(Data_S类型数据)
-/// @return 返回Data_S类型数据, 这里是SVal, 如果没有, 返回空Data_S类型数据, 通过Data.isEmpty进行查看, 具体查看文档
-extern Data_S getCopySValBySKeyInSChianMap(ChainMap_S* pMap, Data_S key);
+/// @brief 通过键找到单类型链式哈希表中的值, 使用完后用freeSValInSChainMap函数进行释放
+/// @param pMap 哈希表指针
+/// @param key 待查找的键
+/// @return 返回找到的值, 若没找到, 返回空值(用字段isEmpty检查)
+extern Data_S getCopySValBySKeyInSChainMap(ChainMap_S* pMap, Data_S key);
 
 
-/// @brief 通过SKey得到SVal(Data_S类型), 可直接修改内部的void* data和void* content内容
-/// @param pMap ChainMap_S的指针
-/// @param key 传入的key(Data_S类型数据)
-/// @return返回Data_S类型数据, 这里是SVal, 如果没有, 返回空Data_S类型数据, 通过Data.isEmpty进行查看, 具体查看文档
+/// @brief 通过键找到单类型链式哈希表中的值, 可以直接修改内部数据
+/// @param pMap 哈希表指针
+/// @param key 待查找的键
+/// @return 返回找到的值, 若没找到, 返回空值(用字段isEmpty检查)
 extern Data_S getPtrSValBySKeyInSChainMap(ChainMap_S* pMap, Data_S key);
 
-/// @brief 通过SKey得到复制来的SEntry(Entry_S_inChainMap类型)
-/// @param pMap ChainMap_S的指针
-/// @param key 传入的key(Data_S类型数据)
-/// @return 返回Entry_S_inChainMap类型数据, 这里是SEntry, 如果没有, 返回空Entry_S_inChainMap类型数据, 通过entry.isEmpty进行查看, 具体查看文档
+/// @brief 通过键找到单类型链式哈希表中的条目, 使用完后用freeSEntryInSChainMap函数进行释放
+/// @param pMap 哈希表指针
+/// @param key 待查找的条目的键
+/// @return 返回找到的条目, 若没找到, 返回空条目(用字段isEmpty检查)
 extern Entry_S_inChainMap getCopySEntryBySKeyInSChainMap(ChainMap_S* pMap, Data_S key);
 
-/// @brief 判断Skey是否在ChainMap_S中
-/// @param pMap ChainMap_S的指针
-/// @param key 传入的key(Data_S类型数据)
+/// @brief 判断单类型链式哈希表中是否存在当前键
+/// @param pMap 哈希表指针
+/// @param key 待查找的键
 /// @return 如果存在返回true, 否则false
 extern bool hasSKeyInSChainMap(ChainMap_S* pMap, Data_S key);
 
-/// @brief 通过SKey删除在ChainMap_S中的元素
-/// @param pMap ChainMap_S的指针
-/// @param key 传入的key(Data_S类型数据)
-/// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
+/// @brief 删除单类型链式哈希表中的条目
+/// @param pMap 哈希表指针
+/// @param key 待删除的条目的键
+/// @return 操作结果状态码
 extern InfoOfReturn delSEntryBySKeyInSChainMap(ChainMap_S* pMap, Data_S key);
 
 
 
-/// @brief 打印在ChainMap_S中的SKey(Data_S类型)
-/// @param pMap ChainMap_S的指针
-/// @param key SKey(Data_S类型)
+/// @brief 打印单类型链式哈希表的键
+/// @param pMap 哈希表指针
+/// @param key 待打印的键
 extern void printSKeyInSChainMap(ChainMap_S* pMap, Data_S key);
 
-/// @brief 打印在ChainMap_S中的SVal(Data_S类型)
-/// @param pMap ChainMap_S的指针
-/// @param val SVal(Data_S类型)
+/// @brief 打印单类型链式哈希表的值
+/// @param pMap 哈希表指针
+/// @param val 待打印的值
 extern void printSValInSChainMap(ChainMap_S* pMap, Data_S val);
 
-/// @brief 打印在ChainMap_S中的SEntry(Entry_S_inChainMap类型)
-/// @param pMap ChainMap_S的指针
-/// @param entry SEntry(Entry_S_inChainMap类型)
+/// @brief 打印单类型链式哈希表的条目
+/// @param pMap 哈希表指针
+/// @param entry 待打印的条目
 extern void printSEntryInSChainMap(ChainMap_S* pMap, Entry_S_inChainMap entry);
 
 
 
 
-/// @brief 打印ChainMap_S中的所有数据
-/// @param pMap ChainMap_S的指针
+/// @brief 打印单类型链式哈希表
+/// @param pMap 哈希表指针
 extern void printSChainMap(ChainMap_S* pMap);
 #endif

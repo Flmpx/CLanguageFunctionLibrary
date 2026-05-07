@@ -47,55 +47,61 @@ typedef struct ChainSet_M {
 } ChainSet_M;
 
 
-/// @brief 初始化ChainSet_M
-/// @param pSet ChainSet_M的指针
+/// @brief 初始化多类型链式集合
+/// @param pSet 集合指针
 extern void initMChainSet(ChainSet_M* pSet);
 
 
 
-/// @brief 释放掉复制来的在ChainSet_M中的MKey
-/// @param key MKey类型指针(Data_M*类型)
+/// @brief 释放多类型链式集合中的键
+/// @param key 待释放的键
 extern void freeMKeyInMChainSet(Data_M* key);
 
-/// @brief 释放掉ChainSet_M
-/// @param pSet ChainSet_M的指针
+/// @brief 释放多类型链式集合
+/// @param pSet 集合指针
 extern void freeMChainSet(ChainSet_M* pSet);
 
-/// @brief 插入key到ChainSet_M类型中去
-/// @param pSet ChainSet_M的指针
-/// @param key MKey(Data_M类型)
-/// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
+/// @brief 在多类型链式集合中插入键
+/// @param pSet 集合指针
+/// @param key 待插入的键
+/// @return 操作结果状态码
 extern InfoOfReturn insertMKeyInMChainSet(ChainSet_M* pSet, Data_M key);
 
-/// @brief 通过MKey得到复制来的MKey(Data_M类型)(你可能会觉得奇怪)
-/// @param pSet ChainSet_M的指针
-/// @param key MKey(Data_M类型)
-/// @return 返回Data_M类型数据, 这里是MKey, 如果没有, 返回空Data_M类型数据, 通过Data.isEmpty进行查看, 具体查看文档
+/// @brief 通过键找到多类型链式集合中的键, 使用完后用freeMKeyInMChainSet函数进行释放(你可能会觉得奇怪)
+/// @param pSet 集合指针
+/// @param key 待查找的键
+/// @return 返回找到的键, 若没找到, 返回空键(用字段isEmpty检查)
 extern Data_M getCopyMKeyByMKeyInMChainSet(ChainSet_M* pSet, Data_M key);
 
 
-/// @brief 判断Mkey是否在ChainSet_M中
-/// @param pSet ChainSet_M的指针
-/// @param key MKey(Data_M类型)
-/// @return 如果存在返回true, 否则返回false
+
+
+// TODO: 写一个getPtrMKeyByMKeyInMChainSet函数, 并高度警告不可以改变返回的Key, 这个函数主要为了反转复制整个key过于浪费性能了, 也许只是要读取一下
+
+
+
+/// @brief 判断多类型链式集合中是否存在当前键
+/// @param pSet 集合指针
+/// @param key 待查找的键
+/// @return 如果存在返回true, 否则false
 extern bool hasMKeyInMChainSet(ChainSet_M* pSet, Data_M key);
 
 
-/// @brief 通过MKey删除在ChainSet_M中的元素
-/// @param pSet ChainSet_M的指针
-/// @param key MKey(Data_M类型)
-/// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
+/// @brief 删除多类型链式集合中的键
+/// @param pSet 集合指针
+/// @param key 待删除的键
+/// @return 操作结果状态码
 extern InfoOfReturn delMKeyByMKeyInMChainSet(ChainSet_M* pSet, Data_M key);
 
 
 
 
-/// @brief 打印在ChainSet_M中的MKey(Data_M类型)
-/// @param key MKey(Data_M类型)
+/// @brief 打印多类型链式集合的键
+/// @param key 待打印的键
 extern void printMKeyInMChainSet(Data_M key);
 
 
-/// @brief 打印ChainSet_M中的所有数据
-/// @param pSet ChainSet_M的指针
+/// @brief 打印多类型链式集合
+/// @param pSet 集合指针
 extern void printMChainSet(ChainSet_M* pSet);
 #endif

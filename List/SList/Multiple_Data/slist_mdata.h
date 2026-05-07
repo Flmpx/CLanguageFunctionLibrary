@@ -25,105 +25,102 @@ typedef struct {
 
 
 /*** */
-/// @brief 初始化SList_M
-/// @param plist SList_M类型的指针
+/// @brief 初始化多类型单向链表
+/// @param plist 链表指针
 extern void initMSList(SList_M* plist);
 
 
-/// @brief 释放MVal(Data_M类型)的内容
-/// @param val MVal类型指针(Data_M类型)
+/// @brief 释放多类型单向链表中的值
+/// @param val 待释放的值
 extern void freeMValInMSList(Data_M* val);
 
 
-/// @brief 通过MVal(Data_M类型)返回MVal的指针(Data_M类型)(可直接修改内部的void* data和void* content内容)
-/// @param plist SList_M类型指针
-/// @param val 输入的MVal类型(Data_M类型)
-/// @return 返回Data_M类型数据, 这里是MVal, 如果没有, 返回空Data_M类型数据, 通过Data.isEmpty进行查看, 具体查看文档
+/// @brief 通过值找到多类型单向链表中值, 可以直接修改内部数据
+/// @param plist 链表指针
+/// @param val 待查找的值
+/// @return 返回找到的值, 若没找到, 返回空值(用字段isEmpty检查)
 extern Data_M getPtrMValByMValInMSList(SList_M* plist, Data_M val);
 
-/// @brief 通过Pos位置返回MVal(Data_M类型)的,注意这里MVal中的void* data和void* content都是复制的,使用完后记得释放
-/// @param plist SList_M类型指针
+/// @brief 查找在多类型单向链表的指定位置的值, 使用完后用freeMValInMSList函数进行释放
+/// @param plist 链表指针
 /// @param pos 位置(从0开始)
-/// @return 返回Data_M类型数据, 这里是MVal, 如果没有, 返回空Data_M类型数据, 通过Data.isEmpty进行查看, 具体查看文档
+/// @return 返回找到的值, 若没找到, 返回空值(用字段isEmpty检查)
 extern Data_M getCopyMValByPosInMSList(SList_M* plist, int pos);
 
 
-/// @brief 通过位置Pos返回MVal的指针(Data_M类型)(可直接修改内部的void* data和void* content内容)
-/// @param plist SList_M类型指针
+/// @brief 查找在多类型单向链表的指定位置的值, 可以直接修改内部数据
+/// @param plist 链表指针
 /// @param pos 位置(从0开始)
-/// @return 返回Data_M类型数据, 这里是MVal, 如果没有, 返回空Data_M类型数据, 通过Data.isEmpty进行查看, 具体查看文档
+/// @return 返回找到的值, 若没找到, 返回空值(用字段isEmpty检查)
 extern Data_M getPtrMValByPosInMSList(SList_M* plist, int pos);
 
-/// @brief 判断MVal数据是否在SList_M里面
-/// @param plist SList_M类型指针
-/// @param val Data_M类型数据
-/// @return 有就返回true,没有就false
+/// @brief 判断多类型单向链表中是否有当前值
+/// @param plist 链表指针
+/// @param val 待查找的值
+/// @return 如果存在返回true, 否则false
 extern bool hasMValInMSList(SList_M* plist, Data_M val);
 
 
 
 
-/// @brief 在SList_M链表的尾部插入节点
-/// @param plist SList_M链表指针
-/// @param val Data_M类型数据
-/// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
+/// @brief 在多类型单向链表尾部插入值
+/// @param plist 链表指针
+/// @param val 待插入的值
+/// @return 操作结果状态码
 extern InfoOfReturn insertMValAtEndInMSList(SList_M* plist, Data_M val);
 
 
-/// @brief 在SList_M链表的头部插入节点
-/// @param plist SList_M链表指针
-/// @param val Data_M类型数据
-/// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
+/// @brief 在多类型单向链表头部插入值
+/// @param plist 链表指针
+/// @param val 待插入的值
+/// @return 操作结果状态码
 extern InfoOfReturn insertMValAtStartInMSList(SList_M* plist, Data_M val);
 
-/// @brief 在SList_M链表指定位置插入数据
-/// @param plist SList_M链表指针
-/// @param val Data_M类型数据
-/// @param pos 位置的范围在[0, SList_M.size],范围的两端分别代表头插和尾插
-/// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
+/// @brief 在多类型单向链表指定位置插入值
+/// @param plist 链表指针
+/// @param val 待插入的值
+/// @param pos 位置的范围在[0, 链表大小],范围的两端分别代表头插和尾插
+/// @return 操作结果状态码
 extern InfoOfReturn insertMValAtPosInMSList(SList_M* plist, Data_M val, int pos);
 
-/// @brief 删除SList_M链表头节点
-/// @param plist SList_M链表指针
-/// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
+/// @brief 删除多类型单向链表的尾节点
+/// @param plist 链表指针
+/// @return 操作结果状态码
 extern InfoOfReturn delEndNodeInMSList(SList_M* plist);
 
 
-/// @brief 删除SList_M链表尾节点
-/// @param plist SList_M链表指针
-/// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
+/// @brief 删除多类型单向链表的头节点
+/// @param plist 链表指针
+/// @return 操作结果状态码
 extern InfoOfReturn delStartNodeInMSList(SList_M* plist);
 
-/// @brief 通过MVal(Data_M类型)数据来删除SList_M中的节点
-/// @param plist SList_M链表指针
-/// @param val Data_M类型数据
-/// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
+/// @brief 删除多类型单向链表中指定值(只能删除第一次出现的)
+/// @param plist 链表指针
+/// @param val 待删除的值
+/// @return 操作结果状态码
 extern InfoOfReturn delNodeByMValInMSList(SList_M* plist, Data_M val);
 
-/// @brief 通过位置删除SList_M的节点
-/// @param plist SList_M链表指针
-/// @param pos 要删除的位置(从0开始)
-/// @return 返回InfoOfRetrun中的枚举类型, 具体查看文档
+/// @brief 删除多类型单向链表中指定位置的值
+/// @param plist 链表指针
+/// @param pos 待删除的位置(从0开始)
+/// @return 操作结果状态码
 extern InfoOfReturn delNodeByPosInMSList(SList_M* plist, int pos);
 
 
-
-// /// @brief 反转SList_M链表
-// /// @param plist SList_M链表指针
-// extern void reverseMDList(SList_M* plist);
+// TODO: 单链表的反转
 
 
 
-/// @brief 打印SList_M链表中的Data_M数据
-/// @param val Data_M类型数据
+/// @brief 打印多类型单向链表中的值
+/// @param val 待打印的值
 extern void printMValInMSList(Data_M val);
 
-/// @brief 打印SList_M链表数据
-/// @param plist SList_M链表指针
+/// @brief 打印多类型单向链表
+/// @param plist 链表指针
 extern void printMSList(SList_M* plist);
 
-/// @brief 清除SList_M链表
-/// @param plist SList_M链表指针
+/// @brief 释放多类型单向链表
+/// @param plist 链表指针
 extern void freeMSList(SList_M* plist);
 
 

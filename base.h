@@ -67,14 +67,14 @@ enum EntryStateInSet {
 */
 
 
-
+/// @brief 比较结果
 typedef enum cmpresult {
     SAME = 0,
     DIFFERENT = 1,
 } CmpResult;
 
 
-
+/// @brief 操作结果状态码
 typedef enum info {
     Warning = -1,
     None = 0,

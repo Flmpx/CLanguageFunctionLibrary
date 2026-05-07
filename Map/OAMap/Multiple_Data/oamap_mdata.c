@@ -11,7 +11,7 @@
 static Entry_M_inOAMap getEmptyMEntry() {
     Entry_M_inOAMap entry;
     entry.key = getEmptyMData();
-    entry.value = getEmptyMData();
+    entry.val = getEmptyMData();
     entry.state = NONE_IN_MAP;
     entry.isEmpty = true;
     return entry;
@@ -44,7 +44,7 @@ void freeMValInMOAMap(Data_M* val) {
 void freeMEntryInMOAMap(Entry_M_inOAMap* entry) {
     if (entry->isEmpty) return;
     freeMData(&(entry->key));
-    freeMData(&(entry->value));
+    freeMData(&(entry->val));
     entry->isEmpty = true;
 }
 
@@ -73,8 +73,8 @@ static Entry_M_inOAMap deepCopyMEntry(Entry_M_inOAMap oldEntry) {
     if (newEntry.key.isEmpty) {
         return getEmptyMEntry();
     }
-    newEntry.value = deepCopyMData(oldEntry.value);
-    if (newEntry.value.isEmpty) {
+    newEntry.val = deepCopyMData(oldEntry.val);
+    if (newEntry.val.isEmpty) {
         freeMData(&(newEntry.key));
         return getEmptyMEntry();
     }
@@ -92,8 +92,8 @@ static Entry_M_inOAMap smartCopyMEntry(Entry_M_inOAMap oldEntry) {
         return getEmptyMEntry();
     }
     //val按需拷贝
-    newEntry.value = smartCopyMData(oldEntry.value);
-    if (newEntry.value.isEmpty) {
+    newEntry.val = smartCopyMData(oldEntry.val);
+    if (newEntry.val.isEmpty) {
         freeMData(&(newEntry.key));
         return getEmptyMEntry();
     }
@@ -107,7 +107,7 @@ static Entry_M_inOAMap smartCopyMEntry(Entry_M_inOAMap oldEntry) {
 
 
 //这个函数保证可以添加
-static InfoOfReturn addMEntryFunction(OAMap_M* pMap, Data_M key, Data_M value) {
+static InfoOfReturn addMEntryFunction(OAMap_M* pMap, Data_M key, Data_M val) {
     //hash
     ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
 
@@ -122,13 +122,13 @@ static InfoOfReturn addMEntryFunction(OAMap_M* pMap, Data_M key, Data_M value) {
         }
         //如果发现是同一个key,则更新数据
         if (compareMData(pMap->arr[index].key, key) == SAME) {
-            Data_M newVal = smartCopyMData(value);
+            Data_M newVal = smartCopyMData(val);
             if (newVal.isEmpty) {
                 printf("\nMemory allocation failed\n");
                 return Warning;
             }
-            freeMData(&(pMap->arr[index].value));
-            pMap->arr[index].value = newVal;
+            freeMData(&(pMap->arr[index].val));
+            pMap->arr[index].val = newVal;
             return Success;
         }
         index++;
@@ -142,7 +142,7 @@ static InfoOfReturn addMEntryFunction(OAMap_M* pMap, Data_M key, Data_M value) {
     Entry_M_inOAMap oldEntry;
     oldEntry.isEmpty = false;
     oldEntry.key = key;
-    oldEntry.value = value;
+    oldEntry.val = val;
     pMap->arr[index] = smartCopyMEntry(oldEntry);
     
     if (pMap->arr[index].isEmpty) {
@@ -158,14 +158,14 @@ static InfoOfReturn addMEntryFunction(OAMap_M* pMap, Data_M key, Data_M value) {
 
 
 //专门为重哈希做的软拷贝方式添加的Entry
-static InfoOfReturn addMEntryForFreshMOAMap(OAMap_M* pMap, Data_M key, Data_M value) {
+static InfoOfReturn addMEntryForFreshMOAMap(OAMap_M* pMap, Data_M key, Data_M val) {
     ull index = (key.dataInfo->oper->hashdata(key.data, key.content))%pMap->mod;
     while (pMap->arr[index].state != NONE_IN_MAP) {
         index++;
         index %= pMap->len;
     }
     pMap->arr[index].key = key;
-    pMap->arr[index].value = value;
+    pMap->arr[index].val = val;
     pMap->arr[index].state = EXIST_IN_MAP;
     pMap->arr[index].isEmpty = false;
     pMap->size++;
@@ -210,7 +210,7 @@ static InfoOfReturn freshMOAMap(OAMap_M* pMap) {
     newMap.size = 0;    //再添加函数中会自动加,这里设置为0
     for (int i = 0; i < pMap->len; i++) {
         if (pMap->arr[i].state == EXIST_IN_MAP) {
-            addMEntryForFreshMOAMap(&newMap, pMap->arr[i].key, pMap->arr[i].value);
+            addMEntryForFreshMOAMap(&newMap, pMap->arr[i].key, pMap->arr[i].val);
         }
     }
 
@@ -263,7 +263,7 @@ Data_M getCopyMValByMKeyInMOAMap(OAMap_M* pMap, Data_M key) {
         return getEmptyMData();
     } else {
         Data_M newData;
-        newData = deepCopyMData(pMap->arr[index].value);
+        newData = deepCopyMData(pMap->arr[index].val);
         if (newData.isEmpty) {
             printf("\nMemory allocation failed\n");
         }
@@ -277,12 +277,12 @@ Data_M getPtrMValByMKeyInMOAMap(OAMap_M* pMap, Data_M key) {
         printf("\nNot Found\n");
         return getEmptyMData();
     } else {
-        return pMap->arr[index].value;
+        return pMap->arr[index].val;
     }
 }
 
 
-Entry_M_inOAMap getCopyMEntryByKeyInMOAMap(OAMap_M* pMap, Data_M key) {
+Entry_M_inOAMap getCopyMEntryByMKeyInMOAMap(OAMap_M* pMap, Data_M key) {
     int index = getIndexByMKey(pMap, key);
     if (index == NOT_FOUND) {
         return getEmptyMEntry();
@@ -360,9 +360,9 @@ void printMEntryInMOAMap(Entry_M_inOAMap entry) {
     printf("[key:");
     entry.key.dataInfo->oper->printdata(entry.key.data, entry.key.content);
     
-    //value
-    printf(", value:");
-    entry.value.dataInfo->oper->printdata(entry.value.data, entry.value.content);
+    //val
+    printf(", val:");
+    entry.val.dataInfo->oper->printdata(entry.val.data, entry.val.content);
     printf("]");
 }
 

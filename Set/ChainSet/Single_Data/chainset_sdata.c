@@ -363,7 +363,7 @@ int insertSKeyInSChainSet(ChainSet_S* pSet, Data_S key) {
 
 
 //返回的Data数据为新建,用完后记得释放
-Data_S getCopySKeyBySKeyInSChianSet(ChainSet_S* pSet, Data_S key) {
+Data_S getCopySKeyBySKeyInSChainSet(ChainSet_S* pSet, Data_S key) {
     if (pSet->len == 0 || pSet->size == 0 || pSet->arr == NULL) return getEmptySData();
     ull index = (pSet->keyInfo->oper->hashdata(key.data, key.content))%pSet->mod;
     

@@ -19,7 +19,7 @@
 #include "base.h"
 int main()
 {
-    OAMap_S map;    //创建一个使用开放定址法(OA)的存储单一类型数据(S)的Map
+    OAMap_S map;    //创建一个使用开放寻址法(OA)的存储单一类型数据(S)的Map
     initSOAMap(&map, &Info_Int, &Info_String);  //初始化Map, 使用库提供的Int和String信息
     char string[101] = "abcd";
     for (int i = 0; i < 10; i++) {
@@ -252,7 +252,7 @@ typedef struct Data_M {
         1. Warning-->操作失败(比如插入数据时内存分配失败, 要删除空链表中的数据) 
         2. None-->操作无效(比如上传链表中的元素, 但没找, 那么删除就无效) 
         3. Success-->操作成功操作(比如链表插入元素成功操作)
-    3. Position-->位置index(比如在开放定址法处理冲突的Map中, 通过返回位置下标来找到数据)
+    3. Position-->位置index(比如在开放寻址法处理冲突的Map中, 通过返回位置下标来找到数据)
     
     
 
