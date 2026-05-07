@@ -1,6 +1,8 @@
 # FocX
 
-- 注: M(Multiple)为一种数据结构中可以插入任意类型, S(Single)为一种数据结构中只能插入一种类型, 但这种类型任意  
+- 注: 
+    1. M(Multiple)为一种数据结构中可以插入任意类型, S(Single)为一种数据结构中只能插入一种类型, 但这种类型任意  
+    2. 再所有的数据结构中Key为键, Val为值, 如果不可以重复即为键, 否则值
 ## 🚀快速开始
 
 - 代码
@@ -150,46 +152,67 @@ typedef struct Data_M {
 - 在Map中的数据叫做MVal, MKey, SVal, SKey, MEntry, SEntry
 - 具体什么类型, 在括号中解释 -->
 ## 2 文件夹结构
-    ├─base.c 
-    ├─base.h 
-    ├─List 
-    │ ├─DList 
-    │ │ ├─Multiple_Data 
-    │ │ │ ├─dlist_mdata.c 
-    │ │ │ └─dlist_mdata.h 
-    │ │ └─Single_Data 
-    │ │   ├─dlist_sdata.c 
-    │ │   └─dlist_sdata.h 
-    │ └─SList 
-    ├─Map 
-    │ ├─ChainMap 
-    │ │ ├─Multiple_Data 
-    │ │ │ ├─chainmap_mdata.c 
-    │ │ │ └─chainmap_mdata.h 
-    │ │ └─Single_Data 
-    │ │   ├─chainmap_sdata.c 
-    │ │   └─chainmap_sdata.h 
-    │ └─OAMap 
-    │   ├─Multiple_Data 
-    │   │ ├─oamap_mdata.c 
-    │   │ └─oamap_mdata.h 
-    │   └─Single_Data 
-    │     ├─oamap_sdata.c 
-    │     └─oamap_sdata.h 
-    ├─Oper 
-    │ ├─bool_oper 
-    │ │ ├─_bool_oper.c 
-    │ │ └─_bool_oper.h 
-    │ ├─double_oper 
-    │ │ ├─_double_oper.c 
-    │ │ └─_double_oper.h 
-    │ ├─int_oper 
-    │ │ ├─_int_oper.c 
-    │ │ └─_int_oper.h 
-    │ └─string_oper 
-    │   ├─_string_oper.c 
-    │   └─_string_oper.h 
-    └─README.md 
+    ├── base.c
+    ├── base.h
+    ├── List
+    │   ├── DList
+    │   │   ├── Multiple_Data
+    │   │   │   ├── dlist_mdata.c
+    │   │   │   └── dlist_mdata.h
+    │   │   └── Single_Data
+    │   │       ├── dlist_sdata.c
+    │   │       └── dlist_sdata.h
+    │   └── SList
+    │       ├── Multiple_Data
+    │       │   ├── slist_mdata.c
+    │       │   └── slist_mdata.h
+    │       └── Single_Data
+    │           ├── slist_sdata.c
+    │           └── slist_sdata.h
+    ├── Map
+    │   ├── ChainMap
+    │   │   ├── Multiple_Data
+    │   │   │   ├── chainmap_mdata.c
+    │   │   │   └── chainmap_mdata.h
+    │   │   └── Single_Data
+    │   │       ├── chainmap_sdata.c
+    │   │       └── chainmap_sdata.h
+    │   └── OAMap
+    │       ├── Multiple_Data
+    │       │   ├── oamap_mdata.c
+    │       │   └── oamap_mdata.h
+    │       └── Single_Data
+    │           ├── oamap_sdata.c
+    │           └── oamap_sdata.h
+    ├── Oper
+    │   ├── Bool_Info
+    │   │   ├── bool_info.c
+    │   │   └── bool_info.h
+    │   ├── Double_Info
+    │   │   ├── double_info.c
+    │   │   └── double_info.h
+    │   ├── Int_Info
+    │   │   ├── int_info.c
+    │   │   └── int_info.h
+    │   ├── README.md
+    │   └── String_Info
+    │       ├── string_info.c
+    │       └── string_info.h
+    └── Set
+        ├── ChainSet
+        │   ├── Multiple_Data
+        │   │   ├── chainset_mdata.c
+        │   │   └── chainset_mdata.h
+        │   └── Single_Data
+        │       ├── chainset_sdata.c
+        │       └── chainset_sdata.h
+        └── OASet
+            ├── Multiple_Data
+            │   ├── oaset_mdata.c
+            │   └── oaset_mdata.h
+            └── Single_Data
+                ├── oaset_sdata.c
+                └── oaset_sdata.h
 
             
 ## 3 变量命名规则
@@ -219,7 +242,10 @@ typedef struct Data_M {
     
     2. DList_S-->存储单一类型数据的DList
 ### 2 SList
-- 当前还未开发
+
+    1. SList_M-->存储任意类型数据的SList
+
+    2. SList_S-->存储单一类型数据的DList
 
 ### Map
 #### 1 OAMap
@@ -242,6 +268,21 @@ typedef struct Data_M {
     
     4. Entry_S_inChainMap-->在ChainMap中的存储单一类型数据的Entry(即包含key和val)
     
+### Set
+#### 1 OASet
+    
+    1. OASet_M-->存储任意类型数据的OASet
+    
+    2. OASet_S-->存储单一类型数据的OASet  
+    
+
+#### 2 ChainSet
+    
+    1. ChainSet_M-->存储任意类型数据的ChainSet
+    
+    2. ChainSet_S-->存储单一类型数据的ChainSet
+
+- 再Set内部有Entry这个概念, 但在外部没有
     
     
 ### 其他
